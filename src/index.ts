@@ -1,10 +1,7 @@
 export {
-  AccountMigrationApi,
   type AuthenticatedSession,
   HolodoriApi,
-  HolodoriApiError,
   type HolodoriApiOptions,
-  NoticeApi,
 } from "./api.js";
 export {
   type AccountMigrationLinkedUserInfo,
@@ -19,44 +16,17 @@ export {
   type NoticeTopResponse,
   type NoticeUpdateResponse,
 } from "./codecs.js";
+export { HolodoriApiError } from "./core/client.js";
 export {
-  HttpConnectHttp2Transport,
-  type HttpConnectHttp2TransportOptions,
-} from "./http-connect-transport.js";
-export {
-  assertGrpcSuccess,
-  decryptProto,
-  encryptProto,
-  extractGrpcPayload,
-  grpcFrame,
-  ProtoEncError,
-} from "./proto-enc.js";
-export {
-  decodeProtoFields,
-  encodeBytesField,
-  encodeMessage,
-  encodeStringField,
-  encodeVarint,
-  encodeVarintField,
-  firstBool,
-  firstBytes,
-  firstString,
-  firstUint,
-  ProtobufError,
-  type ProtoValue,
-} from "./protobuf.js";
-export {
-  SshHttp2Transport,
-  type SshHttp2TransportOptions,
-} from "./ssh-transport.js";
-export {
-  type ApiTransport,
-  ApiTransportError,
-  type ApiTransportErrorPhase,
-  type ApiTransportRequest,
-  type ApiTransportResponse,
-  type ApiTunnelConnector,
-  type ApiTunnelContext,
-  Http2Transport,
-  type Http2TransportOptions,
-} from "./transport.js";
+  type ApiMethod,
+  type RequestSignatureInput,
+  type RequestSigner,
+} from "./core/method.js";
+export { type SessionSnapshot } from "./core/session.js";
+export * from "./low-level.js";
+export { Region, type RegionBaseUrlResolver } from "./region.js";
+export { AccountMigrationApi } from "./services/account-migration.js";
+export { AuthApi } from "./services/auth.js";
+export { MasterApi } from "./services/master.js";
+export { NoticeApi } from "./services/notice.js";
+export * from "./transports.js";

@@ -12,6 +12,14 @@
     ".": {
       "types": "./dist/src/index.d.ts",
       "import": "./dist/src/index.js"
+    },
+    "./transports": {
+      "types": "./dist/src/transports.d.ts",
+      "import": "./dist/src/transports.js"
+    },
+    "./low-level": {
+      "types": "./dist/src/low-level.d.ts",
+      "import": "./dist/src/low-level.js"
     }
   },
   "files": [

@@ -1,35 +1,32 @@
 import {
-  type AccountMigrationLinkResult,
   type AccountMigrationMigrateRequest,
   type AccountMigrationMigrateResponse,
   type AccountMigrationPreparePasswordResponse,
-  decodeAccountMigrationMigrateResponse,
-  decodeAccountMigrationPreparePasswordResponse,
-  decodeCredentialResponse,
-  decodeGameAuthTokenResponse,
-  decodeMasterVersionResponse,
-  decodeNoticeGetResponse,
-  decodeNoticeListInCategoryResponse,
-  decodeNoticeTopResponse,
-  decodeUpdateResponse,
-  encodeCredentialRequest,
-  encodeEmpty,
-  encodeListInCategoryRequest,
-  encodeMigrateRequest,
-  encodeNoticeGetRequest,
-  encodePrepareMigrationPasswordRequest,
-  encodeStringListRequest,
   type NoticeGetResponse,
   type NoticeListInCategoryResponse,
   type NoticeTopResponse,
   type NoticeUpdateResponse,
 } from "./codecs.js";
-import { assertGrpcSuccess, decryptProto, encryptProto } from "./proto-enc.js";
+import {
+  ApiClient,
+  DEFAULT_TIMEOUT_MS,
+  HolodoriApiError,
+} from "./core/client.js";
+import { type RequestSigner } from "./core/method.js";
+import { ApiSession, type SessionSnapshot } from "./core/session.js";
+import {
+  isOfficialBaseUrl,
+  normalizeBaseUrl,
+  officialBaseUrlForRegion,
+  type RegionBaseUrlResolver,
+} from "./region.js";
+import { AccountMigrationApi } from "./services/account-migration.js";
+import { AuthApi } from "./services/auth.js";
+import { MasterApi } from "./services/master.js";
+import { NoticeApi } from "./services/notice.js";
 import { type ApiTransport, Http2Transport } from "./transport.js";
 
 const DEFAULT_BASE_URL = "https://jp.game-hololive-dreams.com";
-const DEFAULT_TIMEOUT_MS = 30_000;
-const DOTNET_EPOCH_TICKS = 621355968000000000n;
 
 export interface HolodoriApiOptions {
   readonly appVersion: string;
@@ -44,8 +41,10 @@ export interface HolodoriApiOptions {
   readonly gameAuthToken?: string;
   readonly masterVersion?: string;
   readonly requestIdFactory?: () => string;
+  readonly requestSigner?: RequestSigner;
   readonly timeoutMs?: number;
   readonly autoAuthenticate?: boolean;
+  readonly regionBaseUrlResolver?: RegionBaseUrlResolver;
 }
 
 export interface AuthenticatedSession {
@@ -54,62 +53,63 @@ export interface AuthenticatedSession {
   readonly masterVersion: string;
 }
 
-export class HolodoriApiError extends Error {
-  readonly status: number | undefined;
-  readonly path: string;
-
-  constructor(message: string, path: string, status?: number) {
-    super(message);
-    this.name = "HolodoriApiError";
-    this.path = path;
-    this.status = status;
-  }
-}
-
 export class HolodoriApi {
+  readonly auth: AuthApi;
+  readonly master: MasterApi;
   readonly notice: NoticeApi;
   readonly accountMigration: AccountMigrationApi;
 
-  private readonly options: Required<
-    Pick<
-      HolodoriApiOptions,
-      | "apiSecret"
-      | "appVersion"
-      | "baseUrl"
-      | "bundleId"
-      | "lang"
-      | "os"
-      | "store"
-      | "timeoutMs"
-    >
-  > &
-    HolodoriApiOptions;
-  private readonly transport: ApiTransport;
-  private readonly ownsTransport: boolean;
-  private credential: string | undefined;
-  private gameAuthToken: string | undefined;
-  private masterVersion: string | undefined;
+  private readonly client: ApiClient;
+  private readonly session: ApiSession;
   private authentication: Promise<AuthenticatedSession> | undefined;
-  private lastRequestTicks = 0n;
 
   constructor(options: HolodoriApiOptions, transport?: ApiTransport) {
     validateOptions(options);
-    this.options = {
-      ...options,
-      baseUrl: normalizeBaseUrl(options.baseUrl ?? DEFAULT_BASE_URL),
-      bundleId: options.bundleId ?? "game.qualiarts.hololive.dreams.jp",
-      lang: options.lang ?? "jpn",
-      os: options.os ?? "Android",
-      store: options.store ?? "GooglePlay",
-      timeoutMs: options.timeoutMs ?? DEFAULT_TIMEOUT_MS,
-    };
-    this.transport = transport ?? new Http2Transport();
-    this.ownsTransport = transport === undefined;
-    this.credential = options.credential;
-    this.gameAuthToken = options.gameAuthToken;
-    this.masterVersion = options.masterVersion;
-    this.notice = new NoticeApi(this);
-    this.accountMigration = new AccountMigrationApi(this);
+    const baseUrl = normalizeBaseUrl(options.baseUrl ?? DEFAULT_BASE_URL);
+    const ownsTransport = transport === undefined;
+    const actualTransport = transport ?? new Http2Transport();
+    this.session = new ApiSession({
+      credential: options.credential,
+      gameAuthToken: options.gameAuthToken,
+      masterVersion: options.masterVersion,
+    });
+    this.client = new ApiClient(
+      {
+        appVersion: options.appVersion,
+        apiSecret: options.apiSecret,
+        baseUrl,
+        bundleId: options.bundleId ?? "game.qualiarts.hololive.dreams.jp",
+        lang: options.lang ?? "jpn",
+        os: options.os ?? "Android",
+        store: options.store ?? "GooglePlay",
+        ...(options.additionalHeaders === undefined
+          ? {}
+          : { additionalHeaders: options.additionalHeaders }),
+        ...(options.requestIdFactory === undefined
+          ? {}
+          : { requestIdFactory: options.requestIdFactory }),
+        ...(options.requestSigner === undefined
+          ? {}
+          : { requestSigner: options.requestSigner }),
+        timeoutMs: options.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+      },
+      this.session,
+      actualTransport,
+      ownsTransport,
+    );
+    this.auth = new AuthApi(this.client, this.session);
+    this.master = new MasterApi(this.client, this.session);
+    this.notice = new NoticeApi(this.client, () => this.authenticate());
+    const regionBaseUrlResolver = options.regionBaseUrlResolver;
+    this.accountMigration = new AccountMigrationApi(
+      this.client,
+      this.session,
+      regionBaseUrlResolver
+        ? { resolveRegionBaseUrl: regionBaseUrlResolver }
+        : isOfficialBaseUrl(baseUrl)
+          ? { resolveRegionBaseUrl: officialBaseUrlForRegion }
+          : {},
+    );
   }
 
   static async create(
@@ -122,337 +122,123 @@ export class HolodoriApi {
   }
 
   getCredential(): string | undefined {
-    return this.credential;
+    return this.session.credentialValue;
   }
 
   getGameAuthToken(): string | undefined {
-    return this.gameAuthToken;
+    return this.session.gameAuthTokenValue;
   }
 
   getMasterVersion(): string | undefined {
-    return this.masterVersion;
+    return this.session.masterVersionValue;
+  }
+
+  getSession(): SessionSnapshot {
+    return this.session.snapshot;
   }
 
   async authenticate(): Promise<AuthenticatedSession> {
     if (this.authentication) return this.authentication;
-    this.authentication = this.authenticateInternal();
+    const authentication = this.authenticateInternal();
+    this.authentication = authentication;
     try {
-      return await this.authentication;
+      return await authentication;
     } finally {
-      this.authentication = undefined;
+      if (this.authentication === authentication)
+        this.authentication = undefined;
+      // Authentication is intentionally not memoized: callers can retry after
+      // a transient failure while the session values remain reusable.
     }
   }
 
   close(): Promise<void> {
-    if (this.ownsTransport) this.transport.close?.();
+    this.client.close();
     return Promise.resolve();
   }
 
-  async authCreate(): Promise<string> {
-    const response = await this.call(
-      "/rpc.api.Auth/Create",
-      encodeEmpty(),
-      false,
-      false,
-    );
-    this.credential = decodeCredentialResponse(response);
-    return this.credential;
+  /** @deprecated Use `api.auth.create()`. */
+  authCreate(): Promise<string> {
+    return this.auth.create();
   }
 
-  async authLogin(credential = this.credential): Promise<string> {
-    if (!credential)
-      throw new HolodoriApiError(
-        "credential is required for Auth/Login",
-        "/rpc.api.Auth/Login",
-      );
-    const response = await this.call(
-      "/rpc.api.Auth/Login",
-      encodeCredentialRequest(credential),
-      false,
-      false,
-    );
-    this.credential = credential;
-    this.gameAuthToken = decodeGameAuthTokenResponse(response);
-    return this.gameAuthToken;
+  /** @deprecated Use `api.auth.login()`. */
+  authLogin(credential?: string): Promise<string> {
+    return this.auth.login(credential);
   }
 
-  async masterGet(): Promise<string> {
-    const response = await this.call(
-      "/rpc.api.Master/Get",
-      encodeEmpty(),
-      false,
-      false,
-    );
-    this.masterVersion = decodeMasterVersionResponse(response);
-    return this.masterVersion;
+  /** @deprecated Use `api.master.get()`. */
+  masterGet(): Promise<string> {
+    return this.master.get();
   }
 
-  async callAccountMigrationPreparePassword(
+  /** @deprecated Use `api.accountMigration.preparePassword()`. */
+  callAccountMigrationPreparePassword(
     accountMigrationId: string,
     password: string,
   ): Promise<AccountMigrationPreparePasswordResponse> {
-    const response = await this.call(
-      "/rpc.api.AccountMigration/PrepareMigrationPassword",
-      encodePrepareMigrationPasswordRequest(accountMigrationId, password),
-      false,
-      false,
+    return this.accountMigration.preparePasswordResponse(
+      accountMigrationId,
+      password,
     );
-    return decodeAccountMigrationPreparePasswordResponse(response);
   }
 
-  async callAccountMigrationMigrate(
+  /** @deprecated Use `api.accountMigration.migrate()`. */
+  callAccountMigrationMigrate(
     request: AccountMigrationMigrateRequest,
   ): Promise<AccountMigrationMigrateResponse> {
-    const response = await this.call(
-      "/rpc.api.AccountMigration/Migrate",
-      encodeMigrateRequest(request),
-      false,
-      false,
-    );
-    const result = decodeAccountMigrationMigrateResponse(response);
-    this.credential = result.credential;
-    this.gameAuthToken = undefined;
-    this.masterVersion = undefined;
-    return result;
+    return this.accountMigration.migrate(request);
   }
 
-  async callNoticeTop(): Promise<NoticeTopResponse> {
-    await this.ensureAuthenticated();
-    const response = await this.call(
-      "/rpc.api.Notice/Top",
-      encodeEmpty(),
-      true,
-      true,
-    );
-    return decodeNoticeTopResponse(response);
+  /** @deprecated Use `api.notice.top()`. */
+  callNoticeTop(): Promise<NoticeTopResponse> {
+    return this.notice.top();
   }
 
-  async callNoticeListInCategory(
+  /** @deprecated Use `api.notice.listInCategory()`. */
+  callNoticeListInCategory(
     categoryId: string,
     offset: number,
   ): Promise<NoticeListInCategoryResponse> {
-    await this.ensureAuthenticated();
-    const response = await this.call(
-      "/rpc.api.Notice/ListInCategory",
-      encodeListInCategoryRequest(categoryId, offset),
-      true,
-      true,
-    );
-    return decodeNoticeListInCategoryResponse(response);
+    return this.notice.listInCategory(categoryId, offset);
   }
 
-  async callNoticeGet(noticeId: string): Promise<NoticeGetResponse> {
-    await this.ensureAuthenticated();
-    const response = await this.call(
-      "/rpc.api.Notice/Get",
-      encodeNoticeGetRequest(noticeId),
-      true,
-      true,
-    );
-    return decodeNoticeGetResponse(response);
+  /** @deprecated Use `api.notice.get()`. */
+  callNoticeGet(noticeId: string): Promise<NoticeGetResponse> {
+    return this.notice.get(noticeId);
   }
 
-  async callNoticeUpdateCategoryReadTime(
+  /** @deprecated Use `api.notice.updateCategoryReadTime()`. */
+  callNoticeUpdateCategoryReadTime(
     categoryIds: readonly string[],
   ): Promise<NoticeUpdateResponse> {
-    await this.ensureAuthenticated();
-    const response = await this.call(
-      "/rpc.api.Notice/UpdateCategoryReadTime",
-      encodeStringListRequest(categoryIds, "notice category IDs"),
-      true,
-      true,
-    );
-    return decodeUpdateResponse(response);
+    return this.notice.updateCategoryReadTime(categoryIds);
   }
 
-  async callNoticeUpdateDetailReadTime(
+  /** @deprecated Use `api.notice.updateDetailReadTime()`. */
+  callNoticeUpdateDetailReadTime(
     noticeIds: readonly string[],
   ): Promise<NoticeUpdateResponse> {
-    await this.ensureAuthenticated();
-    const response = await this.call(
-      "/rpc.api.Notice/UpdateDetailReadTime",
-      encodeStringListRequest(noticeIds, "notice IDs"),
-      true,
-      true,
-    );
-    return decodeUpdateResponse(response);
+    return this.notice.updateDetailReadTime(noticeIds);
   }
 
   private async authenticateInternal(): Promise<AuthenticatedSession> {
-    if (!this.credential && !this.gameAuthToken) await this.authCreate();
-    if (!this.gameAuthToken) await this.authLogin();
-    if (!this.masterVersion) await this.masterGet();
-    if (!this.gameAuthToken || !this.masterVersion) {
+    if (!this.session.credentialValue && !this.session.gameAuthTokenValue)
+      await this.auth.create();
+    if (!this.session.gameAuthTokenValue) await this.auth.login();
+    if (!this.session.masterVersionValue) await this.master.get();
+    const gameAuthToken = this.session.gameAuthTokenValue;
+    const masterVersion = this.session.masterVersionValue;
+    if (!gameAuthToken || !masterVersion) {
       throw new HolodoriApiError(
         "authentication did not produce a complete session",
         "bootstrap",
       );
     }
     return {
-      credential: this.credential,
-      gameAuthToken: this.gameAuthToken,
-      masterVersion: this.masterVersion,
+      credential: this.session.credentialValue,
+      gameAuthToken,
+      masterVersion,
     };
-  }
-
-  private async ensureAuthenticated(): Promise<void> {
-    if (!this.gameAuthToken || !this.masterVersion) await this.authenticate();
-  }
-
-  private async call(
-    path: string,
-    proto: Buffer,
-    authenticated: boolean,
-    responseCache: boolean,
-  ): Promise<Buffer> {
-    const headers: Record<string, string> = {
-      ...this.options.additionalHeaders,
-      "content-type": "application/grpc+proto-enc",
-      te: "trailers",
-      "grpc-accept-encoding": "identity,gzip",
-      "x-app-version": this.options.appVersion,
-      "x-app-bundle-id": this.options.bundleId,
-      "x-app-lang-type": this.options.lang,
-      "x-app-os-type": this.options.os,
-      "x-app-store-type": this.options.store,
-    };
-    if (authenticated) {
-      if (!this.gameAuthToken || !this.masterVersion) {
-        throw new HolodoriApiError(
-          "authenticated API call requires a logged-in session",
-          path,
-        );
-      }
-      headers["x-app-auth-token"] = this.gameAuthToken;
-      headers["x-app-master-version"] = this.masterVersion;
-    }
-    if (responseCache) headers["x-app-request-id"] = this.createRequestId();
-
-    const result = await this.transport.request({
-      method: "POST",
-      url: `${this.options.baseUrl}${path}`,
-      headers,
-      body: encryptProto(proto, this.options.apiSecret),
-      timeoutMs: this.options.timeoutMs,
-    });
-    if (result.status !== 200) {
-      throw new HolodoriApiError(
-        `${path} HTTP status ${result.status}`,
-        path,
-        result.status,
-      );
-    }
-    assertGrpcSuccess({ ...result.headers }, { ...result.trailers }, path);
-    return decryptProto(result.body, this.options.apiSecret);
-  }
-
-  private createRequestId(): string {
-    const custom = this.options.requestIdFactory?.();
-    if (custom !== undefined) {
-      if (!custom)
-        throw new HolodoriApiError(
-          "request ID factory returned an empty value",
-          "request",
-        );
-      return custom;
-    }
-    const now = BigInt(Date.now()) * 10_000n + DOTNET_EPOCH_TICKS;
-    this.lastRequestTicks =
-      now > this.lastRequestTicks ? now : this.lastRequestTicks + 1n;
-    return this.lastRequestTicks.toString();
-  }
-}
-
-export class NoticeApi {
-  constructor(private readonly api: HolodoriApi) {}
-
-  top(): Promise<NoticeTopResponse> {
-    return this.api.callNoticeTop();
-  }
-
-  listInCategory(
-    categoryId: string,
-    offset: number,
-  ): Promise<NoticeListInCategoryResponse> {
-    return this.api.callNoticeListInCategory(categoryId, offset);
-  }
-
-  get(noticeId: string): Promise<NoticeGetResponse> {
-    return this.api.callNoticeGet(noticeId);
-  }
-
-  updateCategoryReadTime(
-    categoryIds: readonly string[],
-  ): Promise<NoticeUpdateResponse> {
-    return this.api.callNoticeUpdateCategoryReadTime(categoryIds);
-  }
-
-  updateDetailReadTime(
-    noticeIds: readonly string[],
-  ): Promise<NoticeUpdateResponse> {
-    return this.api.callNoticeUpdateDetailReadTime(noticeIds);
-  }
-}
-
-export class AccountMigrationApi {
-  constructor(private readonly api: HolodoriApi) {}
-
-  async preparePassword(
-    accountMigrationId: string,
-    password: string,
-  ): Promise<AccountMigrationLinkResult> {
-    return (
-      await this.api.callAccountMigrationPreparePassword(
-        accountMigrationId,
-        password,
-      )
-    ).linkResult;
-  }
-
-  migrate(
-    request: AccountMigrationMigrateRequest,
-  ): Promise<AccountMigrationMigrateResponse>;
-  migrate(
-    targetPublicUserId: string,
-    oneTimeToken: string,
-    previousPublicUserId?: string,
-  ): Promise<AccountMigrationMigrateResponse>;
-  migrate(
-    requestOrTargetPublicUserId: AccountMigrationMigrateRequest | string,
-    oneTimeToken?: string,
-    previousPublicUserId?: string,
-  ): Promise<AccountMigrationMigrateResponse> {
-    const request =
-      typeof requestOrTargetPublicUserId === "string"
-        ? {
-            targetPublicUserId: requestOrTargetPublicUserId,
-            oneTimeToken: oneTimeToken ?? "",
-            ...(previousPublicUserId === undefined
-              ? {}
-              : { previousPublicUserId }),
-          }
-        : requestOrTargetPublicUserId;
-    return this.api.callAccountMigrationMigrate(request);
-  }
-
-  async migrateWithPassword(
-    accountMigrationId: string,
-    password: string,
-    previousPublicUserId?: string,
-  ): Promise<AccountMigrationMigrateResponse> {
-    const prepared = await this.preparePassword(accountMigrationId, password);
-    const linkedUserInfo = prepared.linkedUserInfo;
-    if (!linkedUserInfo) {
-      throw new HolodoriApiError(
-        "migration response has no linked user info",
-        "/rpc.api.AccountMigration/PrepareMigrationPassword",
-      );
-    }
-    return this.migrate({
-      ...(previousPublicUserId === undefined ? {} : { previousPublicUserId }),
-      targetPublicUserId: linkedUserInfo.publicUserId,
-      oneTimeToken: linkedUserInfo.oneTimeToken,
-    });
   }
 }
 
@@ -479,19 +265,4 @@ function validateOptions(options: HolodoriApiOptions): void {
   }
 }
 
-function normalizeBaseUrl(baseUrl: string): string {
-  const url = new URL(baseUrl);
-  if (
-    url.protocol !== "https:" ||
-    url.username ||
-    url.password ||
-    url.pathname !== "/" ||
-    url.search ||
-    url.hash
-  ) {
-    throw new TypeError(
-      "baseUrl must be an HTTPS origin without credentials or a path",
-    );
-  }
-  return url.toString().replace(/\/$/, "");
-}
+export { AccountMigrationApi, AuthApi, HolodoriApiError, MasterApi, NoticeApi };
