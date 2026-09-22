@@ -47,6 +47,13 @@ The notice client exposes `top`, `listInCategory`, `get`,
 `updateCategoryReadTime`, and `updateDetailReadTime`. Notice `startTime` values
 are returned as `bigint` to preserve protobuf `int64` precision.
 
+The high-level client is grouped by service: use `api.auth.create()` and
+`api.auth.login()`, `api.master.get()`, `api.notice`, and
+`api.accountMigration`. The older top-level authentication and master methods
+remain available as deprecated delegations. Transport implementations are also
+available from `holodori-apis/transports`; protobuf and gRPC helpers are
+available from `holodori-apis/low-level`.
+
 Persist the returned credential and pass it to later client instances to avoid
 creating a new anonymous account for every process. Treat the credential, game
 auth token, and API secret as sensitive values and do not log them.
@@ -71,8 +78,8 @@ await api.accountMigration.migrateWithPassword(
   process.env.HOLODORI_MIGRATION_CODE!,
   process.env.HOLODORI_MIGRATION_PW!,
 );
-await api.authLogin();
-await api.masterGet();
+await api.auth.login();
+await api.master.get();
 ```
 
 `preparePassword()` returns the linked user information when the caller needs
@@ -81,10 +88,11 @@ to show a confirmation step. `migrate()` accepts either an
 token, and optional previous public user ID. Migration credentials, passwords,
 one-time tokens, and auth tokens must not be logged.
 
-The combined method sends both requests to the client's configured `baseUrl`.
-For cross-region migration, call `preparePassword()` first, select the API host
-from `linkedUserInfo.region` (`1=jp`, `2=us`, `3=as`), and run `migrate()` on a
-client configured for that host.
+When the configured base URL is an official Holodori region endpoint, the
+combined method resolves `linkedUserInfo.region` (`1=jp`, `2=us`, `3=as`),
+sends `Migrate` to that region, and keeps the client on the new region for
+subsequent calls. Custom base URLs remain unchanged by default; provide
+`regionBaseUrlResolver` when a caller-owned environment has multiple regions.
 
 ## Proxy transports
 
@@ -96,7 +104,8 @@ host-key trust. It always uses non-interactive authentication and strict
 host-key verification.
 
 ```ts
-import { HolodoriApi, SshHttp2Transport } from "holodori-apis";
+import { HolodoriApi } from "holodori-apis";
+import { SshHttp2Transport } from "holodori-apis/transports";
 
 const transport = new SshHttp2Transport({
   target: "tpe",
@@ -125,7 +134,8 @@ sent as Basic proxy authorization; do not include credentials in logs or error
 messages. HTTPS proxies may receive a caller-owned CA through `proxyCa`.
 
 ```ts
-import { HolodoriApi, HttpConnectHttp2Transport } from "holodori-apis";
+import { HolodoriApi } from "holodori-apis";
+import { HttpConnectHttp2Transport } from "holodori-apis/transports";
 
 const transport = new HttpConnectHttp2Transport({
   proxyUrl: "https://proxy.example:8443",

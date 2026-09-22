@@ -7,8 +7,9 @@ by other Node.js projects.
 ## Interface
 
 - Runtime target: Node.js >= 24, ESM, zero runtime dependencies.
-- Public package entrypoint: `src/index.ts`; package exports point to the built
-  `dist/src/index.js` and declaration file.
+- High-level package entrypoint: `src/index.ts`; transports and protocol helpers
+  also have the `holodori-apis/transports` and `holodori-apis/low-level`
+  subpath exports.
 - Transport is injectable for deterministic tests and offline consumers.
 - `Http2Transport` owns target TLS and HTTP/2 behavior; tunnel connectors own
   only the raw route to the target host and port.
@@ -21,8 +22,10 @@ by other Node.js projects.
 ## Scope
 
 Protocol helpers implement HTTP/2, gRPC framing, proto-enc encryption, and the
-protobuf fields required by Auth, Master, and Notice APIs. Add new API methods
-through typed request/response codecs and the shared unary request path.
+protobuf fields required by game APIs. Keep each domain in matching
+`src/services/` and `src/codecs/` modules. Add methods through typed descriptors
+and the shared unary client, with authentication, master version, response
+cache, and request signature policies declared independently.
 Add new proxy mechanisms through `ApiTunnelConnector`; do not duplicate TLS,
 HTTP/2, authentication, or protobuf behavior inside connectors.
 
