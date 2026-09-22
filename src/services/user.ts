@@ -2,6 +2,7 @@ import {
   type AccountCard,
   decodeUserGetResponse,
   encodeUserGetRequest,
+  type UserDataSnapshot,
   type UserGetResponse,
 } from "../codecs/user.js";
 import { type ApiClient } from "../core/client.js";
@@ -27,7 +28,12 @@ export class UserApi {
     await this.ensureAuthenticated();
     return (await this.client.call(USER_GET, undefined)).cards;
   }
+
+  async getSnapshot(): Promise<UserDataSnapshot> {
+    await this.ensureAuthenticated();
+    return this.client.call(USER_GET, undefined);
+  }
 }
 
 export { USER_GET };
-export type { AccountCard, UserGetResponse };
+export type { AccountCard, UserDataSnapshot, UserGetResponse };
