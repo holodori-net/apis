@@ -35,7 +35,19 @@ export {
   type NoticeListInCategoryResponse,
   type NoticeTopResponse,
   type NoticeUpdateResponse,
+  type UserCharacter,
+  type UserCharacterSkillTree,
+  type UserCostume,
+  type UserDataSnapshot,
   type UserGetResponse,
+  type UserItem,
+  type UserLiveDeck,
+  type UserLiveDeckPosition,
+  type UserMusic,
+  type UserMusicCharacterHighestScore,
+  type UserMusicCharacterHighestScoreInfo,
+  type UserMusicDifficulty,
+  type UserSkillTreePoint,
 } from "./codecs.js";
 export { HolodoriApiError } from "./core/client.js";
 export {
