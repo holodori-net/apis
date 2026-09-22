@@ -14,6 +14,8 @@ export {
   type CardGetParametersResponse,
   type CardParameterInfo,
   type CardSkillTreeEffect,
+  type HomeLoginResponse,
+  type HomeRealtimeNotificationConnectionInfo,
   type LiveActiveSkillLevel,
   type LiveDeckCandidateCardParameterInfo,
   type LiveDeckEvaluation,
@@ -61,6 +63,7 @@ export { Region, type RegionBaseUrlResolver } from "./region.js";
 export { AccountMigrationApi } from "./services/account-migration.js";
 export { AuthApi } from "./services/auth.js";
 export { CardApi } from "./services/card.js";
+export { HomeApi } from "./services/home.js";
 export { LiveApi } from "./services/live.js";
 export { MasterApi } from "./services/master.js";
 export { NoticeApi } from "./services/notice.js";
