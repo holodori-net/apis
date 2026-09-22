@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "vitest";
+import { test, vi } from "vitest";
 
 import { decodeCredentialResponse } from "../src/codecs/auth.js";
 import { ApiClient, HolodoriApiError } from "../src/core/client.js";
@@ -65,6 +65,16 @@ const SIGNED: ApiMethod<void, string> = {
   decode: decodeCredentialResponse,
 };
 
+const CACHED: ApiMethod<void, string> = {
+  path: "/rpc.api.Test/Cached",
+  requiresGameAuth: false,
+  requiresMasterVersion: false,
+  usesResponseCache: true,
+  requiresRequestSignature: false,
+  encode: () => Buffer.alloc(0),
+  decode: decodeCredentialResponse,
+};
+
 function createClient(
   session: ApiSession,
   transport: FakeTransport,
@@ -122,4 +132,26 @@ void test("fails closed when a method requires a request signer", async () => {
       error instanceof HolodoriApiError &&
       error.message.includes("no request signer"),
   );
+});
+
+void test("creates monotonic request IDs from local DateTime ticks", async () => {
+  const now = 1_700_000_000_000;
+  vi.spyOn(Date, "now").mockReturnValue(now);
+  vi.spyOn(Date.prototype, "getTimezoneOffset").mockReturnValue(-480);
+  const transport = new FakeTransport();
+  const client = createClient(new ApiSession(), transport);
+
+  await client.call(CACHED, undefined);
+  await client.call(CACHED, undefined);
+
+  const ticks = BigInt(now + 480 * 60_000) * 10_000n + 621_355_968_000_000_000n;
+  assert.equal(
+    transport.requests[0]?.headers?.["x-app-request-id"],
+    ticks.toString(),
+  );
+  assert.equal(
+    transport.requests[1]?.headers?.["x-app-request-id"],
+    (ticks + 1n).toString(),
+  );
+  vi.restoreAllMocks();
 });
