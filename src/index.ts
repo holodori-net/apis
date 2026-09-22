@@ -4,6 +4,7 @@ export {
   type HolodoriApiOptions,
 } from "./api.js";
 export {
+  type AccountCard,
   type AccountMigrationLinkedUserInfo,
   type AccountMigrationLinkResult,
   type AccountMigrationMigrateRequest,
@@ -15,6 +16,7 @@ export {
   type NoticeListInCategoryResponse,
   type NoticeTopResponse,
   type NoticeUpdateResponse,
+  type UserGetResponse,
 } from "./codecs.js";
 export { HolodoriApiError } from "./core/client.js";
 export {
@@ -29,4 +31,5 @@ export { AccountMigrationApi } from "./services/account-migration.js";
 export { AuthApi } from "./services/auth.js";
 export { MasterApi } from "./services/master.js";
 export { NoticeApi } from "./services/notice.js";
+export { UserApi } from "./services/user.js";
 export * from "./transports.js";

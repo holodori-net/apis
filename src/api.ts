@@ -24,6 +24,7 @@ import { AccountMigrationApi } from "./services/account-migration.js";
 import { AuthApi } from "./services/auth.js";
 import { MasterApi } from "./services/master.js";
 import { NoticeApi } from "./services/notice.js";
+import { UserApi } from "./services/user.js";
 import { type ApiTransport, Http2Transport } from "./transport.js";
 
 const DEFAULT_BASE_URL = "https://jp.game-hololive-dreams.com";
@@ -57,6 +58,7 @@ export class HolodoriApi {
   readonly auth: AuthApi;
   readonly master: MasterApi;
   readonly notice: NoticeApi;
+  readonly user: UserApi;
   readonly accountMigration: AccountMigrationApi;
 
   private readonly client: ApiClient;
@@ -100,6 +102,7 @@ export class HolodoriApi {
     this.auth = new AuthApi(this.client, this.session);
     this.master = new MasterApi(this.client, this.session);
     this.notice = new NoticeApi(this.client, () => this.authenticate());
+    this.user = new UserApi(this.client, () => this.authenticate());
     const regionBaseUrlResolver = options.regionBaseUrlResolver;
     this.accountMigration = new AccountMigrationApi(
       this.client,
