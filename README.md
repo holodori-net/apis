@@ -27,10 +27,12 @@ const api = await HolodoriApi.create({
   apiSecret: process.env.HOLODORI_API_SECRET!,
 });
 
+await api.home.login();
 const top = await api.notice.top();
 console.log(top.categories);
-const cards = await api.user.listCards();
-console.log(cards.length);
+const snapshot = await api.user.getSnapshot();
+const parameters = await api.card.getParameters();
+console.log(snapshot.cards.length, parameters.parameterInfos.length);
 await api.close();
 ```
 
@@ -38,6 +40,11 @@ await api.close();
 creates an anonymous credential, logs in to obtain a game auth token, and
 retrieves the current master version. A caller may supply any of those values
 to avoid the corresponding bootstrap request.
+
+Call `api.home.login()` after authentication before cached gameplay APIs. It
+completes the game's home bootstrap and handles server-side date rollover; an
+authenticated session that skips this step can receive `DATE_CHANGED` from
+Card and Live methods.
 
 The default endpoint is `https://jp.game-hololive-dreams.com`. A custom
 `ApiTransport` can be injected for tests or a caller-owned network layer.
@@ -49,12 +56,18 @@ The notice client exposes `top`, `listInCategory`, `get`,
 `updateCategoryReadTime`, and `updateDetailReadTime`. Notice `startTime` values
 are returned as `bigint` to preserve protobuf `int64` precision.
 
-The user client exposes `listCards()`, which returns the cards currently owned
-by the account. Card `exp` and `acquiredTime` values are returned as `bigint`;
-the other numeric card fields are safe JavaScript numbers.
+The user client exposes `listCards()` for owned cards and `getSnapshot()` for
+characters, character skill trees, costumes, items, live decks, music
+progress, and skill-tree points. Protobuf `int64` values are returned as
+`bigint`.
 
-The high-level client is grouped by service: use `api.auth.create()` and
-`api.auth.login()`, `api.master.get()`, `api.notice`, `api.user`, and
+The card client exposes `getParameter(cardId)` and `getParameters()`. The live
+client exposes `getDeckCandidateCardParameters()`, `getDraftDeckInfo()`, and
+`getDeck()` for server-calculated card parameters, deck power, deck evaluation,
+score-up composition, and in-game effects.
+
+The high-level client is grouped by service: use `api.auth`, `api.master`,
+`api.home`, `api.notice`, `api.user`, `api.card`, `api.live`, and
 `api.accountMigration`. The older top-level authentication and master methods
 remain available as deprecated delegations. Transport implementations are also
 available from `holodori-apis/transports`; protobuf and gRPC helpers are
@@ -64,42 +77,29 @@ available from `holodori-apis/low-level`.
 
 The recovered contract currently contains 53 services and 312 RPC methods.
 Every method has a `POST /<Service>/<Method>` HTTP annotation and uses the gRPC
-path `/rpc.api.<Service>/<Method>`. The SDK implements 11 of those methods:
+path `/rpc.api.<Service>/<Method>`. The SDK implements 17 of those methods:
 
 | Service               | Implemented | Contract | SDK methods                                                                      |
 | --------------------- | ----------: | -------: | -------------------------------------------------------------------------------- |
 | AccountMigration      |           2 |        8 | `PrepareMigrationPassword`, `Migrate`                                            |
 | Auth                  |           2 |        2 | `Create`, `Login`                                                                |
+| Card                  |           2 |        5 | `GetParameter`, `GetParameters`                                                  |
+| Home                  |           1 |        2 | `Login`                                                                          |
+| Live                  |           3 |       18 | `GetDeckCandidateCardParameters`, `GetDraftDeckInfo`, `GetDeck`                  |
 | Master                |           1 |        1 | `Get`                                                                            |
 | Notice                |           5 |        5 | `Top`, `ListInCategory`, `Get`, `UpdateCategoryReadTime`, `UpdateDetailReadTime` |
-| User                  |           1 |        2 | `Get` through `listCards()`                                                      |
-| Remaining 48 services |           0 |      294 | —                                                                                |
-| **Total**             |      **11** |  **312** | **3.5%**                                                                         |
-
-`User/Get` returns the complete account `UserData`; the current SDK decoder
-only exposes `user_card_list`.
+| User                  |           1 |        2 | `Get` through `listCards()` and `getSnapshot()`                                  |
+| Remaining 45 services |           0 |      269 | —                                                                                |
+| **Total**             |      **17** |  **312** | **5.4%**                                                                         |
 
 ### Recommended next APIs
 
-For deck and score simulation, the highest-value next additions are:
-
-1. `User/Get`: decode characters, skill trees, costumes, decks, music progress,
-   items, and skill-tree points from the existing account snapshot.
-2. `Card/GetParameters`: retrieve each owned card's current parameter,
-   performance, technique, and sense values.
-3. `Card/GetParameter`: inspect one card together with its skill-tree parameter
-   effects.
-4. `Live/GetDeckCandidateCardParameters`: evaluate candidate cards for a
-   leader, costume, and song.
-5. `Live/GetDraftDeckInfo`: obtain server-calculated deck power for a candidate
-   five-card deck.
-6. `Live/GetDeck`: obtain saved decks, `LiveDeckEvaluation`, and
-   `LiveDeckInGameEffect` as simulator oracles.
-
-Useful follow-up data sources include `Music/GetHighestScoreLiveDeck`, the
-Music ranking methods, `Event/ListEventInfo`, `Event/ListEventInfoForPortal`,
-the Gift list/count/history methods, `Notification/List`, and
-`System/GetSystemInfo`.
+The simulator foundation includes the account snapshot, current card
+parameters, candidate card evaluation, draft deck power, and saved deck
+evaluation APIs. Useful follow-up data sources include
+`Music/GetHighestScoreLiveDeck`, the Music ranking methods,
+`Event/ListEventInfo`, `Event/ListEventInfoForPortal`, the Gift
+list/count/history methods, `Notification/List`, and `System/GetSystemInfo`.
 
 Method names do not establish that an operation is read-only. Inspect its
 request, response, method options, and client call site before using a
