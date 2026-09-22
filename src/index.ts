@@ -10,6 +10,10 @@ export {
   type AccountMigrationMigrateRequest,
   type AccountMigrationMigrateResponse,
   type AccountMigrationPreparePasswordResponse,
+  type CardGetParameterResponse,
+  type CardGetParametersResponse,
+  type CardParameterInfo,
+  type CardSkillTreeEffect,
   type NoticeCategory,
   type NoticeGetResponse,
   type NoticeInfo,
@@ -29,6 +33,7 @@ export * from "./low-level.js";
 export { Region, type RegionBaseUrlResolver } from "./region.js";
 export { AccountMigrationApi } from "./services/account-migration.js";
 export { AuthApi } from "./services/auth.js";
+export { CardApi } from "./services/card.js";
 export { MasterApi } from "./services/master.js";
 export { NoticeApi } from "./services/notice.js";
 export { UserApi } from "./services/user.js";
