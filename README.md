@@ -51,6 +51,41 @@ Persist the returned credential and pass it to later client instances to avoid
 creating a new anonymous account for every process. Treat the credential, game
 auth token, and API secret as sensitive values and do not log them.
 
+Account migration by linking ID and password is available without first
+authenticating the SDK. `migrateWithPassword()` performs the prepare and
+migrate requests, updates the SDK's credential, and clears any previous
+session. It does not call `Auth/Login`; authenticate the migrated credential
+explicitly before using authenticated APIs.
+
+```ts
+const api = await HolodoriApi.create(
+  {
+    appVersion: process.env.HOLODORI_APP_VERSION!,
+    apiSecret: process.env.HOLODORI_API_SECRET!,
+    autoAuthenticate: false,
+  },
+  transport,
+);
+
+await api.accountMigration.migrateWithPassword(
+  process.env.HOLODORI_MIGRATION_CODE!,
+  process.env.HOLODORI_MIGRATION_PW!,
+);
+await api.authLogin();
+await api.masterGet();
+```
+
+`preparePassword()` returns the linked user information when the caller needs
+to show a confirmation step. `migrate()` accepts either an
+`AccountMigrationMigrateRequest` object or the target public user ID, one-time
+token, and optional previous public user ID. Migration credentials, passwords,
+one-time tokens, and auth tokens must not be logged.
+
+The combined method sends both requests to the client's configured `baseUrl`.
+For cross-region migration, call `preparePassword()` first, select the API host
+from `linkedUserInfo.region` (`1=jp`, `2=us`, `3=as`), and run `migrate()` on a
+client configured for that host.
+
 ## Proxy transports
 
 Pass a transport as the second argument to keep network routing explicit. An
