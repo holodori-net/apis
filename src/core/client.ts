@@ -143,7 +143,12 @@ export class ApiClient {
         );
       return custom;
     }
-    const now = BigInt(Date.now()) * 10_000n + DOTNET_EPOCH_TICKS;
+    const nowMilliseconds = Date.now();
+    const timezoneOffsetMilliseconds =
+      new Date(nowMilliseconds).getTimezoneOffset() * 60_000;
+    const now =
+      BigInt(nowMilliseconds - timezoneOffsetMilliseconds) * 10_000n +
+      DOTNET_EPOCH_TICKS;
     this.lastRequestTicks.value =
       now > this.lastRequestTicks.value
         ? now
