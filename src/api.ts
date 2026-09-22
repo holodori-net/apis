@@ -23,6 +23,7 @@ import {
 import { AccountMigrationApi } from "./services/account-migration.js";
 import { AuthApi } from "./services/auth.js";
 import { CardApi } from "./services/card.js";
+import { LiveApi } from "./services/live.js";
 import { MasterApi } from "./services/master.js";
 import { NoticeApi } from "./services/notice.js";
 import { UserApi } from "./services/user.js";
@@ -58,6 +59,7 @@ export interface AuthenticatedSession {
 export class HolodoriApi {
   readonly auth: AuthApi;
   readonly card: CardApi;
+  readonly live: LiveApi;
   readonly master: MasterApi;
   readonly notice: NoticeApi;
   readonly user: UserApi;
@@ -103,6 +105,7 @@ export class HolodoriApi {
     );
     this.auth = new AuthApi(this.client, this.session);
     this.card = new CardApi(this.client, () => this.authenticate());
+    this.live = new LiveApi(this.client, () => this.authenticate());
     this.master = new MasterApi(this.client, this.session);
     this.notice = new NoticeApi(this.client, () => this.authenticate());
     this.user = new UserApi(this.client, () => this.authenticate());

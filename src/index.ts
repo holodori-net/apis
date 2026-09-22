@@ -14,6 +14,21 @@ export {
   type CardGetParametersResponse,
   type CardParameterInfo,
   type CardSkillTreeEffect,
+  type LiveActiveSkillLevel,
+  type LiveDeckCandidateCardParameterInfo,
+  type LiveDeckEvaluation,
+  type LiveDeckEvaluationScoreUpPermilUp,
+  type LiveDeckInGameEffect,
+  type LiveDeckInGameEffectPosition,
+  type LiveDeckPosition,
+  type LiveDeckPositionInput,
+  type LiveDeckPower,
+  type LiveGetDeckCandidateCardParametersRequest,
+  type LiveGetDeckCandidateCardParametersResponse,
+  type LiveGetDeckRequest,
+  type LiveGetDeckResponse,
+  type LiveGetDraftDeckInfoRequest,
+  type LiveGetDraftDeckInfoResponse,
   type NoticeCategory,
   type NoticeGetResponse,
   type NoticeInfo,
@@ -34,6 +49,7 @@ export { Region, type RegionBaseUrlResolver } from "./region.js";
 export { AccountMigrationApi } from "./services/account-migration.js";
 export { AuthApi } from "./services/auth.js";
 export { CardApi } from "./services/card.js";
+export { LiveApi } from "./services/live.js";
 export { MasterApi } from "./services/master.js";
 export { NoticeApi } from "./services/notice.js";
 export { UserApi } from "./services/user.js";
