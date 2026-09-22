@@ -173,6 +173,43 @@ void test("can defer bootstrap and reuse supplied session values", async () => {
   );
 });
 
+void test("lazily bootstraps authentication for a Notice call", async () => {
+  const transport = new FakeTransport();
+  transport.respond(
+    "/rpc.api.Auth/Create",
+    encodeMessage(encodeStringField(1, "credential-1")),
+  );
+  transport.respond(
+    "/rpc.api.Auth/Login",
+    encodeMessage(encodeStringField(1, "token-1")),
+  );
+  transport.respond(
+    "/rpc.api.Master/Get",
+    encodeMessage(encodeStringField(1, "master-1")),
+  );
+  transport.respond("/rpc.api.Notice/Top", encodeMessage());
+
+  const api = await HolodoriApi.create(
+    {
+      appVersion: "1.1.0",
+      apiSecret: SECRET,
+      autoAuthenticate: false,
+    },
+    transport,
+  );
+  await api.notice.top();
+
+  assert.deepEqual(
+    transport.requests.map((request) => new URL(request.url).pathname),
+    [
+      "/rpc.api.Auth/Create",
+      "/rpc.api.Auth/Login",
+      "/rpc.api.Master/Get",
+      "/rpc.api.Notice/Top",
+    ],
+  );
+});
+
 void test("validates Notice request contracts", async () => {
   const transport = new FakeTransport();
   transport.respond("/rpc.api.Notice/Top", encodeMessage());

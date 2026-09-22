@@ -154,3 +154,138 @@ void test("omits an empty previous public user ID from migrate payload", async (
   const payload = decryptProto(transport.requests[0]!.body!, SECRET);
   assert.equal(decodeProtoFields(payload).has(1), false);
 });
+
+void test("switches official regions after password migration", async () => {
+  const transport = new FakeMigrationTransport();
+  const linkedUserInfo = encodeMessage(
+    encodeStringField(1, "target-public-user"),
+    encodeStringField(4, "one-time-token"),
+    encodeVarintField(5, 2),
+  );
+  transport.respond(
+    "/rpc.api.AccountMigration/PrepareMigrationPassword",
+    encodeMessage(
+      encodeBytesField(1, encodeMessage(encodeBytesField(2, linkedUserInfo))),
+    ),
+  );
+  transport.respond(
+    "/rpc.api.AccountMigration/Migrate",
+    encodeMessage(encodeStringField(1, "migrated-credential")),
+  );
+  transport.respond(
+    "/rpc.api.Auth/Login",
+    encodeMessage(encodeStringField(1, "migrated-auth-token")),
+  );
+
+  const api = await HolodoriApi.create(
+    {
+      appVersion: "1.1.0",
+      apiSecret: SECRET,
+      autoAuthenticate: false,
+    },
+    transport,
+  );
+  await api.accountMigration.migrateWithPassword(
+    "migration-code",
+    "migration-password",
+  );
+  await api.auth.login();
+
+  assert.deepEqual(
+    transport.requests.map((request) => new URL(request.url).origin),
+    [
+      "https://jp.game-hololive-dreams.com",
+      "https://us.game-hololive-dreams.com",
+      "https://us.game-hololive-dreams.com",
+    ],
+  );
+});
+
+void test("keeps custom base URLs unless a region resolver is supplied", async () => {
+  const transport = new FakeMigrationTransport();
+  transport.respond(
+    "/rpc.api.AccountMigration/PrepareMigrationPassword",
+    encodeMessage(
+      encodeBytesField(
+        1,
+        encodeMessage(
+          encodeBytesField(
+            2,
+            encodeMessage(
+              encodeStringField(1, "target-public-user"),
+              encodeStringField(4, "one-time-token"),
+              encodeVarintField(5, 2),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+  transport.respond(
+    "/rpc.api.AccountMigration/Migrate",
+    encodeMessage(encodeStringField(1, "migrated-credential")),
+  );
+  transport.respond(
+    "/rpc.api.Auth/Login",
+    encodeMessage(encodeStringField(1, "migrated-auth-token")),
+  );
+
+  const api = await HolodoriApi.create(
+    {
+      appVersion: "1.1.0",
+      apiSecret: SECRET,
+      baseUrl: "https://test.example",
+      autoAuthenticate: false,
+    },
+    transport,
+  );
+  await api.accountMigration.migrateWithPassword(
+    "migration-code",
+    "migration-password",
+  );
+  await api.auth.login();
+
+  assert.deepEqual(
+    transport.requests.map((request) => new URL(request.url).origin),
+    ["https://test.example", "https://test.example", "https://test.example"],
+  );
+});
+
+void test("rejects unsupported regions on official endpoints", async () => {
+  const transport = new FakeMigrationTransport();
+  transport.respond(
+    "/rpc.api.AccountMigration/PrepareMigrationPassword",
+    encodeMessage(
+      encodeBytesField(
+        1,
+        encodeMessage(
+          encodeBytesField(
+            2,
+            encodeMessage(
+              encodeStringField(1, "target-public-user"),
+              encodeStringField(4, "one-time-token"),
+              encodeVarintField(5, 99),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+  const api = await HolodoriApi.create(
+    {
+      appVersion: "1.1.0",
+      apiSecret: SECRET,
+      autoAuthenticate: false,
+    },
+    transport,
+  );
+
+  await assert.rejects(
+    api.accountMigration.migrateWithPassword(
+      "migration-code",
+      "migration-password",
+    ),
+    /unsupported migration region 99/,
+  );
+  assert.equal(transport.requests.length, 1);
+});
