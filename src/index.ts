@@ -1,4 +1,5 @@
 export {
+  AccountMigrationApi,
   type AuthenticatedSession,
   HolodoriApi,
   HolodoriApiError,
@@ -6,6 +7,11 @@ export {
   NoticeApi,
 } from "./api.js";
 export {
+  type AccountMigrationLinkedUserInfo,
+  type AccountMigrationLinkResult,
+  type AccountMigrationMigrateRequest,
+  type AccountMigrationMigrateResponse,
+  type AccountMigrationPreparePasswordResponse,
   type NoticeCategory,
   type NoticeGetResponse,
   type NoticeInfo,

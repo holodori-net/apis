@@ -1,4 +1,10 @@
 import {
+  type AccountMigrationLinkResult,
+  type AccountMigrationMigrateRequest,
+  type AccountMigrationMigrateResponse,
+  type AccountMigrationPreparePasswordResponse,
+  decodeAccountMigrationMigrateResponse,
+  decodeAccountMigrationPreparePasswordResponse,
   decodeCredentialResponse,
   decodeGameAuthTokenResponse,
   decodeMasterVersionResponse,
@@ -9,7 +15,9 @@ import {
   encodeCredentialRequest,
   encodeEmpty,
   encodeListInCategoryRequest,
+  encodeMigrateRequest,
   encodeNoticeGetRequest,
+  encodePrepareMigrationPasswordRequest,
   encodeStringListRequest,
   type NoticeGetResponse,
   type NoticeListInCategoryResponse,
@@ -60,6 +68,7 @@ export class HolodoriApiError extends Error {
 
 export class HolodoriApi {
   readonly notice: NoticeApi;
+  readonly accountMigration: AccountMigrationApi;
 
   private readonly options: Required<
     Pick<
@@ -100,6 +109,7 @@ export class HolodoriApi {
     this.gameAuthToken = options.gameAuthToken;
     this.masterVersion = options.masterVersion;
     this.notice = new NoticeApi(this);
+    this.accountMigration = new AccountMigrationApi(this);
   }
 
   static async create(
@@ -175,6 +185,35 @@ export class HolodoriApi {
     );
     this.masterVersion = decodeMasterVersionResponse(response);
     return this.masterVersion;
+  }
+
+  async callAccountMigrationPreparePassword(
+    accountMigrationId: string,
+    password: string,
+  ): Promise<AccountMigrationPreparePasswordResponse> {
+    const response = await this.call(
+      "/rpc.api.AccountMigration/PrepareMigrationPassword",
+      encodePrepareMigrationPasswordRequest(accountMigrationId, password),
+      false,
+      false,
+    );
+    return decodeAccountMigrationPreparePasswordResponse(response);
+  }
+
+  async callAccountMigrationMigrate(
+    request: AccountMigrationMigrateRequest,
+  ): Promise<AccountMigrationMigrateResponse> {
+    const response = await this.call(
+      "/rpc.api.AccountMigration/Migrate",
+      encodeMigrateRequest(request),
+      false,
+      false,
+    );
+    const result = decodeAccountMigrationMigrateResponse(response);
+    this.credential = result.credential;
+    this.gameAuthToken = undefined;
+    this.masterVersion = undefined;
+    return result;
   }
 
   async callNoticeTop(): Promise<NoticeTopResponse> {
@@ -352,6 +391,68 @@ export class NoticeApi {
     noticeIds: readonly string[],
   ): Promise<NoticeUpdateResponse> {
     return this.api.callNoticeUpdateDetailReadTime(noticeIds);
+  }
+}
+
+export class AccountMigrationApi {
+  constructor(private readonly api: HolodoriApi) {}
+
+  async preparePassword(
+    accountMigrationId: string,
+    password: string,
+  ): Promise<AccountMigrationLinkResult> {
+    return (
+      await this.api.callAccountMigrationPreparePassword(
+        accountMigrationId,
+        password,
+      )
+    ).linkResult;
+  }
+
+  migrate(
+    request: AccountMigrationMigrateRequest,
+  ): Promise<AccountMigrationMigrateResponse>;
+  migrate(
+    targetPublicUserId: string,
+    oneTimeToken: string,
+    previousPublicUserId?: string,
+  ): Promise<AccountMigrationMigrateResponse>;
+  migrate(
+    requestOrTargetPublicUserId: AccountMigrationMigrateRequest | string,
+    oneTimeToken?: string,
+    previousPublicUserId?: string,
+  ): Promise<AccountMigrationMigrateResponse> {
+    const request =
+      typeof requestOrTargetPublicUserId === "string"
+        ? {
+            targetPublicUserId: requestOrTargetPublicUserId,
+            oneTimeToken: oneTimeToken ?? "",
+            ...(previousPublicUserId === undefined
+              ? {}
+              : { previousPublicUserId }),
+          }
+        : requestOrTargetPublicUserId;
+    return this.api.callAccountMigrationMigrate(request);
+  }
+
+  async migrateWithPassword(
+    accountMigrationId: string,
+    password: string,
+    previousPublicUserId?: string,
+  ): Promise<AccountMigrationMigrateResponse> {
+    const prepared = await this.preparePassword(accountMigrationId, password);
+    const linkedUserInfo = prepared.linkedUserInfo;
+    if (!linkedUserInfo) {
+      throw new HolodoriApiError(
+        "migration response has no linked user info",
+        "/rpc.api.AccountMigration/PrepareMigrationPassword",
+      );
+    }
+    return this.migrate({
+      ...(previousPublicUserId === undefined ? {} : { previousPublicUserId }),
+      targetPublicUserId: linkedUserInfo.publicUserId,
+      oneTimeToken: linkedUserInfo.oneTimeToken,
+    });
   }
 }
 
