@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import { test, vi } from "vitest";
 
 import { decodeCredentialResponse } from "../src/codecs/auth.js";
-import { ApiClient, HolodoriApiError } from "../src/core/client.js";
+import { ApiClient } from "../src/core/client.js";
+import { HolodoriApiError } from "../src/core/errors.js";
 import { type ApiMethod } from "../src/core/method.js";
 import { ApiSession } from "../src/core/session.js";
 import {

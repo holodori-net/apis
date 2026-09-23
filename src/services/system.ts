@@ -3,7 +3,8 @@ import {
   encodeSystemGetSystemInfoRequest,
   type SystemGetSystemInfoResponse,
 } from "../codecs/system.js";
-import { type ApiClient, HolodoriApiError } from "../core/client.js";
+import { type ApiClient } from "../core/client.js";
+import { HolodoriApiError } from "../core/errors.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 import { type ApiSession } from "../core/session.js";

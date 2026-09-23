@@ -11,7 +11,7 @@ export {
   HolodoriApiError,
   type HolodoriApiErrorKind,
   type HolodoriApiErrorOptions,
-} from "./core/client.js";
+} from "./core/errors.js";
 export {
   type ApiMethod,
   type RequestSignatureInput,

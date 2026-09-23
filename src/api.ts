@@ -10,11 +10,8 @@ import {
   type NoticeUpdateResponse,
 } from "./codecs.js";
 import { AuthenticatedApiCaller } from "./core/caller.js";
-import {
-  ApiClient,
-  DEFAULT_TIMEOUT_MS,
-  HolodoriApiError,
-} from "./core/client.js";
+import { ApiClient, DEFAULT_TIMEOUT_MS } from "./core/client.js";
+import { HolodoriApiError } from "./core/errors.js";
 import { type RequestSigner } from "./core/method.js";
 import { type RequestOptions } from "./core/request-options.js";
 import { ApiSession, type SessionSnapshot } from "./core/session.js";
