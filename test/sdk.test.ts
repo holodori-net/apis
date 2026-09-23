@@ -10,19 +10,23 @@ import {
   ChaseTeamType,
   CircuitApi,
   ComboCardGameApi,
+  CookingPuzzleApi,
   decodeProtoFields,
   decryptProto,
   encodeMessage,
   encodeStringField,
   encodeVarintField,
   encryptProto,
+  GiftApi,
   HealthApi,
   HealthCheckServingStatus,
   HolodoriApi,
   JumpRopeApi,
   MarathonApi,
+  MultiGameApi,
   MusicApi,
   MusicCreativeChartApi,
+  ParkPermanenceApi,
   ProfileApi,
   SplashBallApi,
 } from "../src/index.js";
@@ -300,12 +304,16 @@ void test("exposes public information services from the high-level client", asyn
   assert.equal(ChaseTeamType.Patrol, 2);
   assert.ok(api.circuit instanceof CircuitApi);
   assert.ok(api.comboCardGame instanceof ComboCardGameApi);
+  assert.ok(api.cookingPuzzle instanceof CookingPuzzleApi);
+  assert.ok(api.gift instanceof GiftApi);
   assert.ok(api.health instanceof HealthApi);
   assert.equal(HealthCheckServingStatus.Serving, 1);
   assert.ok(api.marathon instanceof MarathonApi);
   assert.ok(api.jumpRope instanceof JumpRopeApi);
   assert.ok(api.music instanceof MusicApi);
   assert.ok(api.musicCreativeChart instanceof MusicCreativeChartApi);
+  assert.ok(api.multiGame instanceof MultiGameApi);
+  assert.ok(api.parkPermanence instanceof ParkPermanenceApi);
   assert.ok(api.profile instanceof ProfileApi);
   assert.ok(api.splashBall instanceof SplashBallApi);
 });
