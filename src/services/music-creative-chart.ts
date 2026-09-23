@@ -167,7 +167,11 @@ export class MusicCreativeChartApi {
     options?: RequestOptions,
   ): Promise<MusicCreativeChartListResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(MUSIC_CREATIVE_CHART_LIST_NEWER, request, options);
+    return this.client.call(
+      MUSIC_CREATIVE_CHART_LIST_NEWER,
+      withDefaultSearch(request),
+      options,
+    );
   }
 
   /** Lists popular charts grouped by song. @rpc /rpc.api.MusicCreativeChart/ListPopular */
@@ -178,7 +182,7 @@ export class MusicCreativeChartApi {
     await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_CREATIVE_CHART_LIST_POPULAR,
-      request,
+      withDefaultSearch(request),
       options,
     );
   }
@@ -204,7 +208,7 @@ export class MusicCreativeChartApi {
     await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_CREATIVE_CHART_LIST_BY_CREATOR,
-      request,
+      withDefaultSearch(request),
       options,
     );
   }
@@ -269,6 +273,18 @@ export class MusicCreativeChartApi {
       options,
     );
   }
+}
+
+function withDefaultSearch<
+  T extends
+    MusicCreativeChartListByCreatorRequest | MusicCreativeChartListRequest,
+>(request: T): T {
+  return request.searchParameter === undefined
+    ? {
+        ...request,
+        searchParameter: { isSearchAllMusic: true },
+      }
+    : request;
 }
 
 export {
