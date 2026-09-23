@@ -261,6 +261,16 @@ void test("authenticates and forwards every MusicCreativeChart read", async () =
       "/rpc.api.MusicCreativeChart/GetEarlyClearLiveDeck",
     ],
   );
+  assert.deepEqual(calls[0]?.request, {
+    searchParameter: { isSearchAllMusic: true },
+  });
+  assert.deepEqual(calls[1]?.request, {
+    searchParameter: { isSearchAllMusic: true },
+  });
+  assert.deepEqual(calls[3]?.request, {
+    publicUserId: "public-1",
+    searchParameter: { isSearchAllMusic: true },
+  });
   assert.ok(calls.every(({ options: callOptions }) => callOptions === options));
 });
 
