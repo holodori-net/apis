@@ -27,7 +27,10 @@ export function requireNonEmpty(value: string, name: string): string {
 }
 
 export function toSafeNumber(value: bigint, name: string): number {
-  if (value > BigInt(Number.MAX_SAFE_INTEGER)) {
+  if (
+    value > BigInt(Number.MAX_SAFE_INTEGER) ||
+    value < BigInt(Number.MIN_SAFE_INTEGER)
+  ) {
     throw new RangeError(`${name} exceeds JavaScript safe integer range`);
   }
   return Number(value);

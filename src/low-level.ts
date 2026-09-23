@@ -15,6 +15,8 @@ export {
   encodeVarintField,
   firstBool,
   firstBytes,
+  firstInt32,
+  firstInt64,
   firstString,
   firstUint,
   ProtobufError,

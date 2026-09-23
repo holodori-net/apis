@@ -176,6 +176,22 @@ export function firstUint(
   return typeof value === "bigint" ? value : undefined;
 }
 
+export function firstInt32(
+  fields: Map<number, ProtoValue[]>,
+  field: number,
+): number | undefined {
+  const value = firstUint(fields, field);
+  return value === undefined ? undefined : Number(BigInt.asIntN(32, value));
+}
+
+export function firstInt64(
+  fields: Map<number, ProtoValue[]>,
+  field: number,
+): bigint | undefined {
+  const value = firstUint(fields, field);
+  return value === undefined ? undefined : BigInt.asIntN(64, value);
+}
+
 export function firstBool(
   fields: Map<number, ProtoValue[]>,
   field: number,
