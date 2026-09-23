@@ -25,7 +25,10 @@ export class HealthApi {
    *
    * @rpc /rpc.api.Health/Check
    */
-  check(service = "", options?: RequestOptions): Promise<HealthCheckResponse> {
+  check(
+    service: string = "",
+    options?: RequestOptions,
+  ): Promise<HealthCheckResponse> {
     return this.client.call(HEALTH_CHECK, service, options);
   }
 }

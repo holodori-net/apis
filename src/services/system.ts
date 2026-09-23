@@ -36,7 +36,7 @@ export class SystemApi {
    * @rpc /rpc.api.System/GetSystemInfo
    */
   getSystemInfo(
-    credential = this.session.credentialValue,
+    credential: string | undefined = this.session.credentialValue,
     options?: RequestOptions,
   ): Promise<SystemGetSystemInfoResponse> {
     if (!credential)

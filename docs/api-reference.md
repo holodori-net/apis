@@ -15,7 +15,7 @@ Verifies a linking ID and password and returns the target account preview.
 RPC: `/rpc.api.AccountMigration/PrepareMigrationPassword`
 
 ```ts
-preparePassword(accountMigrationId: string, password: string): Promise<AccountMigrationLinkResult>
+preparePassword(accountMigrationId: string, password: string, options?: RequestOptions): Promise<AccountMigrationLinkResult>
 ```
 
 ### `preparePasswordResponse()`
@@ -25,7 +25,7 @@ Returns the complete password-prepare response including its link result.
 RPC: `/rpc.api.AccountMigration/PrepareMigrationPassword`
 
 ```ts
-preparePasswordResponse(accountMigrationId: string, password: string): Promise<AccountMigrationPreparePasswordResponse>
+preparePasswordResponse(accountMigrationId: string, password: string, options?: RequestOptions): Promise<AccountMigrationPreparePasswordResponse>
 ```
 
 ### `migrate()`
@@ -37,8 +37,8 @@ RPC: `/rpc.api.AccountMigration/Migrate`
 A successful call replaces the credential held by this SDK session.
 
 ```ts
-migrate(request: AccountMigrationMigrateRequest): Promise<AccountMigrationMigrateResponse>
-migrate(targetPublicUserId: string, oneTimeToken: string, previousPublicUserId?: string): Promise<AccountMigrationMigrateResponse>
+migrate(request: AccountMigrationMigrateRequest, options?: RequestOptions): Promise<AccountMigrationMigrateResponse>
+migrate(targetPublicUserId: string, oneTimeToken: string, previousPublicUserId?: string, options?: RequestOptions): Promise<AccountMigrationMigrateResponse>
 ```
 
 ### `migrateWithPassword()`
@@ -48,7 +48,21 @@ Runs password preparation and credential migration, switching official regions w
 A successful call replaces the credential held by this SDK session.
 
 ```ts
-migrateWithPassword(accountMigrationId: string, password: string, previousPublicUserId?: string): Promise<AccountMigrationMigrateResponse>
+migrateWithPassword(accountMigrationId: string, password: string, previousPublicUserId?: string, options?: RequestOptions): Promise<AccountMigrationMigrateResponse>
+```
+
+## AssetApi
+
+Provides asset identifiers reported as expired by the game service.
+
+### `listExpiredAssetId()`
+
+Lists expired asset IDs grouped by the game feature that references them.
+
+RPC: `/rpc.api.Asset/ListExpiredAssetId`
+
+```ts
+listExpiredAssetId(options?: RequestOptions): Promise<AssetListExpiredAssetIdResponse>
 ```
 
 ## AuthApi
@@ -62,7 +76,7 @@ Creates a new anonymous account and stores its persistent credential.
 RPC: `/rpc.api.Auth/Create`
 
 ```ts
-create(): Promise<string>
+create(options?: RequestOptions): Promise<string>
 ```
 
 ### `login()`
@@ -72,7 +86,7 @@ Logs in with a persistent credential and stores the returned game auth token.
 RPC: `/rpc.api.Auth/Login`
 
 ```ts
-login(credential?): Promise<string>
+login(credential?: string, options?: RequestOptions): Promise<string>
 ```
 
 ## CardApi
@@ -86,7 +100,7 @@ Returns one owned card's current parameters and skill-tree effects.
 RPC: `/rpc.api.Card/GetParameter`
 
 ```ts
-getParameter(cardId: string): Promise<CardGetParameterResponse>
+getParameter(cardId: string, options?: RequestOptions): Promise<CardGetParameterResponse>
 ```
 
 ### `getParameters()`
@@ -96,7 +110,7 @@ Returns current parameters for every card owned by the account.
 RPC: `/rpc.api.Card/GetParameters`
 
 ```ts
-getParameters(): Promise<CardGetParametersResponse>
+getParameters(options?: RequestOptions): Promise<CardGetParametersResponse>
 ```
 
 ## EventApi
@@ -112,7 +126,7 @@ event definitions are not personalized to the account.
 RPC: `/rpc.api.Event/ListEventInfo`
 
 ```ts
-listEventInfo(): Promise<EventListEventInfoResponse>
+listEventInfo(options?: RequestOptions): Promise<EventListEventInfoResponse>
 ```
 
 ### `listEventInfoForPortal()`
@@ -124,7 +138,7 @@ not personalized to the account.
 RPC: `/rpc.api.Event/ListEventInfoForPortal`
 
 ```ts
-listEventInfoForPortal(): Promise<EventListEventInfoForPortalResponse>
+listEventInfoForPortal(options?: RequestOptions): Promise<EventListEventInfoForPortalResponse>
 ```
 
 ## ExchangeApi
@@ -140,7 +154,7 @@ quantities and unlock flags are specific to the authenticated account.
 RPC: `/rpc.api.Exchange/List`
 
 ```ts
-list(boothGroupId: string): Promise<ExchangeResponse>
+list(boothGroupId: string, options?: RequestOptions): Promise<ExchangeResponse>
 ```
 
 ## GachaApi
@@ -156,7 +170,7 @@ fields describe the authenticated account.
 RPC: `/rpc.api.Gacha/List`
 
 ```ts
-list(): Promise<GachaListResponse>
+list(options?: RequestOptions): Promise<GachaListResponse>
 ```
 
 ### `listNormalProbability()`
@@ -167,7 +181,7 @@ Probabilities are returned as integer parts per ten million.
 RPC: `/rpc.api.Gacha/ListNormalProbability`
 
 ```ts
-listNormalProbability(gachaId: string): Promise<GachaListProbabilityResponse>
+listNormalProbability(gachaId: string, options?: RequestOptions): Promise<GachaListProbabilityResponse>
 ```
 
 ### `listCardSelectProbability()`
@@ -181,7 +195,21 @@ The server may reject the request until the authenticated account
 has selected cards for the Gacha.
 
 ```ts
-listCardSelectProbability(gachaId: string): Promise<GachaListProbabilityResponse>
+listCardSelectProbability(gachaId: string, options?: RequestOptions): Promise<GachaListProbabilityResponse>
+```
+
+## HealthApi
+
+Provides unauthenticated server health checks.
+
+### `check()`
+
+Checks whether the named game service is serving; empty checks overall health.
+
+RPC: `/rpc.api.Health/Check`
+
+```ts
+check(service?: string, options?: RequestOptions): Promise<HealthCheckResponse>
 ```
 
 ## HomeApi
@@ -195,7 +223,7 @@ Enters the home session and applies server-side rollover processing.
 RPC: `/rpc.api.Home/Login`
 
 ```ts
-login(): Promise<HomeLoginResponse>
+login(options?: RequestOptions): Promise<HomeLoginResponse>
 ```
 
 ## LiveApi
@@ -209,7 +237,7 @@ Evaluates owned cards for a character, costume, and optional song.
 RPC: `/rpc.api.Live/GetDeckCandidateCardParameters`
 
 ```ts
-getDeckCandidateCardParameters(request: LiveGetDeckCandidateCardParametersRequest): Promise<LiveGetDeckCandidateCardParametersResponse>
+getDeckCandidateCardParameters(request: LiveGetDeckCandidateCardParametersRequest, options?: RequestOptions): Promise<LiveGetDeckCandidateCardParametersResponse>
 ```
 
 ### `getDraftDeckInfo()`
@@ -219,7 +247,7 @@ Calculates deck power for an unsaved candidate deck.
 RPC: `/rpc.api.Live/GetDraftDeckInfo`
 
 ```ts
-getDraftDeckInfo(request: LiveGetDraftDeckInfoRequest): Promise<LiveGetDraftDeckInfoResponse>
+getDraftDeckInfo(request: LiveGetDraftDeckInfoRequest, options?: RequestOptions): Promise<LiveGetDraftDeckInfoResponse>
 ```
 
 ### `getDeck()`
@@ -229,7 +257,95 @@ Returns a saved deck with its evaluation and in-game effects.
 RPC: `/rpc.api.Live/GetDeck`
 
 ```ts
-getDeck(request: LiveGetDeckRequest): Promise<LiveGetDeckResponse>
+getDeck(request: LiveGetDeckRequest, options?: RequestOptions): Promise<LiveGetDeckResponse>
+```
+
+## MarathonApi
+
+Provides Marathon configuration, public rankings, and ranking results.
+
+### `top()`
+
+Returns Marathon metadata, chapters, rewards, bonuses, and account ranks.
+
+RPC: `/rpc.api.Marathon/Top`
+
+The ranking result includes ranks and rewards for the authenticated account.
+
+```ts
+top(request: MarathonTopRequest, options?: RequestOptions): Promise<MarathonTopResponse>
+```
+
+### `listMusicHighestScoreRankingGrade()`
+
+Lists music-score ranking grades for a chapter and song.
+
+RPC: `/rpc.api.Marathon/ListMusicHighestScoreRankingGrade`
+
+Each result includes the authenticated account's self rank and score.
+
+```ts
+listMusicHighestScoreRankingGrade(request: MarathonListMusicHighestScoreRankingRequest, options?: RequestOptions): Promise<MarathonMusicRankingResponse>
+```
+
+### `listMusicHighestScoreRankingTop()`
+
+Lists top music scores for a chapter and song.
+
+RPC: `/rpc.api.Marathon/ListMusicHighestScoreRankingTop`
+
+Each result includes the authenticated account's self rank and score.
+
+```ts
+listMusicHighestScoreRankingTop(request: MarathonListMusicHighestScoreRankingRequest, options?: RequestOptions): Promise<MarathonMusicRankingResponse>
+```
+
+### `listMarathonScoreRankingGrade()`
+
+Lists Marathon score ranking grades for a chapter.
+
+RPC: `/rpc.api.Marathon/ListMarathonScoreRankingGrade`
+
+Each result includes the authenticated account's self rank and score.
+
+```ts
+listMarathonScoreRankingGrade(request: MarathonListRankingRequest, options?: RequestOptions): Promise<MarathonScoreRankingResponse>
+```
+
+### `listMarathonScoreRankingTop()`
+
+Lists top Marathon scores for a chapter.
+
+RPC: `/rpc.api.Marathon/ListMarathonScoreRankingTop`
+
+Each result includes the authenticated account's self rank and score.
+
+```ts
+listMarathonScoreRankingTop(request: MarathonListRankingRequest, options?: RequestOptions): Promise<MarathonScoreRankingResponse>
+```
+
+### `listTotalMusicHighestScoreRankingGrade()`
+
+Lists total music-score ranking grades for a chapter.
+
+RPC: `/rpc.api.Marathon/ListTotalMusicHighestScoreRankingGrade`
+
+Each result includes the authenticated account's self rank and score.
+
+```ts
+listTotalMusicHighestScoreRankingGrade(request: MarathonListRankingRequest, options?: RequestOptions): Promise<MarathonScoreRankingResponse>
+```
+
+### `listTotalMusicHighestScoreRankingTop()`
+
+Lists top total music scores for a chapter.
+
+RPC: `/rpc.api.Marathon/ListTotalMusicHighestScoreRankingTop`
+
+Each result includes the authenticated account's self rank and score.
+
+```ts
+listTotalMusicHighestScoreRankingTop(request: MarathonListRankingRequest, options?: RequestOptions): Promise<MarathonScoreRankingResponse>
 ```
 
 ## MasterApi
@@ -243,7 +359,7 @@ Fetches and stores the current master-data version.
 RPC: `/rpc.api.Master/Get`
 
 ```ts
-get(): Promise<string>
+get(options?: RequestOptions): Promise<string>
 ```
 
 ## MembershipApi
@@ -259,7 +375,63 @@ and subscribed flags reflect the authenticated account.
 RPC: `/rpc.api.Membership/GetShop`
 
 ```ts
-getShop(): Promise<ShopInfo>
+getShop(options?: RequestOptions): Promise<ShopInfo>
+```
+
+## MusicApi
+
+Reads music score and per-character rating rankings.
+
+### `getHighestScoreLiveDeck()`
+
+Returns a public player's deck used for their highest score on a song.
+
+RPC: `/rpc.api.Music/GetHighestScoreLiveDeck`
+
+```ts
+getHighestScoreLiveDeck(request: MusicGetHighestScoreLiveDeckRequest, options?: RequestOptions): Promise<MusicGetHighestScoreLiveDeckResponse>
+```
+
+### `getHighestScoreRankingInfo()`
+
+Returns the song's score ranking and the current account's rank by difficulty.
+
+RPC: `/rpc.api.Music/GetHighestScoreRankingInfo`
+
+`selfRank` and `selfMusicDifficultyScoreInfos` depend on the authenticated account.
+
+```ts
+getHighestScoreRankingInfo(request: MusicGetHighestScoreRankingInfoRequest, options?: RequestOptions): Promise<MusicGetHighestScoreRankingInfoResponse>
+```
+
+### `listHighestScoreRatingRankingRank()`
+
+Returns ranks for the requested characters in the highest-score rating ranking.
+
+RPC: `/rpc.api.Music/ListHighestScoreRatingRankingRank`
+
+```ts
+listHighestScoreRatingRankingRank(request: MusicListHighestScoreRatingRankingRankRequest, options?: RequestOptions): Promise<MusicListHighestScoreRatingRankingRankResponse>
+```
+
+### `getHighestScoreRatingRankingInfo()`
+
+Returns the highest-score rating leaderboard for a character.
+
+RPC: `/rpc.api.Music/GetHighestScoreRatingRankingInfo`
+
+```ts
+getHighestScoreRatingRankingInfo(request: MusicGetHighestScoreRatingRankingInfoRequest, options?: RequestOptions): Promise<MusicGetHighestScoreRatingRankingInfoResponse>
+```
+
+### `listHighestScoreRatingRankingRewardThresholdRankingRankInfo()`
+
+Returns the score thresholds and last update time for a character's rating ranking.
+
+RPC: `/rpc.api.Music/ListHighestScoreRatingRankingRewardThresholdRankingRankInfo`
+
+```ts
+listHighestScoreRatingRankingRewardThresholdRankingRankInfo(request: MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequest, options?: RequestOptions): Promise<MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse>
 ```
 
 ## NoticeApi
@@ -273,7 +445,7 @@ Returns notice categories and their current summaries.
 RPC: `/rpc.api.Notice/Top`
 
 ```ts
-top(): Promise<NoticeTopResponse>
+top(options?: RequestOptions): Promise<NoticeTopResponse>
 ```
 
 ### `listInCategory()`
@@ -283,7 +455,7 @@ Lists one notice category with offset-based pagination.
 RPC: `/rpc.api.Notice/ListInCategory`
 
 ```ts
-listInCategory(categoryId: string, offset: number): Promise<NoticeListInCategoryResponse>
+listInCategory(categoryId: string, offset: number, options?: RequestOptions): Promise<NoticeListInCategoryResponse>
 ```
 
 ### `get()`
@@ -293,7 +465,7 @@ Returns the localized detail body for one notice.
 RPC: `/rpc.api.Notice/Get`
 
 ```ts
-get(noticeId: string): Promise<NoticeGetResponse>
+get(noticeId: string, options?: RequestOptions): Promise<NoticeGetResponse>
 ```
 
 ### `updateCategoryReadTime()`
@@ -305,7 +477,7 @@ RPC: `/rpc.api.Notice/UpdateCategoryReadTime`
 This method changes account read state.
 
 ```ts
-updateCategoryReadTime(categoryIds: readonly string[]): Promise<NoticeUpdateResponse>
+updateCategoryReadTime(categoryIds: readonly string[], options?: RequestOptions): Promise<NoticeUpdateResponse>
 ```
 
 ### `updateDetailReadTime()`
@@ -317,7 +489,7 @@ RPC: `/rpc.api.Notice/UpdateDetailReadTime`
 This method changes account read state.
 
 ```ts
-updateDetailReadTime(noticeIds: readonly string[]): Promise<NoticeUpdateResponse>
+updateDetailReadTime(noticeIds: readonly string[], options?: RequestOptions): Promise<NoticeUpdateResponse>
 ```
 
 ## NotificationApi
@@ -332,7 +504,23 @@ any updated Park exchange booth groups.
 RPC: `/rpc.api.Notification/List`
 
 ```ts
-list(): Promise<NotificationListResponse>
+list(options?: RequestOptions): Promise<NotificationListResponse>
+```
+
+## ProfileApi
+
+Reads a player's public profile and gameplay summary.
+
+### `getUserProfileDetail()`
+
+Returns visible profile details and public play statistics for a user.
+
+RPC: `/rpc.api.Profile/GetUserProfileDetail`
+
+Returned fields follow the target user's profile publication settings.
+
+```ts
+getUserProfileDetail(request: ProfileGetUserProfileDetailRequest, options?: RequestOptions): Promise<ProfileGetUserProfileDetailResponse>
 ```
 
 ## ShopApi
@@ -349,7 +537,7 @@ specific to the authenticated account.
 RPC: `/rpc.api.Shop/List`
 
 ```ts
-list(): Promise<ShopResponse>
+list(options?: RequestOptions): Promise<ShopResponse>
 ```
 
 ## SystemApi
@@ -365,7 +553,7 @@ not require an authenticated game session or master version.
 RPC: `/rpc.api.System/GetSystemInfo`
 
 ```ts
-getSystemInfo(credential?): Promise<SystemGetSystemInfoResponse>
+getSystemInfo(credential?: string, options?: RequestOptions): Promise<SystemGetSystemInfoResponse>
 ```
 
 ## UserApi
@@ -379,7 +567,7 @@ Returns the cards currently owned by the account.
 RPC: `/rpc.api.User/Get`
 
 ```ts
-listCards(): Promise<readonly AccountCard[]>
+listCards(options?: RequestOptions): Promise<readonly AccountCard[]>
 ```
 
 ### `getSnapshot()`
@@ -389,5 +577,5 @@ Returns decoded card, character, deck, music, item, and skill-tree state.
 RPC: `/rpc.api.User/Get`
 
 ```ts
-getSnapshot(): Promise<UserDataSnapshot>
+getSnapshot(options?: RequestOptions): Promise<UserDataSnapshot>
 ```

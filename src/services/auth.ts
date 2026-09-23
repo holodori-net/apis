@@ -45,7 +45,7 @@ export class AuthApi {
 
   /** Logs in with a persistent credential and stores the returned game auth token. @rpc /rpc.api.Auth/Login */
   async login(
-    credential = this.session.credentialValue,
+    credential: string | undefined = this.session.credentialValue,
     options?: RequestOptions,
   ): Promise<string> {
     if (!credential)

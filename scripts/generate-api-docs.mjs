@@ -118,9 +118,10 @@ function formatParameter(parameter, source) {
   const rest = parameter.dotDotDotToken ? "..." : "";
   const name = parameter.name.getText(source);
   const optional = parameter.questionToken || parameter.initializer ? "?" : "";
-  const type = parameter.type
-    ? `: ${parameter.type.getText(source).replaceAll(/\s+/g, " ")}`
-    : "";
+  const rawType = parameter.type?.getText(source).replaceAll(/\s+/g, " ");
+  const normalizedType =
+    optional && rawType ? rawType.replace(/\s*\|\s*undefined$/, "") : rawType;
+  const type = normalizedType ? `: ${normalizedType}` : "";
   return `${rest}${name}${optional}${type}`;
 }
 
