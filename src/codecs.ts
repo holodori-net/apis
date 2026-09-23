@@ -16,6 +16,16 @@ export * from "./codecs/home.js";
 export * from "./codecs/live.js";
 export * from "./codecs/marathon.js";
 export * from "./codecs/master.js";
+export {
+  decodeMiniGameRankingResponse,
+  encodeChaseRankingRequest,
+  encodeMiniGameRankingRequest,
+} from "./codecs/mini-game-ranking.js";
+export type {
+  ChaseRankingRequest,
+  MiniGameRankingResponse,
+} from "./codecs/mini-game-ranking.js";
+export * from "./codecs/music-creative-chart.js";
 export * from "./codecs/music.js";
 export * from "./codecs/notice.js";
 export * from "./codecs/notification.js";

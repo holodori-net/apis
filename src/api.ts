@@ -25,20 +25,26 @@ import { AccountMigrationApi } from "./services/account-migration.js";
 import { AssetApi } from "./services/asset.js";
 import { AuthApi } from "./services/auth.js";
 import { CardApi } from "./services/card.js";
+import { ChaseApi } from "./services/chase.js";
+import { CircuitApi } from "./services/circuit.js";
+import { ComboCardGameApi } from "./services/combo-card-game.js";
 import { EventApi } from "./services/event.js";
 import { ExchangeApi } from "./services/exchange.js";
 import { GachaApi } from "./services/gacha.js";
 import { HealthApi } from "./services/health.js";
 import { HomeApi } from "./services/home.js";
+import { JumpRopeApi } from "./services/jump-rope.js";
 import { LiveApi } from "./services/live.js";
 import { MarathonApi } from "./services/marathon.js";
 import { MasterApi } from "./services/master.js";
 import { MembershipApi } from "./services/membership.js";
+import { MusicCreativeChartApi } from "./services/music-creative-chart.js";
 import { MusicApi } from "./services/music.js";
 import { NoticeApi } from "./services/notice.js";
 import { NotificationApi } from "./services/notification.js";
 import { ProfileApi } from "./services/profile.js";
 import { ShopApi } from "./services/shop.js";
+import { SplashBallApi } from "./services/splash-ball.js";
 import { SystemApi } from "./services/system.js";
 import { UserApi } from "./services/user.js";
 import { type ApiTransport, Http2Transport } from "./transport.js";
@@ -74,11 +80,15 @@ export class HolodoriApi {
   readonly auth: AuthApi;
   readonly asset: AssetApi;
   readonly card: CardApi;
+  readonly chase: ChaseApi;
+  readonly circuit: CircuitApi;
+  readonly comboCardGame: ComboCardGameApi;
   readonly event: EventApi;
   readonly exchange: ExchangeApi;
   readonly gacha: GachaApi;
   readonly home: HomeApi;
   readonly health: HealthApi;
+  readonly jumpRope: JumpRopeApi;
   readonly live: LiveApi;
   readonly marathon: MarathonApi;
   readonly master: MasterApi;
@@ -86,8 +96,10 @@ export class HolodoriApi {
   readonly notice: NoticeApi;
   readonly notification: NotificationApi;
   readonly music: MusicApi;
+  readonly musicCreativeChart: MusicCreativeChartApi;
   readonly profile: ProfileApi;
   readonly shop: ShopApi;
+  readonly splashBall: SplashBallApi;
   readonly system: SystemApi;
   readonly user: UserApi;
   readonly accountMigration: AccountMigrationApi;
@@ -133,11 +145,17 @@ export class HolodoriApi {
     this.auth = new AuthApi(this.client, this.session);
     this.asset = new AssetApi(this.client, () => this.authenticate());
     this.card = new CardApi(this.client, () => this.authenticate());
+    this.chase = new ChaseApi(this.client, () => this.authenticate());
+    this.circuit = new CircuitApi(this.client, () => this.authenticate());
+    this.comboCardGame = new ComboCardGameApi(this.client, () =>
+      this.authenticate(),
+    );
     this.event = new EventApi(this.client, () => this.authenticate());
     this.exchange = new ExchangeApi(this.client, () => this.authenticate());
     this.gacha = new GachaApi(this.client, () => this.authenticate());
     this.home = new HomeApi(this.client, () => this.authenticate());
     this.health = new HealthApi(this.client);
+    this.jumpRope = new JumpRopeApi(this.client, () => this.authenticate());
     this.live = new LiveApi(this.client, () => this.authenticate());
     this.marathon = new MarathonApi(this.client, () => this.authenticate());
     this.master = new MasterApi(this.client, this.session);
@@ -147,8 +165,12 @@ export class HolodoriApi {
       this.authenticate(),
     );
     this.music = new MusicApi(this.client, () => this.authenticate());
+    this.musicCreativeChart = new MusicCreativeChartApi(this.client, () =>
+      this.authenticate(),
+    );
     this.profile = new ProfileApi(this.client, () => this.authenticate());
     this.shop = new ShopApi(this.client, () => this.authenticate());
+    this.splashBall = new SplashBallApi(this.client, () => this.authenticate());
     this.system = new SystemApi(this.client, this.session);
     this.user = new UserApi(this.client, () => this.authenticate());
     const regionBaseUrlResolver = options.regionBaseUrlResolver;
@@ -332,18 +354,24 @@ export {
   AccountMigrationApi,
   AssetApi,
   AuthApi,
+  ChaseApi,
+  CircuitApi,
+  ComboCardGameApi,
   EventApi,
   ExchangeApi,
   GachaApi,
   HealthApi,
   HolodoriApiError,
+  JumpRopeApi,
   MarathonApi,
   MasterApi,
   MembershipApi,
   MusicApi,
+  MusicCreativeChartApi,
   NoticeApi,
   NotificationApi,
   ProfileApi,
   ShopApi,
+  SplashBallApi,
   SystemApi,
 };
