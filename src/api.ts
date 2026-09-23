@@ -21,17 +21,22 @@ import {
   type RegionBaseUrlResolver,
 } from "./region.js";
 import { AccountMigrationApi } from "./services/account-migration.js";
+import { AssetApi } from "./services/asset.js";
 import { AuthApi } from "./services/auth.js";
 import { CardApi } from "./services/card.js";
 import { EventApi } from "./services/event.js";
 import { ExchangeApi } from "./services/exchange.js";
 import { GachaApi } from "./services/gacha.js";
+import { HealthApi } from "./services/health.js";
 import { HomeApi } from "./services/home.js";
 import { LiveApi } from "./services/live.js";
+import { MarathonApi } from "./services/marathon.js";
 import { MasterApi } from "./services/master.js";
 import { MembershipApi } from "./services/membership.js";
+import { MusicApi } from "./services/music.js";
 import { NoticeApi } from "./services/notice.js";
 import { NotificationApi } from "./services/notification.js";
+import { ProfileApi } from "./services/profile.js";
 import { ShopApi } from "./services/shop.js";
 import { SystemApi } from "./services/system.js";
 import { UserApi } from "./services/user.js";
@@ -66,16 +71,21 @@ export interface AuthenticatedSession {
 
 export class HolodoriApi {
   readonly auth: AuthApi;
+  readonly asset: AssetApi;
   readonly card: CardApi;
   readonly event: EventApi;
   readonly exchange: ExchangeApi;
   readonly gacha: GachaApi;
   readonly home: HomeApi;
+  readonly health: HealthApi;
   readonly live: LiveApi;
+  readonly marathon: MarathonApi;
   readonly master: MasterApi;
   readonly membership: MembershipApi;
   readonly notice: NoticeApi;
   readonly notification: NotificationApi;
+  readonly music: MusicApi;
+  readonly profile: ProfileApi;
   readonly shop: ShopApi;
   readonly system: SystemApi;
   readonly user: UserApi;
@@ -120,18 +130,23 @@ export class HolodoriApi {
       ownsTransport,
     );
     this.auth = new AuthApi(this.client, this.session);
+    this.asset = new AssetApi(this.client, () => this.authenticate());
     this.card = new CardApi(this.client, () => this.authenticate());
     this.event = new EventApi(this.client, () => this.authenticate());
     this.exchange = new ExchangeApi(this.client, () => this.authenticate());
     this.gacha = new GachaApi(this.client, () => this.authenticate());
     this.home = new HomeApi(this.client, () => this.authenticate());
+    this.health = new HealthApi(this.client);
     this.live = new LiveApi(this.client, () => this.authenticate());
+    this.marathon = new MarathonApi(this.client, () => this.authenticate());
     this.master = new MasterApi(this.client, this.session);
     this.membership = new MembershipApi(this.client, () => this.authenticate());
     this.notice = new NoticeApi(this.client, () => this.authenticate());
     this.notification = new NotificationApi(this.client, () =>
       this.authenticate(),
     );
+    this.music = new MusicApi(this.client, () => this.authenticate());
+    this.profile = new ProfileApi(this.client, () => this.authenticate());
     this.shop = new ShopApi(this.client, () => this.authenticate());
     this.system = new SystemApi(this.client, this.session);
     this.user = new UserApi(this.client, () => this.authenticate());
@@ -302,15 +317,20 @@ function validateOptions(options: HolodoriApiOptions): void {
 
 export {
   AccountMigrationApi,
+  AssetApi,
   AuthApi,
   EventApi,
   ExchangeApi,
   GachaApi,
+  HealthApi,
   HolodoriApiError,
+  MarathonApi,
   MasterApi,
   MembershipApi,
+  MusicApi,
   NoticeApi,
   NotificationApi,
+  ProfileApi,
   ShopApi,
   SystemApi,
 };
