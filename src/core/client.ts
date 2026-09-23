@@ -1,3 +1,5 @@
+import type { ApiTransport } from "../transports/types.js";
+
 import {
   assertGrpcSuccess,
   decryptProto,
@@ -5,11 +7,9 @@ import {
   GrpcStatusError,
 } from "../proto-enc.js";
 import {
-  type ApiTransport,
   ApiTransportError,
   type ApiTransportErrorPhase,
-  Http2Transport,
-} from "../transport.js";
+} from "../transports/error.js";
 import { type ApiMethod, type RequestSigner } from "./method.js";
 import { type RequestOptions } from "./request-options.js";
 import { type ApiSession } from "./session.js";
@@ -104,7 +104,7 @@ export class ApiClient {
   constructor(
     private readonly options: ApiClientOptions,
     private readonly session: ApiSession,
-    private readonly transport: ApiTransport = new Http2Transport(),
+    private readonly transport: ApiTransport,
     private readonly ownsTransport = false,
   ) {
     this.baseUrl = options.baseUrl;

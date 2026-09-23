@@ -1,13 +1,11 @@
 import { spawn } from "node:child_process";
 import { Duplex } from "node:stream";
 
-import {
-  ApiTransportError,
-  type ApiTunnelConnector,
-  type ApiTunnelContext,
-  Http2Transport,
-  targetAuthority,
-} from "./transport.js";
+import type { ApiTunnelConnector, ApiTunnelContext } from "./types.js";
+
+import { ApiTransportError } from "./error.js";
+import { Http2Transport } from "./http2.js";
+import { targetAuthority } from "./socket.js";
 
 const FORCED_SSH_OPTIONS = [
   "BatchMode=yes",
@@ -78,7 +76,7 @@ export class OpenSshTunnelConnector implements ApiTunnelConnector {
       tunnel.destroy(new ApiTransportError("SSH tunnel aborted", "aborted"));
     };
     child.once("error", (error) =>
-      fail(`failed to start SSH executable`, error),
+      fail("failed to start SSH executable", error),
     );
     child.once("exit", (code, signal) => {
       if (code !== 0 && !context.signal.aborted) {

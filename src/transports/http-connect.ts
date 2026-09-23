@@ -3,14 +3,11 @@ import type { Duplex } from "node:stream";
 import { connect as connectTcp, isIP } from "node:net";
 import { connect as connectTls, type SecureContextOptions } from "node:tls";
 
-import {
-  ApiTransportError,
-  type ApiTunnelConnector,
-  type ApiTunnelContext,
-  Http2Transport,
-  targetAuthority,
-  waitForSocket,
-} from "./transport.js";
+import type { ApiTunnelConnector, ApiTunnelContext } from "./types.js";
+
+import { ApiTransportError } from "./error.js";
+import { Http2Transport } from "./http2.js";
+import { targetAuthority, waitForSocket } from "./socket.js";
 
 const MAX_CONNECT_RESPONSE_BYTES = 32 * 1024;
 const CONTROLLED_PROXY_HEADERS = new Set([

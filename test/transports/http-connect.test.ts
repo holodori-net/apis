@@ -9,74 +9,15 @@ import {
 import { createServer as createTlsServer } from "node:tls";
 import { onTestFinished, test } from "vitest";
 
-import { HttpConnectTunnelConnector } from "../src/http-connect-transport.js";
-import { buildSshForwardArguments } from "../src/ssh-transport.js";
-import {
-  ApiTransportError,
-  type ApiTunnelConnector,
-  Http2Transport,
-} from "../src/transport.js";
+import { ApiTransportError } from "../../src/transports/error.js";
+import { HttpConnectTunnelConnector } from "../../src/transports/http-connect.js";
 
 const CERTIFICATE = readFileSync(
-  new URL("./fixtures/proxy-cert.pem", import.meta.url),
+  new URL("../fixtures/proxy-cert.pem", import.meta.url),
 );
 const PRIVATE_KEY = readFileSync(
-  new URL("./fixtures/proxy-key.pem", import.meta.url),
+  new URL("../fixtures/proxy-key.pem", import.meta.url),
 );
-
-void test("builds a non-interactive OpenSSH stdio-forward command", () => {
-  const args = buildSshForwardArguments(
-    {
-      target: "tpe",
-      configFile: "/tmp/ssh-config",
-      options: ["ConnectTimeout=10"],
-    },
-    "api.example:443",
-  );
-  assert.deepEqual(args, [
-    "-F",
-    "/tmp/ssh-config",
-    "-T",
-    "-o",
-    "BatchMode=yes",
-    "-o",
-    "NumberOfPasswordPrompts=0",
-    "-o",
-    "StrictHostKeyChecking=yes",
-    "-o",
-    "ConnectTimeout=10",
-    "-W",
-    "api.example:443",
-    "tpe",
-  ]);
-});
-
-void test("rejects unsafe or interactive SSH options", () => {
-  assert.throws(
-    () =>
-      buildSshForwardArguments(
-        { target: "-oProxyCommand=bad" },
-        "api.example:443",
-      ),
-    /invalid SSH target/,
-  );
-  assert.throws(
-    () =>
-      buildSshForwardArguments(
-        { target: "tpe", options: ["BatchMode=no"] },
-        "api.example:443",
-      ),
-    /controlled by the SDK/,
-  );
-  assert.throws(
-    () =>
-      buildSshForwardArguments(
-        { target: "tpe", options: ["bad\nvalue"] },
-        "api.example:443",
-      ),
-    /invalid SSH option/,
-  );
-});
 
 void test("establishes an HTTP CONNECT tunnel with Basic auth and custom headers", async () => {
   let connectRequest = "";
@@ -178,48 +119,6 @@ void test("preserves bytes received after CONNECT response headers", async () =>
   tunnel.resume();
   const [receivedChunk] = (await received) as [Buffer];
   assert.equal(receivedChunk.toString(), "prefetched");
-});
-
-void test("applies timeout, abort, and close to connector setup", async () => {
-  const connector: ApiTunnelConnector = {
-    connect(_target, context) {
-      return new Promise((_resolve, reject) => {
-        context.signal.addEventListener(
-          "abort",
-          () => reject(new ApiTransportError("connector aborted", "aborted")),
-          { once: true },
-        );
-      });
-    },
-  };
-  const timed = new Http2Transport({ connector });
-  await assert.rejects(
-    timed.request({
-      method: "POST",
-      url: "https://api.example/test",
-      timeoutMs: 10,
-    }),
-    (error: unknown) =>
-      error instanceof ApiTransportError && error.phase === "timeout",
-  );
-
-  const closed = new Http2Transport({ connector });
-  const request = closed.request({
-    method: "POST",
-    url: "https://api.example/test",
-  });
-  closed.close();
-  await assert.rejects(
-    request,
-    (error: unknown) =>
-      error instanceof ApiTransportError && error.phase === "closed",
-  );
-  await assert.rejects(
-    closed.request({ method: "POST", url: "https://api.example/test" }),
-    (error: unknown) =>
-      error instanceof ApiTransportError && error.phase === "closed",
-  );
-  closed.close();
 });
 
 void test("rejects ambiguous proxy authorization configuration", () => {

@@ -1,67 +1,24 @@
 import type { Duplex } from "node:stream";
+import type { TLSSocket } from "node:tls";
 
 import {
   type ClientHttp2Session,
   connect as connectHttp2,
   type IncomingHttpHeaders,
 } from "node:http2";
-import { connect as connectTcp, isIP } from "node:net";
-import { connect as connectTls, type TLSSocket } from "node:tls";
 
-export interface ApiTransportRequest {
-  readonly method: "GET" | "POST";
-  readonly url: string;
-  readonly headers?: Readonly<Record<string, string>>;
-  readonly body?: Buffer;
-  readonly timeoutMs?: number;
-  readonly signal?: AbortSignal;
-}
+import type {
+  ApiTransport,
+  ApiTransportRequest,
+  ApiTransportResponse,
+  ApiTunnelConnector,
+} from "./types.js";
 
-export interface ApiTransportResponse {
-  readonly status: number;
-  readonly headers: Readonly<Record<string, string>>;
-  readonly trailers: Readonly<Record<string, string>>;
-  readonly body: Buffer;
-}
-
-export interface ApiTransport {
-  request(request: ApiTransportRequest): Promise<ApiTransportResponse>;
-  close?(): void;
-}
-
-export interface ApiTunnelContext {
-  readonly signal: AbortSignal;
-}
-
-/** Opens a raw byte tunnel to the target URL host and port. */
-export interface ApiTunnelConnector {
-  connect(target: URL, context: ApiTunnelContext): Promise<Duplex>;
-  close?(): void;
-}
+import { ApiTransportError, errorMessage } from "./error.js";
+import { connectDirect, connectTargetTls } from "./socket.js";
 
 export interface Http2TransportOptions {
   readonly connector?: ApiTunnelConnector;
-}
-
-export type ApiTransportErrorPhase =
-  | "aborted"
-  | "closed"
-  | "connect"
-  | "http2"
-  | "proxy"
-  | "ssh"
-  | "timeout"
-  | "tls"
-  | "validation";
-
-export class ApiTransportError extends Error {
-  readonly phase: ApiTransportErrorPhase;
-
-  constructor(message: string, phase: ApiTransportErrorPhase, cause?: unknown) {
-    super(message, cause === undefined ? undefined : { cause });
-    this.name = "ApiTransportError";
-    this.phase = phase;
-  }
 }
 
 interface ActiveRequest {
@@ -155,7 +112,7 @@ export class Http2Transport implements ApiTransport {
   }
 }
 
-export function parseApiUrl(text: string): URL {
+function parseApiUrl(text: string): URL {
   let url: URL;
   try {
     url = new URL(text);
@@ -173,98 +130,6 @@ export function parseApiUrl(text: string): URL {
     );
   }
   return url;
-}
-
-export function targetPort(url: URL): number {
-  if (!url.port) return 443;
-  const port = Number(url.port);
-  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
-    throw new ApiTransportError(
-      "API URL contains an invalid port",
-      "validation",
-    );
-  }
-  return port;
-}
-
-export function targetAuthority(url: URL): string {
-  const host = isIP(url.hostname) === 6 ? `[${url.hostname}]` : url.hostname;
-  return `${host}:${targetPort(url)}`;
-}
-
-export function waitForSocket(
-  socket: Duplex,
-  event: "connect" | "secureConnect",
-  signal: AbortSignal,
-  phase: ApiTransportErrorPhase,
-  label: string,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const cleanup = () => {
-      socket.removeListener(event, onReady);
-      socket.removeListener("error", onError);
-      socket.removeListener("close", onClose);
-      signal.removeEventListener("abort", onAbort);
-    };
-    const finish = (error?: Error) => {
-      cleanup();
-      if (error) reject(error);
-      else resolve();
-    };
-    const onReady = () => finish();
-    const onError = (error: Error) =>
-      finish(new ApiTransportError(`${label}: ${error.message}`, phase, error));
-    const onClose = () =>
-      finish(new ApiTransportError(`${label}: connection closed`, phase));
-    const onAbort = () => {
-      socket.destroy();
-      finish(new ApiTransportError(`${label}: aborted`, "aborted"));
-    };
-    socket.once(event, onReady);
-    socket.once("error", onError);
-    socket.once("close", onClose);
-    if (signal.aborted) onAbort();
-    else signal.addEventListener("abort", onAbort, { once: true });
-  });
-}
-
-async function connectDirect(url: URL, signal: AbortSignal): Promise<Duplex> {
-  const socket = connectTcp({ host: url.hostname, port: targetPort(url) });
-  await waitForSocket(
-    socket,
-    "connect",
-    signal,
-    "connect",
-    "direct connection failed",
-  );
-  return socket;
-}
-
-async function connectTargetTls(
-  socket: Duplex,
-  url: URL,
-  signal: AbortSignal,
-): Promise<TLSSocket> {
-  const tlsSocket = connectTls({
-    socket,
-    ...(isIP(url.hostname) === 0 ? { servername: url.hostname } : {}),
-    ALPNProtocols: ["h2"],
-  });
-  await waitForSocket(
-    tlsSocket,
-    "secureConnect",
-    signal,
-    "tls",
-    "target TLS failed",
-  );
-  if (tlsSocket.alpnProtocol !== "h2") {
-    tlsSocket.destroy();
-    throw new ApiTransportError(
-      `target did not negotiate HTTP/2 (ALPN=${tlsSocket.alpnProtocol || "none"})`,
-      "tls",
-    );
-  }
-  return tlsSocket;
 }
 
 function requestHttp2(
@@ -383,8 +248,4 @@ function abortError(
     );
   }
   return new ApiTransportError("HTTP/2 request aborted", "aborted", cause);
-}
-
-export function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
 }

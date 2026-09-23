@@ -51,4 +51,4 @@ export { ShopApi } from "./services/shop.js";
 export { SplashBallApi } from "./services/splash-ball.js";
 export { SystemApi } from "./services/system.js";
 export { UserApi } from "./services/user.js";
-export * from "./transports.js";
+export * from "./transports/index.js";

@@ -10,6 +10,8 @@ by other Node.js projects.
 - High-level package entrypoint: `src/index.ts`; transports and protocol helpers
   also have the `holodori-apis/transports` and `holodori-apis/low-level`
   subpath exports.
+- Transport contracts and implementations live under `src/transports/`; keep
+  `src/transports/index.ts` as the public transport barrel.
 - Transport is injectable for deterministic tests and offline consumers.
 - `Http2Transport` owns target TLS and HTTP/2 behavior; tunnel connectors own
   only the raw route to the target host and port.

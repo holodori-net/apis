@@ -1,3 +1,5 @@
+import type { ApiTransport } from "./transports/types.js";
+
 import {
   type AccountMigrationMigrateRequest,
   type AccountMigrationMigrateResponse,
@@ -51,7 +53,7 @@ import { ShopApi } from "./services/shop.js";
 import { SplashBallApi } from "./services/splash-ball.js";
 import { SystemApi } from "./services/system.js";
 import { UserApi } from "./services/user.js";
-import { type ApiTransport, Http2Transport } from "./transport.js";
+import { Http2Transport } from "./transports/http2.js";
 
 const DEFAULT_BASE_URL = "https://jp.game-hololive-dreams.com";
 

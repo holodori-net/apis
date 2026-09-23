@@ -14,8 +14,8 @@
       "import": "./dist/src/index.js"
     },
     "./transports": {
-      "types": "./dist/src/transports.d.ts",
-      "import": "./dist/src/transports.js"
+      "types": "./dist/src/transports/index.d.ts",
+      "import": "./dist/src/transports/index.js"
     },
     "./low-level": {
       "types": "./dist/src/low-level.d.ts",
@@ -27,14 +27,15 @@
     "docs"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "pnpm clean && tsc",
+    "clean": "node --eval \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "docs:api": "node scripts/generate-api-docs.mjs",
     "docs:api:check": "node scripts/generate-api-docs.mjs --check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint \"{src,test}/**/*.ts\"",
     "lint:fix": "eslint \"{src,test}/**/*.ts\" --fix",
-    "prepack": "tsc",
+    "prepack": "pnpm build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

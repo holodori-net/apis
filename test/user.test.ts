@@ -30,7 +30,7 @@ import {
   type ApiTransport,
   type ApiTransportRequest,
   type ApiTransportResponse,
-} from "../src/transport.js";
+} from "../src/transports/index.js";
 
 const SECRET = "test-api-secret";
 
