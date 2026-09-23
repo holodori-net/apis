@@ -5,13 +5,18 @@ import {
   type ApiTransport,
   type ApiTransportRequest,
   type ApiTransportResponse,
+  AssetApi,
   decodeProtoFields,
   decryptProto,
   encodeMessage,
   encodeStringField,
   encodeVarintField,
   encryptProto,
+  HealthApi,
   HolodoriApi,
+  MarathonApi,
+  MusicApi,
+  ProfileApi,
 } from "../src/index.js";
 
 const SECRET = "test-api-secret";
@@ -254,6 +259,23 @@ void test("adds caller-owned device headers without allowing core header overrid
     "test-device",
   );
   assert.equal(transport.requests[0]?.headers?.["x-app-version"], "1.1.0");
+});
+
+void test("exposes public information services from the high-level client", async () => {
+  const api = await HolodoriApi.create(
+    {
+      appVersion: "1.1.0",
+      apiSecret: SECRET,
+      autoAuthenticate: false,
+    },
+    new FakeTransport(),
+  );
+
+  assert.ok(api.asset instanceof AssetApi);
+  assert.ok(api.health instanceof HealthApi);
+  assert.ok(api.marathon instanceof MarathonApi);
+  assert.ok(api.music instanceof MusicApi);
+  assert.ok(api.profile instanceof ProfileApi);
 });
 
 function encodeLengthDelimitedField(field: number, value: Buffer): Buffer {
