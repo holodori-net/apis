@@ -3,7 +3,7 @@ import {
   encodeShopListRequest,
   type ShopResponse,
 } from "../codecs/shop.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -19,10 +19,7 @@ const SHOP_LIST: ApiMethod<void, ShopResponse> = {
 
 /** Provides the authenticated account's visible shop catalogue. */
 export class ShopApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /**
    * Lists the shops and their current catalogue, including costs, rewards,
@@ -34,7 +31,6 @@ export class ShopApi {
    * @returns The shops visible to the authenticated account.
    */
   async list(options?: RequestOptions): Promise<ShopResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(SHOP_LIST, undefined, options);
   }
 }

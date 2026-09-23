@@ -16,6 +16,7 @@ import {
   EVENT_LIST_EVENT_INFO_FOR_PORTAL,
   EventApi,
 } from "../src/services/event.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 function portalEvent(): Buffer {
   return encodeMessage(
@@ -281,16 +282,18 @@ void test("EventApi authenticates both cached event reads", async () => {
   let authenticationCalls = 0;
   const calls: string[] = [];
   const api = new EventApi(
-    {
-      call: (method: { path: string }) => {
-        calls.push(method.path);
-        return Promise.resolve({ eventInfos: [] });
+    authenticatedCaller(
+      {
+        call: (method: { path: string }) => {
+          calls.push(method.path);
+          return Promise.resolve({ eventInfos: [] });
+        },
+      } as never,
+      () => {
+        authenticationCalls += 1;
+        return Promise.resolve();
       },
-    } as never,
-    () => {
-      authenticationCalls += 1;
-      return Promise.resolve();
-    },
+    ),
   );
 
   await api.listEventInfo();

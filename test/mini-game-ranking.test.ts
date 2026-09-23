@@ -17,6 +17,7 @@ import { CircuitApi } from "../src/services/circuit.js";
 import { ComboCardGameApi } from "../src/services/combo-card-game.js";
 import { JumpRopeApi } from "../src/services/jump-rope.js";
 import { SplashBallApi } from "../src/services/splash-ball.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes mini-game ranking requests according to their contracts", () => {
   assert.deepEqual(encodeMiniGameRankingRequest(), Buffer.alloc(0));
@@ -64,11 +65,12 @@ void test("uses authenticated, cached read policies and forwards options", async
     authCalls += 1;
     return Promise.resolve();
   };
-  const jumpRope = new JumpRopeApi(client, authenticate);
-  const circuit = new CircuitApi(client, authenticate);
-  const chase = new ChaseApi(client, authenticate);
-  const splashBall = new SplashBallApi(client, authenticate);
-  const comboCardGame = new ComboCardGameApi(client, authenticate);
+  const caller = authenticatedCaller(client, authenticate);
+  const jumpRope = new JumpRopeApi(caller);
+  const circuit = new CircuitApi(caller);
+  const chase = new ChaseApi(caller);
+  const splashBall = new SplashBallApi(caller);
+  const comboCardGame = new ComboCardGameApi(caller);
   const options = { timeoutMs: 2_000 };
 
   await jumpRope.getRankingInfo(options);

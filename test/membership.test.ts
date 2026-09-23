@@ -16,6 +16,7 @@ import {
   MEMBERSHIP_GET_SHOP,
   MembershipApi,
 } from "../src/services/membership.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes empty Membership/GetShop request", () => {
   assert.equal(encodeMembershipGetShopRequest().length, 0);
@@ -88,16 +89,18 @@ void test("MembershipApi authenticates lazily and declares read policies", async
   let authCalls = 0;
   const paths: string[] = [];
   const api = new MembershipApi(
-    {
-      call: (method: { path: string }) => {
-        paths.push(method.path);
-        return Promise.resolve({ id: "membership-shop" });
+    authenticatedCaller(
+      {
+        call: (method: { path: string }) => {
+          paths.push(method.path);
+          return Promise.resolve({ id: "membership-shop" });
+        },
+      } as never,
+      () => {
+        authCalls += 1;
+        return Promise.resolve();
       },
-    } as never,
-    () => {
-      authCalls += 1;
-      return Promise.resolve();
-    },
+    ),
   );
   await api.getShop();
   assert.equal(authCalls, 1);

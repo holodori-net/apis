@@ -3,7 +3,7 @@ import {
   encodeMiniGameRankingRequest,
   type MiniGameRankingResponse,
 } from "../codecs/mini-game-ranking.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -22,10 +22,7 @@ const COOKING_PUZZLE_GET_RANKING_INFO: ApiMethod<
 
 /** Reads Cooking Puzzle public information. */
 export class CookingPuzzleApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /**
    * Returns the Cooking Puzzle leaderboard.
@@ -35,7 +32,6 @@ export class CookingPuzzleApi {
   async getRankingInfo(
     options?: RequestOptions,
   ): Promise<MiniGameRankingResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       COOKING_PUZZLE_GET_RANKING_INFO,
       undefined,

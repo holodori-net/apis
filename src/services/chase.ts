@@ -4,7 +4,7 @@ import {
   encodeChaseRankingRequest,
   type MiniGameRankingResponse,
 } from "../codecs/mini-game-ranking.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -23,10 +23,7 @@ const CHASE_GET_RANKING_INFO: ApiMethod<
 
 /** Reads Chase public information. */
 export class ChaseApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /**
    * Returns the Chase leaderboard for a team category.
@@ -37,7 +34,6 @@ export class ChaseApi {
     request: ChaseRankingRequest,
     options?: RequestOptions,
   ): Promise<MiniGameRankingResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(CHASE_GET_RANKING_INFO, request, options);
   }
 }

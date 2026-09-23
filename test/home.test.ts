@@ -10,6 +10,7 @@ import {
   encodeVarintField,
 } from "../src/low-level.js";
 import { HOME_LOGIN, HomeApi } from "../src/services/home.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("decodes Home/Login startup fields", () => {
   const response = encodeMessage(
@@ -39,16 +40,18 @@ void test("HomeApi authenticates and declares cached bootstrap policies", async 
   let authenticationCalls = 0;
   const calls: string[] = [];
   const api = new HomeApi(
-    {
-      call: (method: { path: string }) => {
-        calls.push(method.path);
-        return Promise.resolve({ fcmTopics: [], ruleTypes: [] });
+    authenticatedCaller(
+      {
+        call: (method: { path: string }) => {
+          calls.push(method.path);
+          return Promise.resolve({ fcmTopics: [], ruleTypes: [] });
+        },
+      } as never,
+      () => {
+        authenticationCalls += 1;
+        return Promise.resolve();
       },
-    } as never,
-    () => {
-      authenticationCalls += 1;
-      return Promise.resolve();
-    },
+    ),
   );
 
   await api.login();

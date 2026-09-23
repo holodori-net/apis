@@ -3,7 +3,7 @@ import {
   encodeMembershipGetShopRequest,
   type ShopInfo,
 } from "../codecs/shop.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -19,10 +19,7 @@ const MEMBERSHIP_GET_SHOP: ApiMethod<void, ShopInfo> = {
 
 /** Provides the Membership subscription shop. */
 export class MembershipApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /**
    * Returns the Membership shop catalogue, including subscription product IDs,
@@ -33,7 +30,6 @@ export class MembershipApi {
    * @returns The Membership shop visible to the authenticated account.
    */
   async getShop(options?: RequestOptions): Promise<ShopInfo> {
-    await this.ensureAuthenticated();
     return this.client.call(MEMBERSHIP_GET_SHOP, undefined, options);
   }
 }

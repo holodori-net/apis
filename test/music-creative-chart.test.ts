@@ -37,6 +37,7 @@ import {
   MUSIC_CREATIVE_CHART_LIST_POPULAR_CREATOR,
   MusicCreativeChartApi,
 } from "../src/services/music-creative-chart.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes MusicCreativeChart query requests using contract fields", () => {
   const listRequest = encodeMusicCreativeChartListRequest({
@@ -214,10 +215,12 @@ void test("authenticates and forwards every MusicCreativeChart read", async () =
       return Promise.resolve({});
     },
   } as never;
-  const api = new MusicCreativeChartApi(client, () => {
-    authCalls += 1;
-    return Promise.resolve();
-  });
+  const api = new MusicCreativeChartApi(
+    authenticatedCaller(client, () => {
+      authCalls += 1;
+      return Promise.resolve();
+    }),
+  );
   const options = { timeoutMs: 2_000 };
 
   await api.listNewer({}, options);

@@ -20,7 +20,7 @@ import {
   type MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequest,
   type MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse,
 } from "../codecs/music.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -93,17 +93,13 @@ const MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_REWARD_THRESHOLD_RANKING_RANK_INFO
 
 /** Reads music score and per-character rating rankings. */
 export class MusicApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /** Returns a public player's deck used for their highest score on a song. @rpc /rpc.api.Music/GetHighestScoreLiveDeck */
   async getHighestScoreLiveDeck(
     request: MusicGetHighestScoreLiveDeckRequest,
     options?: RequestOptions,
   ): Promise<MusicGetHighestScoreLiveDeckResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_GET_HIGHEST_SCORE_LIVE_DECK,
       request,
@@ -120,7 +116,6 @@ export class MusicApi {
     request: MusicGetHighestScoreRankingInfoRequest,
     options?: RequestOptions,
   ): Promise<MusicGetHighestScoreRankingInfoResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_GET_HIGHEST_SCORE_RANKING_INFO,
       request,
@@ -133,7 +128,6 @@ export class MusicApi {
     request: MusicListHighestScoreRatingRankingRankRequest,
     options?: RequestOptions,
   ): Promise<MusicListHighestScoreRatingRankingRankResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_RANK,
       request,
@@ -149,7 +143,6 @@ export class MusicApi {
     request: MusicGetHighestScoreRatingRankingInfoRequest,
     options?: RequestOptions,
   ): Promise<MusicGetHighestScoreRatingRankingInfoResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_GET_HIGHEST_SCORE_RATING_RANKING_INFO,
       request,
@@ -162,7 +155,6 @@ export class MusicApi {
     request: MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequest,
     options?: RequestOptions,
   ): Promise<MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_REWARD_THRESHOLD_RANKING_RANK_INFO,
       request,

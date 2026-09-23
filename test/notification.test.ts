@@ -13,6 +13,7 @@ import {
   NOTIFICATION_LIST,
   NotificationApi,
 } from "../src/services/notification.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("decodes account notification flags and updated Park exchange groups", () => {
   const response = encodeMessage(
@@ -66,10 +67,12 @@ void test("Notification API authenticates and uses its declared transport policy
     },
   };
   let authenticationCalls = 0;
-  const api = new NotificationApi(client as never, () => {
-    authenticationCalls += 1;
-    return Promise.resolve();
-  });
+  const api = new NotificationApi(
+    authenticatedCaller(client as never, () => {
+      authenticationCalls += 1;
+      return Promise.resolve();
+    }),
+  );
 
   await api.list();
 

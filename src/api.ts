@@ -9,6 +9,7 @@ import {
   type NoticeTopResponse,
   type NoticeUpdateResponse,
 } from "./codecs.js";
+import { AuthenticatedApiCaller } from "./core/caller.js";
 import {
   ApiClient,
   DEFAULT_TIMEOUT_MS,
@@ -152,45 +153,38 @@ export class HolodoriApi {
       actualTransport,
       ownsTransport,
     );
+    const authenticatedCaller = new AuthenticatedApiCaller(this.client, () =>
+      this.authenticate(),
+    );
     this.auth = new AuthApi(this.client, this.session);
-    this.asset = new AssetApi(this.client, () => this.authenticate());
-    this.card = new CardApi(this.client, () => this.authenticate());
-    this.chase = new ChaseApi(this.client, () => this.authenticate());
-    this.circuit = new CircuitApi(this.client, () => this.authenticate());
-    this.comboCardGame = new ComboCardGameApi(this.client, () =>
-      this.authenticate(),
-    );
-    this.cookingPuzzle = new CookingPuzzleApi(this.client, () =>
-      this.authenticate(),
-    );
-    this.event = new EventApi(this.client, () => this.authenticate());
-    this.exchange = new ExchangeApi(this.client, () => this.authenticate());
-    this.gacha = new GachaApi(this.client, () => this.authenticate());
-    this.gift = new GiftApi(this.client, () => this.authenticate());
-    this.home = new HomeApi(this.client, () => this.authenticate());
+    this.asset = new AssetApi(authenticatedCaller);
+    this.card = new CardApi(authenticatedCaller);
+    this.chase = new ChaseApi(authenticatedCaller);
+    this.circuit = new CircuitApi(authenticatedCaller);
+    this.comboCardGame = new ComboCardGameApi(authenticatedCaller);
+    this.cookingPuzzle = new CookingPuzzleApi(authenticatedCaller);
+    this.event = new EventApi(authenticatedCaller);
+    this.exchange = new ExchangeApi(authenticatedCaller);
+    this.gacha = new GachaApi(authenticatedCaller);
+    this.gift = new GiftApi(authenticatedCaller);
+    this.home = new HomeApi(authenticatedCaller);
     this.health = new HealthApi(this.client);
-    this.jumpRope = new JumpRopeApi(this.client, () => this.authenticate());
-    this.live = new LiveApi(this.client, () => this.authenticate());
-    this.marathon = new MarathonApi(this.client, () => this.authenticate());
+    this.jumpRope = new JumpRopeApi(authenticatedCaller);
+    this.live = new LiveApi(authenticatedCaller);
+    this.marathon = new MarathonApi(authenticatedCaller);
     this.master = new MasterApi(this.client, this.session);
-    this.membership = new MembershipApi(this.client, () => this.authenticate());
-    this.notice = new NoticeApi(this.client, () => this.authenticate());
-    this.notification = new NotificationApi(this.client, () =>
-      this.authenticate(),
-    );
-    this.music = new MusicApi(this.client, () => this.authenticate());
-    this.musicCreativeChart = new MusicCreativeChartApi(this.client, () =>
-      this.authenticate(),
-    );
-    this.multiGame = new MultiGameApi(this.client, () => this.authenticate());
-    this.parkPermanence = new ParkPermanenceApi(this.client, () =>
-      this.authenticate(),
-    );
-    this.profile = new ProfileApi(this.client, () => this.authenticate());
-    this.shop = new ShopApi(this.client, () => this.authenticate());
-    this.splashBall = new SplashBallApi(this.client, () => this.authenticate());
+    this.membership = new MembershipApi(authenticatedCaller);
+    this.notice = new NoticeApi(authenticatedCaller);
+    this.notification = new NotificationApi(authenticatedCaller);
+    this.music = new MusicApi(authenticatedCaller);
+    this.musicCreativeChart = new MusicCreativeChartApi(authenticatedCaller);
+    this.multiGame = new MultiGameApi(authenticatedCaller);
+    this.parkPermanence = new ParkPermanenceApi(authenticatedCaller);
+    this.profile = new ProfileApi(authenticatedCaller);
+    this.shop = new ShopApi(authenticatedCaller);
+    this.splashBall = new SplashBallApi(authenticatedCaller);
     this.system = new SystemApi(this.client, this.session);
-    this.user = new UserApi(this.client, () => this.authenticate());
+    this.user = new UserApi(authenticatedCaller);
     const regionBaseUrlResolver = options.regionBaseUrlResolver;
     this.accountMigration = new AccountMigrationApi(
       this.client,

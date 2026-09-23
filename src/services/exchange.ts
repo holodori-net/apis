@@ -3,7 +3,7 @@ import {
   encodeExchangeListRequest,
   type ExchangeResponse,
 } from "../codecs/exchange.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -22,10 +22,7 @@ const EXCHANGE_LIST: ApiMethod<
 
 /** Provides exchange booth catalogues and account stock state. */
 export class ExchangeApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /**
    * Lists a single exchange booth group, including booth metadata, item costs,
@@ -40,7 +37,6 @@ export class ExchangeApi {
     boothGroupId: string,
     options?: RequestOptions,
   ): Promise<ExchangeResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(EXCHANGE_LIST, { boothGroupId }, options);
   }
 }

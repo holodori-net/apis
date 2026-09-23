@@ -12,7 +12,7 @@ import {
   type LiveGetDraftDeckInfoRequest,
   type LiveGetDraftDeckInfoResponse,
 } from "../codecs/live.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -54,17 +54,13 @@ const LIVE_GET_DECK: ApiMethod<LiveGetDeckRequest, LiveGetDeckResponse> = {
 
 /** Evaluates candidate and saved live decks with the game server's formulas. */
 export class LiveApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /** Evaluates owned cards for a character, costume, and optional song. @rpc /rpc.api.Live/GetDeckCandidateCardParameters */
   async getDeckCandidateCardParameters(
     request: LiveGetDeckCandidateCardParametersRequest,
     options?: RequestOptions,
   ): Promise<LiveGetDeckCandidateCardParametersResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       LIVE_GET_DECK_CANDIDATE_CARD_PARAMETERS,
       request,
@@ -77,7 +73,6 @@ export class LiveApi {
     request: LiveGetDraftDeckInfoRequest,
     options?: RequestOptions,
   ): Promise<LiveGetDraftDeckInfoResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(LIVE_GET_DRAFT_DECK_INFO, request, options);
   }
 
@@ -86,7 +81,6 @@ export class LiveApi {
     request: LiveGetDeckRequest,
     options?: RequestOptions,
   ): Promise<LiveGetDeckResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(LIVE_GET_DECK, request, options);
   }
 }

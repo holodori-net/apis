@@ -14,7 +14,7 @@ import {
   type NoticeTopResponse,
   type NoticeUpdateResponse,
 } from "../codecs/notice.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -82,14 +82,10 @@ const NOTICE_UPDATE_DETAIL_READ_TIME: ApiMethod<
 
 /** Reads localized public notices and manages account-specific read timestamps. */
 export class NoticeApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /** Returns notice categories and their current summaries. @rpc /rpc.api.Notice/Top */
   async top(options?: RequestOptions): Promise<NoticeTopResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(NOTICE_TOP, undefined, options);
   }
 
@@ -107,7 +103,6 @@ export class NoticeApi {
     offset: number,
     options?: RequestOptions,
   ): Promise<NoticeListInCategoryResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       NOTICE_LIST_IN_CATEGORY,
       { categoryId, offset },
@@ -120,7 +115,6 @@ export class NoticeApi {
     noticeId: string,
     options?: RequestOptions,
   ): Promise<NoticeGetResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(NOTICE_GET, { noticeId }, options);
   }
 
@@ -136,7 +130,6 @@ export class NoticeApi {
     categoryIds: readonly string[],
     options?: RequestOptions,
   ): Promise<NoticeUpdateResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       NOTICE_UPDATE_CATEGORY_READ_TIME,
       categoryIds,
@@ -156,7 +149,6 @@ export class NoticeApi {
     noticeIds: readonly string[],
     options?: RequestOptions,
   ): Promise<NoticeUpdateResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(NOTICE_UPDATE_DETAIL_READ_TIME, noticeIds, options);
   }
 }

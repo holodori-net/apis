@@ -18,6 +18,7 @@ import {
   CARD_GET_PARAMETERS,
   CardApi,
 } from "../src/services/card.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 function encodeFloat32Field(field: number, value: number): Buffer {
   const bytes = Buffer.alloc(4);
@@ -113,10 +114,12 @@ void test("CardApi lazily authenticates both read methods", async () => {
     },
   };
   let authenticationCalls = 0;
-  const api = new CardApi(client as never, () => {
-    authenticationCalls += 1;
-    return Promise.resolve();
-  });
+  const api = new CardApi(
+    authenticatedCaller(client as never, () => {
+      authenticationCalls += 1;
+      return Promise.resolve();
+    }),
+  );
 
   await api.getParameter("card-1");
   await api.getParameters();

@@ -11,6 +11,7 @@ import {
   ASSET_LIST_EXPIRED_ASSET_ID,
   AssetApi,
 } from "../src/services/asset.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("decodes feature-specific expired asset IDs", () => {
   const response = encodeMessage(
@@ -92,21 +93,23 @@ void test("decodes feature-specific expired asset IDs", () => {
 void test("AssetApi authenticates and uses the contract policies", async () => {
   let ensured = false;
   const api = new AssetApi(
-    {
-      call: (
-        method: { path: string; encode: (request: unknown) => Buffer },
-        request: unknown,
-      ) => {
-        assert.equal(method.path, "/rpc.api.Asset/ListExpiredAssetId");
-        assert.equal(request, undefined);
-        assert.deepEqual(method.encode(request), Buffer.alloc(0));
-        return Promise.resolve({});
+    authenticatedCaller(
+      {
+        call: (
+          method: { path: string; encode: (request: unknown) => Buffer },
+          request: unknown,
+        ) => {
+          assert.equal(method.path, "/rpc.api.Asset/ListExpiredAssetId");
+          assert.equal(request, undefined);
+          assert.deepEqual(method.encode(request), Buffer.alloc(0));
+          return Promise.resolve({});
+        },
+      } as never,
+      () => {
+        ensured = true;
+        return Promise.resolve();
       },
-    } as never,
-    () => {
-      ensured = true;
-      return Promise.resolve();
-    },
+    ),
   );
 
   await api.listExpiredAssetId();

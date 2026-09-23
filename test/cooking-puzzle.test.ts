@@ -8,6 +8,7 @@ import {
   encodeVarintField,
 } from "../src/low-level.js";
 import { CookingPuzzleApi } from "../src/services/cooking-puzzle.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("decodes Cooking Puzzle rankings using the shared ranking response", () => {
   const rankInfo = encodeMessage(
@@ -35,10 +36,12 @@ void test("uses authenticated cached read policies and forwards request options"
       return Promise.resolve({ selfRank: 0, rankInfos: [] });
     },
   } as never;
-  const api = new CookingPuzzleApi(client, () => {
-    authCalls += 1;
-    return Promise.resolve();
-  });
+  const api = new CookingPuzzleApi(
+    authenticatedCaller(client, () => {
+      authCalls += 1;
+      return Promise.resolve();
+    }),
+  );
   const options = { timeoutMs: 2_000 };
 
   await api.getRankingInfo(options);

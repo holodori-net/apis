@@ -3,7 +3,7 @@ import {
   encodeMultiGameListPingServerRequest,
   type MultiGameListPingServerResponse,
 } from "../codecs/multi-game.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -22,10 +22,7 @@ const MULTI_GAME_LIST_PING_SERVER: ApiMethod<
 
 /** Provides multiplayer connection discovery. */
 export class MultiGameApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /** Lists server regions and endpoints used for multiplayer ping checks.
    *
@@ -34,7 +31,6 @@ export class MultiGameApi {
   async listPingServer(
     options?: RequestOptions,
   ): Promise<MultiGameListPingServerResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(MULTI_GAME_LIST_PING_SERVER, undefined, options);
   }
 }

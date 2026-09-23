@@ -31,7 +31,7 @@ import {
   type MusicCreativeChartListRequest,
   type MusicCreativeChartListResponse,
 } from "../codecs/music-creative-chart.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -156,17 +156,13 @@ const MUSIC_CREATIVE_CHART_GET_EARLY_CLEAR_LIVE_DECK: ApiMethod<
  * @remarks Chart `isFavorite` and `isOwn` fields reflect the authenticated account.
  */
 export class MusicCreativeChartApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /** Lists recently published charts grouped by song. @rpc /rpc.api.MusicCreativeChart/ListNewer */
   async listNewer(
     request: MusicCreativeChartListRequest = {},
     options?: RequestOptions,
   ): Promise<MusicCreativeChartListResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_CREATIVE_CHART_LIST_NEWER,
       withDefaultSearch(request),
@@ -179,7 +175,6 @@ export class MusicCreativeChartApi {
     request: MusicCreativeChartListRequest = {},
     options?: RequestOptions,
   ): Promise<MusicCreativeChartListResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_CREATIVE_CHART_LIST_POPULAR,
       withDefaultSearch(request),
@@ -192,7 +187,6 @@ export class MusicCreativeChartApi {
     request: MusicCreativeChartListPopularCreatorRequest = {},
     options?: RequestOptions,
   ): Promise<MusicCreativeChartListPopularCreatorResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_CREATIVE_CHART_LIST_POPULAR_CREATOR,
       request,
@@ -205,7 +199,6 @@ export class MusicCreativeChartApi {
     request: MusicCreativeChartListByCreatorRequest,
     options?: RequestOptions,
   ): Promise<MusicCreativeChartListByCreatorResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_CREATIVE_CHART_LIST_BY_CREATOR,
       withDefaultSearch(request),
@@ -218,7 +211,6 @@ export class MusicCreativeChartApi {
     request: MusicCreativeChartGetByIdRequest,
     options?: RequestOptions,
   ): Promise<MusicCreativeChartGetByIdResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(MUSIC_CREATIVE_CHART_GET_BY_ID, request, options);
   }
 
@@ -227,7 +219,6 @@ export class MusicCreativeChartApi {
     request: MusicCreativeChartGetQuoteTargetChartRequest,
     options?: RequestOptions,
   ): Promise<MusicCreativeChartGetQuoteTargetChartResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_CREATIVE_CHART_GET_QUOTE_TARGET,
       request,
@@ -240,7 +231,6 @@ export class MusicCreativeChartApi {
     request: MusicCreativeChartGetCreatorInfoRequest,
     options?: RequestOptions,
   ): Promise<MusicCreativeChartGetCreatorInfoResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_CREATIVE_CHART_GET_CREATOR_INFO,
       request,
@@ -253,7 +243,6 @@ export class MusicCreativeChartApi {
     request: MusicCreativeChartGetEarlyClearRankingInfoRequest,
     options?: RequestOptions,
   ): Promise<MusicCreativeChartGetEarlyClearRankingInfoResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_CREATIVE_CHART_GET_EARLY_CLEAR_RANKING_INFO,
       request,
@@ -266,7 +255,6 @@ export class MusicCreativeChartApi {
     request: MusicCreativeChartGetEarlyClearLiveDeckRequest,
     options?: RequestOptions,
   ): Promise<MusicCreativeChartGetEarlyClearLiveDeckResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_CREATIVE_CHART_GET_EARLY_CLEAR_LIVE_DECK,
       request,

@@ -6,7 +6,7 @@ import {
   type GachaListProbabilityResponse,
   type GachaListResponse,
 } from "../codecs/gacha.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -48,10 +48,7 @@ const GACHA_LIST_CARD_SELECT_PROBABILITY: ApiMethod<
 
 /** Provides Gacha banners, draw configuration, and probabilities. */
 export class GachaApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /**
    * Lists Gacha groups and their active configurations, costs, rewards, and
@@ -61,7 +58,6 @@ export class GachaApi {
    * @rpc /rpc.api.Gacha/List
    */
   async list(options?: RequestOptions): Promise<GachaListResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(GACHA_LIST, undefined, options);
   }
 
@@ -75,7 +71,6 @@ export class GachaApi {
     gachaId: string,
     options?: RequestOptions,
   ): Promise<GachaListProbabilityResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       GACHA_LIST_NORMAL_PROBABILITY,
       { gachaId },
@@ -95,7 +90,6 @@ export class GachaApi {
     gachaId: string,
     options?: RequestOptions,
   ): Promise<GachaListProbabilityResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       GACHA_LIST_CARD_SELECT_PROBABILITY,
       { gachaId },

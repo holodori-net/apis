@@ -14,6 +14,7 @@ import {
   encodeVarintField,
 } from "../src/low-level.js";
 import { GIFT_LIST, GiftApi } from "../src/services/gift.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes Gift/List request fields and validates them", () => {
   const encoded = encodeGiftListRequest({
@@ -103,10 +104,12 @@ void test("Gift/List authenticates, forwards options, and declares descriptor po
     },
   };
   let authCalls = 0;
-  const api = new GiftApi(client as never, () => {
-    authCalls += 1;
-    return Promise.resolve();
-  });
+  const api = new GiftApi(
+    authenticatedCaller(client as never, () => {
+      authCalls += 1;
+      return Promise.resolve();
+    }),
+  );
   const options = { timeoutMs: 1_000 };
   await api.list(
     { offset: 0, sortType: GiftSortType.PostedTime, isDesc: true },

@@ -13,6 +13,7 @@ import {
   encodeVarintField,
 } from "../src/low-level.js";
 import { EXCHANGE_LIST, ExchangeApi } from "../src/services/exchange.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes Exchange/List booth group ID", () => {
   assert.equal(
@@ -146,16 +147,18 @@ void test("ExchangeApi authenticates lazily and declares read policies", async (
   let authCalls = 0;
   const calls: string[] = [];
   const api = new ExchangeApi(
-    {
-      call: (method: { path: string }, request: { boothGroupId: string }) => {
-        calls.push(`${method.path}:${request.boothGroupId}`);
-        return Promise.resolve({ id: request.boothGroupId });
+    authenticatedCaller(
+      {
+        call: (method: { path: string }, request: { boothGroupId: string }) => {
+          calls.push(`${method.path}:${request.boothGroupId}`);
+          return Promise.resolve({ id: request.boothGroupId });
+        },
+      } as never,
+      () => {
+        authCalls += 1;
+        return Promise.resolve();
       },
-    } as never,
-    () => {
-      authCalls += 1;
-      return Promise.resolve();
-    },
+    ),
   );
   await api.list("membership-group");
   assert.equal(authCalls, 1);

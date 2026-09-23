@@ -3,7 +3,7 @@ import {
   decodeAssetListExpiredAssetIdResponse,
   encodeAssetListExpiredAssetIdRequest,
 } from "../codecs/asset.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -22,10 +22,7 @@ const ASSET_LIST_EXPIRED_ASSET_ID: ApiMethod<
 
 /** Provides asset identifiers reported as expired by the game service. */
 export class AssetApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /** Lists expired asset IDs grouped by the game feature that references them.
    *
@@ -34,7 +31,6 @@ export class AssetApi {
   async listExpiredAssetId(
     options?: RequestOptions,
   ): Promise<AssetListExpiredAssetIdResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(ASSET_LIST_EXPIRED_ASSET_ID, undefined, options);
   }
 }

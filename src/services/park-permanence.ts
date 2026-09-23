@@ -4,7 +4,7 @@ import {
   type ParkPermanenceListCharacterShopItemRequest,
   type ParkPermanenceListCharacterShopItemResponse,
 } from "../codecs/park-permanence.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -23,10 +23,7 @@ const PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM: ApiMethod<
 
 /** Provides the authenticated account's Park character shop catalogue. */
 export class ParkPermanenceApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /**
    * Lists the shop name, cost, available items, collection flags, and selected
@@ -40,7 +37,6 @@ export class ParkPermanenceApi {
     request: ParkPermanenceListCharacterShopItemRequest,
     options?: RequestOptions,
   ): Promise<ParkPermanenceListCharacterShopItemResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM,
       request,

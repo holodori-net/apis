@@ -4,7 +4,7 @@ import {
   type GiftListRequest,
   type GiftListResponse,
 } from "../codecs/gift.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -20,10 +20,7 @@ const GIFT_LIST: ApiMethod<GiftListRequest, GiftListResponse> = {
 
 /** Provides access to the authenticated account's gift box. */
 export class GiftApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /** Lists gifts using the requested sort order and offset.
    *
@@ -33,7 +30,6 @@ export class GiftApi {
     request: GiftListRequest,
     options?: RequestOptions,
   ): Promise<GiftListResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(GIFT_LIST, request, options);
   }
 }

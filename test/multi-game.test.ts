@@ -14,6 +14,7 @@ import {
   MULTI_GAME_LIST_PING_SERVER,
   MultiGameApi,
 } from "../src/services/multi-game.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes an empty MultiGame/ListPingServer request", () => {
   assert.equal(encodeMultiGameListPingServerRequest().length, 0);
@@ -41,10 +42,12 @@ void test("ListPingServer authenticates, forwards options, and declares policies
     },
   };
   let authCalls = 0;
-  const api = new MultiGameApi(client as never, () => {
-    authCalls += 1;
-    return Promise.resolve();
-  });
+  const api = new MultiGameApi(
+    authenticatedCaller(client as never, () => {
+      authCalls += 1;
+      return Promise.resolve();
+    }),
+  );
   const options = { timeoutMs: 1_000 };
   await api.listPingServer(options);
 

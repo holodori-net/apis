@@ -6,7 +6,7 @@ import {
   encodeCardGetParameterRequest,
   encodeCardGetParametersRequest,
 } from "../codecs/card.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -35,17 +35,13 @@ const CARD_GET_PARAMETERS: ApiMethod<void, CardGetParametersResponse> = {
 
 /** Reads server-calculated parameters for cards owned by the current account. */
 export class CardApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /** Returns one owned card's current parameters and skill-tree effects. @rpc /rpc.api.Card/GetParameter */
   async getParameter(
     cardId: string,
     options?: RequestOptions,
   ): Promise<CardGetParameterResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(CARD_GET_PARAMETER, { cardId }, options);
   }
 
@@ -53,7 +49,6 @@ export class CardApi {
   async getParameters(
     options?: RequestOptions,
   ): Promise<CardGetParametersResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(CARD_GET_PARAMETERS, undefined, options);
   }
 }

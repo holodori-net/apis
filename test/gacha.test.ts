@@ -19,6 +19,7 @@ import {
   GACHA_LIST_NORMAL_PROBABILITY,
   GachaApi,
 } from "../src/services/gacha.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes probability requests with a required Gacha ID", () => {
   assert.equal(
@@ -257,10 +258,12 @@ void test("Gacha API authenticates read methods and declares transport policies"
     },
   };
   let authenticationCalls = 0;
-  const api = new GachaApi(client as never, () => {
-    authenticationCalls += 1;
-    return Promise.resolve();
-  });
+  const api = new GachaApi(
+    authenticatedCaller(client as never, () => {
+      authenticationCalls += 1;
+      return Promise.resolve();
+    }),
+  );
 
   await api.list();
   await api.listNormalProbability("gacha-1");

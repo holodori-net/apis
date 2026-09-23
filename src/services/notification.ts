@@ -3,7 +3,7 @@ import {
   encodeNotificationListRequest,
   type NotificationListResponse,
 } from "../codecs/notification.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -19,10 +19,7 @@ const NOTIFICATION_LIST: ApiMethod<void, NotificationListResponse> = {
 
 /** Provides account-level unread and content update indicators. */
 export class NotificationApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /**
    * Returns unread and update flags for the authenticated account, including
@@ -31,7 +28,6 @@ export class NotificationApi {
    * @rpc /rpc.api.Notification/List
    */
   async list(options?: RequestOptions): Promise<NotificationListResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(NOTIFICATION_LIST, undefined, options);
   }
 }

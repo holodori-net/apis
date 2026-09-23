@@ -15,6 +15,7 @@ import {
   PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM,
   ParkPermanenceApi,
 } from "../src/services/park-permanence.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes the complete Park permanence common request parameter", () => {
   const request = encodeMessage(
@@ -174,10 +175,12 @@ void test("authenticates and passes request options for shop listing", async () 
       });
     },
   };
-  const api = new ParkPermanenceApi(client as never, () => {
-    authenticated = true;
-    return Promise.resolve();
-  });
+  const api = new ParkPermanenceApi(
+    authenticatedCaller(client as never, () => {
+      authenticated = true;
+      return Promise.resolve();
+    }),
+  );
 
   const result = await api.listCharacterShopItem(
     { parkPermanenceId: "park-001", actionNumber: 7 },

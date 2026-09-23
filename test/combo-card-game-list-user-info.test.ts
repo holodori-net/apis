@@ -12,6 +12,7 @@ import {
   encodeVarintField,
 } from "../src/low-level.js";
 import { ComboCardGameApi } from "../src/services/combo-card-game.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes public user IDs and optional private room ID", () => {
   assert.deepEqual(
@@ -109,10 +110,12 @@ void test("uses ListUserInfo policies and forwards options", async () => {
       return Promise.resolve({ comboCardGameUserInfos: [] });
     },
   } as never;
-  const api = new ComboCardGameApi(client, () => {
-    authCalls += 1;
-    return Promise.resolve();
-  });
+  const api = new ComboCardGameApi(
+    authenticatedCaller(client, () => {
+      authCalls += 1;
+      return Promise.resolve();
+    }),
+  );
   const request = { publicUserIds: ["public-42"], privateRoomId: "room-1" };
   const options = { timeoutMs: 1_500 };
 

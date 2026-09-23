@@ -6,7 +6,7 @@ import {
   type EventListEventInfoForPortalResponse,
   type EventListEventInfoResponse,
 } from "../codecs/event.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -35,10 +35,7 @@ const EVENT_LIST_EVENT_INFO_FOR_PORTAL: ApiMethod<
 
 /** Provides current event definitions and portal summaries. */
 export class EventApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /**
    * Lists full event configuration, including Marathon chapters, rewards,
@@ -50,7 +47,6 @@ export class EventApi {
   async listEventInfo(
     options?: RequestOptions,
   ): Promise<EventListEventInfoResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(EVENT_LIST_EVENT_INFO, undefined, options);
   }
 
@@ -64,7 +60,6 @@ export class EventApi {
   async listEventInfoForPortal(
     options?: RequestOptions,
   ): Promise<EventListEventInfoForPortalResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       EVENT_LIST_EVENT_INFO_FOR_PORTAL,
       undefined,

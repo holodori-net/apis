@@ -13,6 +13,7 @@ import {
   encodeVarintField,
 } from "../src/low-level.js";
 import { SHOP_LIST, ShopApi } from "../src/services/shop.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 const shop = encodeMessage(
   encodeStringField(1, "shop-main"),
@@ -211,7 +212,7 @@ void test("Shop/List authenticates lazily and declares read policies", async () 
     authCalls += 1;
     return Promise.resolve();
   };
-  await new ShopApi(client as never, authenticate).list();
+  await new ShopApi(authenticatedCaller(client as never, authenticate)).list();
   assert.equal(authCalls, 1);
   assert.deepEqual(paths, ["/rpc.api.Shop/List"]);
 

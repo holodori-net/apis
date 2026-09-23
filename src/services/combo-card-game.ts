@@ -9,7 +9,7 @@ import {
   encodeMiniGameRankingRequest,
   type MiniGameRankingResponse,
 } from "../codecs/mini-game-ranking.js";
-import { type ApiClient } from "../core/client.js";
+import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 
@@ -41,10 +41,7 @@ const COMBO_CARD_GAME_LIST_USER_INFO: ApiMethod<
 
 /** Reads Combo Card Game public information. */
 export class ComboCardGameApi {
-  constructor(
-    private readonly client: ApiClient,
-    private readonly ensureAuthenticated: () => Promise<unknown>,
-  ) {}
+  constructor(private readonly client: ApiCaller) {}
 
   /**
    * Returns the Combo Card Game leaderboard.
@@ -54,7 +51,6 @@ export class ComboCardGameApi {
   async getRankingInfo(
     options?: RequestOptions,
   ): Promise<MiniGameRankingResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(
       COMBO_CARD_GAME_GET_RANKING_INFO,
       undefined,
@@ -71,7 +67,6 @@ export class ComboCardGameApi {
     request: ComboCardGameListUserInfoRequest,
     options?: RequestOptions,
   ): Promise<ComboCardGameListUserInfoResponse> {
-    await this.ensureAuthenticated();
     return this.client.call(COMBO_CARD_GAME_LIST_USER_INFO, request, options);
   }
 }
