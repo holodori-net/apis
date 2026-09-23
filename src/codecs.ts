@@ -3,10 +3,20 @@ export * from "./codecs/account-migration.js";
 export * from "./codecs/asset.js";
 export * from "./codecs/auth.js";
 export * from "./codecs/card.js";
+export * from "./codecs/combo-card-game.js";
 export { encodeEmpty } from "./codecs/common.js";
 export * from "./codecs/event.js";
 export * from "./codecs/exchange.js";
 export * from "./codecs/gacha.js";
+export {
+  decodeGiftListResponse,
+  encodeGiftListRequest,
+} from "./codecs/gift.js";
+export type {
+  GiftItem,
+  GiftListRequest,
+  GiftListResponse,
+} from "./codecs/gift.js";
 export {
   decodeHealthCheckResponse,
   encodeHealthCheckRequest,
@@ -25,10 +35,12 @@ export type {
   ChaseRankingRequest,
   MiniGameRankingResponse,
 } from "./codecs/mini-game-ranking.js";
+export * from "./codecs/multi-game.js";
 export * from "./codecs/music-creative-chart.js";
 export * from "./codecs/music.js";
 export * from "./codecs/notice.js";
 export * from "./codecs/notification.js";
+export * from "./codecs/park-permanence.js";
 export * from "./codecs/profile.js";
 export * from "./codecs/ranking.js";
 export * from "./codecs/resource.js";

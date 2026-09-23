@@ -28,9 +28,11 @@ import { CardApi } from "./services/card.js";
 import { ChaseApi } from "./services/chase.js";
 import { CircuitApi } from "./services/circuit.js";
 import { ComboCardGameApi } from "./services/combo-card-game.js";
+import { CookingPuzzleApi } from "./services/cooking-puzzle.js";
 import { EventApi } from "./services/event.js";
 import { ExchangeApi } from "./services/exchange.js";
 import { GachaApi } from "./services/gacha.js";
+import { GiftApi } from "./services/gift.js";
 import { HealthApi } from "./services/health.js";
 import { HomeApi } from "./services/home.js";
 import { JumpRopeApi } from "./services/jump-rope.js";
@@ -38,10 +40,12 @@ import { LiveApi } from "./services/live.js";
 import { MarathonApi } from "./services/marathon.js";
 import { MasterApi } from "./services/master.js";
 import { MembershipApi } from "./services/membership.js";
+import { MultiGameApi } from "./services/multi-game.js";
 import { MusicCreativeChartApi } from "./services/music-creative-chart.js";
 import { MusicApi } from "./services/music.js";
 import { NoticeApi } from "./services/notice.js";
 import { NotificationApi } from "./services/notification.js";
+import { ParkPermanenceApi } from "./services/park-permanence.js";
 import { ProfileApi } from "./services/profile.js";
 import { ShopApi } from "./services/shop.js";
 import { SplashBallApi } from "./services/splash-ball.js";
@@ -83,9 +87,11 @@ export class HolodoriApi {
   readonly chase: ChaseApi;
   readonly circuit: CircuitApi;
   readonly comboCardGame: ComboCardGameApi;
+  readonly cookingPuzzle: CookingPuzzleApi;
   readonly event: EventApi;
   readonly exchange: ExchangeApi;
   readonly gacha: GachaApi;
+  readonly gift: GiftApi;
   readonly home: HomeApi;
   readonly health: HealthApi;
   readonly jumpRope: JumpRopeApi;
@@ -97,6 +103,8 @@ export class HolodoriApi {
   readonly notification: NotificationApi;
   readonly music: MusicApi;
   readonly musicCreativeChart: MusicCreativeChartApi;
+  readonly multiGame: MultiGameApi;
+  readonly parkPermanence: ParkPermanenceApi;
   readonly profile: ProfileApi;
   readonly shop: ShopApi;
   readonly splashBall: SplashBallApi;
@@ -150,9 +158,13 @@ export class HolodoriApi {
     this.comboCardGame = new ComboCardGameApi(this.client, () =>
       this.authenticate(),
     );
+    this.cookingPuzzle = new CookingPuzzleApi(this.client, () =>
+      this.authenticate(),
+    );
     this.event = new EventApi(this.client, () => this.authenticate());
     this.exchange = new ExchangeApi(this.client, () => this.authenticate());
     this.gacha = new GachaApi(this.client, () => this.authenticate());
+    this.gift = new GiftApi(this.client, () => this.authenticate());
     this.home = new HomeApi(this.client, () => this.authenticate());
     this.health = new HealthApi(this.client);
     this.jumpRope = new JumpRopeApi(this.client, () => this.authenticate());
@@ -166,6 +178,10 @@ export class HolodoriApi {
     );
     this.music = new MusicApi(this.client, () => this.authenticate());
     this.musicCreativeChart = new MusicCreativeChartApi(this.client, () =>
+      this.authenticate(),
+    );
+    this.multiGame = new MultiGameApi(this.client, () => this.authenticate());
+    this.parkPermanence = new ParkPermanenceApi(this.client, () =>
       this.authenticate(),
     );
     this.profile = new ProfileApi(this.client, () => this.authenticate());
@@ -357,19 +373,23 @@ export {
   ChaseApi,
   CircuitApi,
   ComboCardGameApi,
+  CookingPuzzleApi,
   EventApi,
   ExchangeApi,
   GachaApi,
+  GiftApi,
   HealthApi,
   HolodoriApiError,
   JumpRopeApi,
   MarathonApi,
   MasterApi,
   MembershipApi,
+  MultiGameApi,
   MusicApi,
   MusicCreativeChartApi,
   NoticeApi,
   NotificationApi,
+  ParkPermanenceApi,
   ProfileApi,
   ShopApi,
   SplashBallApi,
