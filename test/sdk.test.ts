@@ -6,6 +6,10 @@ import {
   type ApiTransportRequest,
   type ApiTransportResponse,
   AssetApi,
+  ChaseApi,
+  ChaseTeamType,
+  CircuitApi,
+  ComboCardGameApi,
   decodeProtoFields,
   decryptProto,
   encodeMessage,
@@ -15,9 +19,12 @@ import {
   HealthApi,
   HealthCheckServingStatus,
   HolodoriApi,
+  JumpRopeApi,
   MarathonApi,
   MusicApi,
+  MusicCreativeChartApi,
   ProfileApi,
+  SplashBallApi,
 } from "../src/index.js";
 
 const SECRET = "test-api-secret";
@@ -289,11 +296,18 @@ void test("exposes public information services from the high-level client", asyn
   );
 
   assert.ok(api.asset instanceof AssetApi);
+  assert.ok(api.chase instanceof ChaseApi);
+  assert.equal(ChaseTeamType.Patrol, 2);
+  assert.ok(api.circuit instanceof CircuitApi);
+  assert.ok(api.comboCardGame instanceof ComboCardGameApi);
   assert.ok(api.health instanceof HealthApi);
   assert.equal(HealthCheckServingStatus.Serving, 1);
   assert.ok(api.marathon instanceof MarathonApi);
+  assert.ok(api.jumpRope instanceof JumpRopeApi);
   assert.ok(api.music instanceof MusicApi);
+  assert.ok(api.musicCreativeChart instanceof MusicCreativeChartApi);
   assert.ok(api.profile instanceof ProfileApi);
+  assert.ok(api.splashBall instanceof SplashBallApi);
 });
 
 function encodeLengthDelimitedField(field: number, value: Buffer): Buffer {
