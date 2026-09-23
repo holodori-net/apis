@@ -177,6 +177,9 @@ Probabilities are returned as integer parts per ten million.
 
 RPC: `/rpc.api.Gacha/ListCardSelectProbability`
 
+The server may reject the request until the authenticated account
+has selected cards for the Gacha.
+
 ```ts
 listCardSelectProbability(gachaId: string): Promise<GachaListProbabilityResponse>
 ```

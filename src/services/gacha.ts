@@ -82,6 +82,8 @@ export class GachaApi {
    * Probabilities are returned as integer parts per ten million.
    *
    * @rpc /rpc.api.Gacha/ListCardSelectProbability
+   * @remarks The server may reject the request until the authenticated account
+   * has selected cards for the Gacha.
    */
   async listCardSelectProbability(
     gachaId: string,
