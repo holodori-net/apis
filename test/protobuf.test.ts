@@ -7,7 +7,7 @@ import {
   firstInt32,
   firstInt64,
   firstUint,
-} from "../src/protobuf.js";
+} from "../src/protocol/protobuf.js";
 
 void test("decodes signed int32 and int64 protobuf varints", () => {
   const negativeOne = (1n << 64n) - 1n;

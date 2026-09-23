@@ -4,7 +4,7 @@ import {
   firstBool,
   firstString,
   firstUint,
-} from "../protobuf.js";
+} from "../protocol/protobuf.js";
 import {
   decodeProtoFields,
   encodeEmpty,

@@ -1,4 +1,9 @@
-import { firstBool, firstBytes, firstString, firstUint } from "../protobuf.js";
+import {
+  firstBool,
+  firstBytes,
+  firstString,
+  firstUint,
+} from "../protocol/protobuf.js";
 import {
   decodeProtoFields,
   encodeMessage,

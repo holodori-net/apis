@@ -4,7 +4,7 @@ import {
   encodeVarintField,
   firstBool,
   firstString,
-} from "../protobuf.js";
+} from "../protocol/protobuf.js";
 import { decodeProtoFields, encodeMessage, isBuffer } from "./common.js";
 import {
   type CommonConsumption,

@@ -4,7 +4,7 @@ import {
   encodeStringField,
   type ProtoValue,
   requireString,
-} from "../protobuf.js";
+} from "../protocol/protobuf.js";
 
 export { decodeProtoFields, encodeMessage, encodeStringField, requireString };
 export type { ProtoValue };

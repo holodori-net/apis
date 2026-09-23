@@ -1,4 +1,4 @@
-import { firstUint } from "../protobuf.js";
+import { firstUint } from "../protocol/protobuf.js";
 import { decodeProtoFields, encodeEmpty, encodeStringField } from "./common.js";
 
 export enum HealthCheckServingStatus {

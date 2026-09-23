@@ -1,4 +1,4 @@
-import { firstString, type ProtoValue } from "../protobuf.js";
+import { firstString, type ProtoValue } from "../protocol/protobuf.js";
 import {
   decodeProtoFields,
   encodeEmpty,

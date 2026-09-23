@@ -3,7 +3,7 @@ import {
   firstUint,
   type ProtoValue,
   requireString,
-} from "../protobuf.js";
+} from "../protocol/protobuf.js";
 import {
   decodeProtoFields,
   encodeEmpty,

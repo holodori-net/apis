@@ -5,7 +5,7 @@ import {
   firstString,
   firstUint,
   type ProtoValue,
-} from "../protobuf.js";
+} from "../protocol/protobuf.js";
 import {
   decodeProtoFields,
   decodeRepeatedMessages,

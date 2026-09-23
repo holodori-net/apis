@@ -1,11 +1,10 @@
+export { ProtoEncError } from "./protocol/errors.js";
 export {
   assertGrpcSuccess,
-  decryptProto,
-  encryptProto,
   extractGrpcPayload,
   grpcFrame,
-  ProtoEncError,
-} from "./proto-enc.js";
+} from "./protocol/grpc.js";
+export { decryptProto, encryptProto } from "./protocol/proto-enc.js";
 export {
   decodeProtoFields,
   encodeBytesField,
@@ -21,4 +20,4 @@ export {
   firstUint,
   ProtobufError,
   type ProtoValue,
-} from "./protobuf.js";
+} from "./protocol/protobuf.js";

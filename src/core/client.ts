@@ -1,11 +1,7 @@
 import type { ApiTransport } from "../transports/types.js";
 
-import {
-  assertGrpcSuccess,
-  decryptProto,
-  encryptProto,
-  GrpcStatusError,
-} from "../proto-enc.js";
+import { assertGrpcSuccess, GrpcStatusError } from "../protocol/grpc.js";
+import { decryptProto, encryptProto } from "../protocol/proto-enc.js";
 import {
   ApiTransportError,
   type ApiTransportErrorPhase,

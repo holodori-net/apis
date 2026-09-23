@@ -4,8 +4,8 @@ import {
   firstInt64,
   firstString,
   type ProtoValue,
-} from "../protobuf.js";
-import { encodeBytesField, encodeVarintField } from "../protobuf.js";
+} from "../protocol/protobuf.js";
+import { encodeBytesField, encodeVarintField } from "../protocol/protobuf.js";
 import {
   decodeProtoFields,
   encodeMessage,

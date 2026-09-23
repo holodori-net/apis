@@ -1,4 +1,4 @@
-import { firstString, firstUint } from "../protobuf.js";
+import { firstString, firstUint } from "../protocol/protobuf.js";
 import { decodeProtoFields, toSafeNumber } from "./common.js";
 
 export interface CommonConsumption {

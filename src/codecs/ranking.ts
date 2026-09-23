@@ -3,7 +3,7 @@ import {
   firstInt32,
   firstInt64,
   firstString,
-} from "../protobuf.js";
+} from "../protocol/protobuf.js";
 import { decodeProtoFields, decodeRepeatedMessages } from "./common.js";
 import {
   decodeProfileBasicUserInfo,

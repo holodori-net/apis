@@ -1,4 +1,4 @@
-import { firstBytes, firstInt32, firstInt64 } from "../protobuf.js";
+import { firstBytes, firstInt32, firstInt64 } from "../protocol/protobuf.js";
 import {
   decodeProtoFields,
   decodeRepeatedMessages,

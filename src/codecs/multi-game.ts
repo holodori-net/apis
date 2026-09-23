@@ -1,4 +1,4 @@
-import { firstString } from "../protobuf.js";
+import { firstString } from "../protocol/protobuf.js";
 import { decodeProtoFields, encodeEmpty, isBuffer } from "./common.js";
 
 export interface MultiGameListPingServerResponse {

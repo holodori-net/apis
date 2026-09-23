@@ -1,4 +1,4 @@
-import { firstBool, firstString } from "../protobuf.js";
+import { firstBool, firstString } from "../protocol/protobuf.js";
 import { decodeProtoFields, encodeEmpty, isBuffer } from "./common.js";
 
 /** Account-specific notification flags and updated exchange booth groups. */

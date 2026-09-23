@@ -1,4 +1,8 @@
-import { encodeVarintField, firstInt32, type ProtoValue } from "../protobuf.js";
+import {
+  encodeVarintField,
+  firstInt32,
+  type ProtoValue,
+} from "../protocol/protobuf.js";
 import { decodeProtoFields, encodeMessage, isBuffer } from "./common.js";
 import {
   type BasicRankingRankInfo,

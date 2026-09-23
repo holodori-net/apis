@@ -4,7 +4,7 @@ import {
   firstInt64,
   firstString,
   type ProtoValue,
-} from "../protobuf.js";
+} from "../protocol/protobuf.js";
 import {
   decodeProtoFields,
   encodeMessage,

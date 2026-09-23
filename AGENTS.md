@@ -12,6 +12,8 @@ by other Node.js projects.
   subpath exports.
 - Transport contracts and implementations live under `src/transports/`; keep
   `src/transports/index.ts` as the public transport barrel.
+- Protocol framing, encryption, and protobuf primitives live under
+  `src/protocol/`; keep `src/low-level.ts` as their public compatibility barrel.
 - Transport is injectable for deterministic tests and offline consumers.
 - `Http2Transport` owns target TLS and HTTP/2 behavior; tunnel connectors own
   only the raw route to the target host and port.
