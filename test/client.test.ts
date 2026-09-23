@@ -135,6 +135,35 @@ void test("fails closed when a method requires a request signer", async () => {
   );
 });
 
+void test("passes per-call signal and timeout while retaining the client default", async () => {
+  const transport = new FakeTransport();
+  const client = createClient(new ApiSession(), transport);
+  const controller = new AbortController();
+
+  await client.call(CACHED, undefined);
+  await client.call(CACHED, undefined, {
+    signal: controller.signal,
+    timeoutMs: 1_250,
+  });
+
+  assert.equal(transport.requests[0]?.timeoutMs, 30_000);
+  assert.equal(transport.requests[0]?.signal, undefined);
+  assert.equal(transport.requests[1]?.timeoutMs, 1_250);
+  assert.equal(transport.requests[1]?.signal, controller.signal);
+});
+
+void test("rejects an invalid per-call timeout before calling the transport", async () => {
+  const transport = new FakeTransport();
+  const client = createClient(new ApiSession(), transport);
+
+  await assert.rejects(
+    client.call(CACHED, undefined, { timeoutMs: Number.POSITIVE_INFINITY }),
+    (error: unknown) =>
+      error instanceof HolodoriApiError && error.kind === "configuration",
+  );
+  assert.equal(transport.requests.length, 0);
+});
+
 void test("creates monotonic request IDs from local DateTime ticks", async () => {
   const now = 1_700_000_000_000;
   vi.spyOn(Date, "now").mockReturnValue(now);

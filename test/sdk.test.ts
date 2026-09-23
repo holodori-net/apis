@@ -152,7 +152,13 @@ void test("generates decimal .NET tick request IDs by default", async () => {
     },
     transport,
   );
-  await api.notice.top();
+  const controller = new AbortController();
+  await api.notice.top({ signal: controller.signal, timeoutMs: 1_500 });
+
+  assert.deepEqual(
+    transport.requests.map(({ signal, timeoutMs }) => ({ signal, timeoutMs })),
+    [{ signal: controller.signal, timeoutMs: 1_500 }],
+  );
   const requestId = transport.requests[0]?.headers?.["x-app-request-id"];
   assert.match(requestId ?? "", /^\d{18}$/);
 });
@@ -202,7 +208,8 @@ void test("lazily bootstraps authentication for a Notice call", async () => {
     },
     transport,
   );
-  await api.notice.top();
+  const controller = new AbortController();
+  await api.notice.top({ signal: controller.signal, timeoutMs: 1_500 });
 
   assert.deepEqual(
     transport.requests.map((request) => new URL(request.url).pathname),
@@ -211,6 +218,15 @@ void test("lazily bootstraps authentication for a Notice call", async () => {
       "/rpc.api.Auth/Login",
       "/rpc.api.Master/Get",
       "/rpc.api.Notice/Top",
+    ],
+  );
+  assert.deepEqual(
+    transport.requests.map(({ signal, timeoutMs }) => ({ signal, timeoutMs })),
+    [
+      { signal: undefined, timeoutMs: 30_000 },
+      { signal: undefined, timeoutMs: 30_000 },
+      { signal: undefined, timeoutMs: 30_000 },
+      { signal: controller.signal, timeoutMs: 1_500 },
     ],
   );
 });

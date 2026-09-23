@@ -106,15 +106,29 @@ void test("performs password migration and leaves login explicit", async () => {
     },
     transport,
   );
+  const controller = new AbortController();
   const result = await api.accountMigration.migrateWithPassword(
     "migration-code",
     "migration-password",
+    undefined,
+    { signal: controller.signal, timeoutMs: 2_000 },
   );
 
   assert.equal(result.accountMigrationId, "new-migration-code");
   assert.equal(api.getCredential(), "migrated-credential");
   assert.equal(api.getGameAuthToken(), undefined);
   assert.equal(api.getMasterVersion(), undefined);
+  assert.deepEqual(
+    transport.requests
+      .filter((request) =>
+        new URL(request.url).pathname.startsWith("/rpc.api.AccountMigration/"),
+      )
+      .map(({ signal, timeoutMs }) => ({ signal, timeoutMs })),
+    [
+      { signal: controller.signal, timeoutMs: 2_000 },
+      { signal: controller.signal, timeoutMs: 2_000 },
+    ],
+  );
 
   await api.authLogin();
   await api.masterGet();
