@@ -35,6 +35,7 @@ import {
   MUSIC_CREATIVE_CHART_LIST_NEWER,
   MUSIC_CREATIVE_CHART_LIST_POPULAR,
   MUSIC_CREATIVE_CHART_LIST_POPULAR_CREATOR,
+  MusicCreativeChartApi,
 } from "../src/services/music-creative-chart.js";
 
 void test("encodes MusicCreativeChart query requests using contract fields", () => {
@@ -202,6 +203,65 @@ void test("declares public MusicCreativeChart reads with contract policies", () 
     MUSIC_CREATIVE_CHART_GET_BY_ID.path,
     "/rpc.api.MusicCreativeChart/GetByMusicCreativeChartId",
   );
+});
+
+void test("authenticates and forwards every MusicCreativeChart read", async () => {
+  const calls: { path: string; request: unknown; options: unknown }[] = [];
+  let authCalls = 0;
+  const client = {
+    call: (method: { path: string }, request: unknown, options: unknown) => {
+      calls.push({ path: method.path, request, options });
+      return Promise.resolve({});
+    },
+  } as never;
+  const api = new MusicCreativeChartApi(client, () => {
+    authCalls += 1;
+    return Promise.resolve();
+  });
+  const options = { timeoutMs: 2_000 };
+
+  await api.listNewer({}, options);
+  await api.listPopular({}, options);
+  await api.listPopularCreator({}, options);
+  await api.listByCreator({ publicUserId: "public-1" }, options);
+  await api.getByMusicCreativeChartId(
+    { musicCreativeChartId: "chart-1" },
+    options,
+  );
+  await api.getQuoteTargetChart({ musicCreativeChartId: "chart-1" }, options);
+  await api.getCreatorInfoByMusicCreativeChartId(
+    { musicCreativeChartId: "chart-1" },
+    options,
+  );
+  await api.getEarlyClearRankingInfo(
+    { musicCreativeChartId: "chart-1", liveResultType: 1 },
+    options,
+  );
+  await api.getEarlyClearLiveDeck(
+    {
+      publicUserId: "public-1",
+      musicCreativeChartId: "chart-1",
+      liveResultType: 1,
+    },
+    options,
+  );
+
+  assert.equal(authCalls, 9);
+  assert.deepEqual(
+    calls.map(({ path }) => path),
+    [
+      "/rpc.api.MusicCreativeChart/ListNewer",
+      "/rpc.api.MusicCreativeChart/ListPopular",
+      "/rpc.api.MusicCreativeChart/ListPopularCreator",
+      "/rpc.api.MusicCreativeChart/ListByCreator",
+      "/rpc.api.MusicCreativeChart/GetByMusicCreativeChartId",
+      "/rpc.api.MusicCreativeChart/GetQuoteTargetChart",
+      "/rpc.api.MusicCreativeChart/GetCreatorInfoByMusicCreativeChartId",
+      "/rpc.api.MusicCreativeChart/GetEarlyClearRankingInfo",
+      "/rpc.api.MusicCreativeChart/GetEarlyClearLiveDeck",
+    ],
+  );
+  assert.ok(calls.every(({ options: callOptions }) => callOptions === options));
 });
 
 void test("decodes MusicCreativeChart discovery, creator, and ranking responses", () => {
