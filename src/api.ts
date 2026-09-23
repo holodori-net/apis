@@ -23,10 +23,17 @@ import {
 import { AccountMigrationApi } from "./services/account-migration.js";
 import { AuthApi } from "./services/auth.js";
 import { CardApi } from "./services/card.js";
+import { EventApi } from "./services/event.js";
+import { ExchangeApi } from "./services/exchange.js";
+import { GachaApi } from "./services/gacha.js";
 import { HomeApi } from "./services/home.js";
 import { LiveApi } from "./services/live.js";
 import { MasterApi } from "./services/master.js";
+import { MembershipApi } from "./services/membership.js";
 import { NoticeApi } from "./services/notice.js";
+import { NotificationApi } from "./services/notification.js";
+import { ShopApi } from "./services/shop.js";
+import { SystemApi } from "./services/system.js";
 import { UserApi } from "./services/user.js";
 import { type ApiTransport, Http2Transport } from "./transport.js";
 
@@ -60,10 +67,17 @@ export interface AuthenticatedSession {
 export class HolodoriApi {
   readonly auth: AuthApi;
   readonly card: CardApi;
+  readonly event: EventApi;
+  readonly exchange: ExchangeApi;
+  readonly gacha: GachaApi;
   readonly home: HomeApi;
   readonly live: LiveApi;
   readonly master: MasterApi;
+  readonly membership: MembershipApi;
   readonly notice: NoticeApi;
+  readonly notification: NotificationApi;
+  readonly shop: ShopApi;
+  readonly system: SystemApi;
   readonly user: UserApi;
   readonly accountMigration: AccountMigrationApi;
 
@@ -107,10 +121,19 @@ export class HolodoriApi {
     );
     this.auth = new AuthApi(this.client, this.session);
     this.card = new CardApi(this.client, () => this.authenticate());
+    this.event = new EventApi(this.client, () => this.authenticate());
+    this.exchange = new ExchangeApi(this.client, () => this.authenticate());
+    this.gacha = new GachaApi(this.client, () => this.authenticate());
     this.home = new HomeApi(this.client, () => this.authenticate());
     this.live = new LiveApi(this.client, () => this.authenticate());
     this.master = new MasterApi(this.client, this.session);
+    this.membership = new MembershipApi(this.client, () => this.authenticate());
     this.notice = new NoticeApi(this.client, () => this.authenticate());
+    this.notification = new NotificationApi(this.client, () =>
+      this.authenticate(),
+    );
+    this.shop = new ShopApi(this.client, () => this.authenticate());
+    this.system = new SystemApi(this.client, this.session);
     this.user = new UserApi(this.client, () => this.authenticate());
     const regionBaseUrlResolver = options.regionBaseUrlResolver;
     this.accountMigration = new AccountMigrationApi(
@@ -277,4 +300,17 @@ function validateOptions(options: HolodoriApiOptions): void {
   }
 }
 
-export { AccountMigrationApi, AuthApi, HolodoriApiError, MasterApi, NoticeApi };
+export {
+  AccountMigrationApi,
+  AuthApi,
+  EventApi,
+  ExchangeApi,
+  GachaApi,
+  HolodoriApiError,
+  MasterApi,
+  MembershipApi,
+  NoticeApi,
+  NotificationApi,
+  ShopApi,
+  SystemApi,
+};
