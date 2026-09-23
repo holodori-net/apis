@@ -11,10 +11,15 @@ import {
   Http2Transport,
 } from "../transport.js";
 import { type ApiMethod, type RequestSigner } from "./method.js";
+import { type RequestOptions } from "./request-options.js";
 import { type ApiSession } from "./session.js";
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 const DOTNET_EPOCH_TICKS = 621355968000000000n;
+
+interface ApiClientCallOptions extends RequestOptions {
+  readonly baseUrl?: string;
+}
 
 export interface ApiClientOptions {
   readonly appVersion: string;
@@ -116,8 +121,17 @@ export class ApiClient {
   async call<Request, Response>(
     method: ApiMethod<Request, Response>,
     request: Request,
-    baseUrl = this.baseUrl,
+    callOptions: ApiClientCallOptions = {},
   ): Promise<Response> {
+    if (
+      callOptions.timeoutMs !== undefined &&
+      (!Number.isFinite(callOptions.timeoutMs) || callOptions.timeoutMs <= 0)
+    ) {
+      throw new HolodoriApiError(
+        "request timeout must be a positive finite number",
+        { kind: "configuration", rpcPath: method.path },
+      );
+    }
     const headers: Record<string, string> = {
       ...this.options.additionalHeaders,
       "content-type": "application/grpc+proto-enc",
@@ -172,10 +186,13 @@ export class ApiClient {
     try {
       result = await this.transport.request({
         method: "POST",
-        url: `${baseUrl}${method.path}`,
+        url: `${callOptions.baseUrl ?? this.baseUrl}${method.path}`,
         headers,
         body: encryptedBody,
-        timeoutMs: this.options.timeoutMs,
+        timeoutMs: callOptions.timeoutMs ?? this.options.timeoutMs,
+        ...(callOptions.signal === undefined
+          ? {}
+          : { signal: callOptions.signal }),
       });
     } catch (error) {
       if (error instanceof HolodoriApiError) throw error;

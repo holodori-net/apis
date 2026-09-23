@@ -14,6 +14,7 @@ export {
   type RequestSignatureInput,
   type RequestSigner,
 } from "./core/method.js";
+export type { RequestOptions } from "./core/request-options.js";
 export { type SessionSnapshot } from "./core/session.js";
 export * from "./low-level.js";
 export { Region, type RegionBaseUrlResolver } from "./region.js";

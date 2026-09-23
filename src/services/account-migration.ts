@@ -10,6 +10,7 @@ import {
 } from "../codecs/account-migration.js";
 import { type ApiClient, HolodoriApiError } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 import { type ApiSession } from "../core/session.js";
 import { normalizeBaseUrl, type RegionBaseUrlResolver } from "../region.js";
 
@@ -56,44 +57,63 @@ export class AccountMigrationApi {
   async preparePassword(
     accountMigrationId: string,
     password: string,
+    options?: RequestOptions,
   ): Promise<AccountMigrationLinkResult> {
-    return (await this.preparePasswordResponse(accountMigrationId, password))
-      .linkResult;
+    return (
+      await this.preparePasswordResponse(accountMigrationId, password, options)
+    ).linkResult;
   }
 
   /** Returns the complete password-prepare response including its link result. @rpc /rpc.api.AccountMigration/PrepareMigrationPassword */
   async preparePasswordResponse(
     accountMigrationId: string,
     password: string,
+    options?: RequestOptions,
   ): Promise<AccountMigrationPreparePasswordResponse> {
-    return this.client.call(PREPARE_PASSWORD, { accountMigrationId, password });
+    return this.client.call(
+      PREPARE_PASSWORD,
+      { accountMigrationId, password },
+      options,
+    );
   }
 
   /** Exchanges a prepared one-time token for a persistent credential. @remarks A successful call replaces the credential held by this SDK session. @rpc /rpc.api.AccountMigration/Migrate */
   migrate(
     request: AccountMigrationMigrateRequest,
+    options?: RequestOptions,
   ): Promise<AccountMigrationMigrateResponse>;
   migrate(
     targetPublicUserId: string,
     oneTimeToken: string,
     previousPublicUserId?: string,
+    options?: RequestOptions,
   ): Promise<AccountMigrationMigrateResponse>;
   migrate(
     requestOrTargetPublicUserId: AccountMigrationMigrateRequest | string,
-    oneTimeToken?: string,
+    oneTimeTokenOrOptions?: RequestOptions | string,
     previousPublicUserId?: string,
+    options?: RequestOptions,
   ): Promise<AccountMigrationMigrateResponse> {
     const request =
       typeof requestOrTargetPublicUserId === "string"
         ? {
             targetPublicUserId: requestOrTargetPublicUserId,
-            oneTimeToken: oneTimeToken ?? "",
+            oneTimeToken:
+              typeof oneTimeTokenOrOptions === "string"
+                ? oneTimeTokenOrOptions
+                : "",
             ...(previousPublicUserId === undefined
               ? {}
               : { previousPublicUserId }),
           }
         : requestOrTargetPublicUserId;
-    return this.migrateRequest(request);
+    const requestOptions =
+      typeof requestOrTargetPublicUserId === "string"
+        ? options
+        : typeof oneTimeTokenOrOptions === "object"
+          ? oneTimeTokenOrOptions
+          : undefined;
+    return this.migrateRequest(request, requestOptions);
   }
 
   /** Runs password preparation and credential migration, switching official regions when required. @remarks A successful call replaces the credential held by this SDK session. */
@@ -101,8 +121,13 @@ export class AccountMigrationApi {
     accountMigrationId: string,
     password: string,
     previousPublicUserId?: string,
+    options?: RequestOptions,
   ): Promise<AccountMigrationMigrateResponse> {
-    const prepared = await this.preparePassword(accountMigrationId, password);
+    const prepared = await this.preparePassword(
+      accountMigrationId,
+      password,
+      options,
+    );
     const linkedUserInfo = prepared.linkedUserInfo;
     if (!linkedUserInfo) {
       throw new HolodoriApiError(
@@ -116,16 +141,20 @@ export class AccountMigrationApi {
       oneTimeToken: linkedUserInfo.oneTimeToken,
     };
     const targetBaseUrl = this.resolveRegionBaseUrl(linkedUserInfo.region);
-    const result = await this.migrateRequest(request, targetBaseUrl);
+    const result = await this.migrateRequest(request, options, targetBaseUrl);
     if (targetBaseUrl) this.client.setBaseUrl(targetBaseUrl);
     return result;
   }
 
   private async migrateRequest(
     request: AccountMigrationMigrateRequest,
+    options?: RequestOptions,
     baseUrl?: string,
   ): Promise<AccountMigrationMigrateResponse> {
-    const result = await this.client.call(MIGRATE, request, baseUrl);
+    const result = await this.client.call(MIGRATE, request, {
+      ...options,
+      ...(baseUrl === undefined ? {} : { baseUrl }),
+    });
     this.session.replaceCredentialAfterMigration(result.credential);
     return result;
   }

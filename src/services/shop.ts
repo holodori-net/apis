@@ -5,6 +5,7 @@ import {
 } from "../codecs/shop.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const SHOP_LIST: ApiMethod<void, ShopResponse> = {
   path: "/rpc.api.Shop/List",
@@ -32,9 +33,9 @@ export class ShopApi {
    * @rpc /rpc.api.Shop/List
    * @returns The shops visible to the authenticated account.
    */
-  async list(): Promise<ShopResponse> {
+  async list(options?: RequestOptions): Promise<ShopResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(SHOP_LIST, undefined);
+    return this.client.call(SHOP_LIST, undefined, options);
   }
 }
 

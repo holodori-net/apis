@@ -13,6 +13,7 @@ import {
   HolodoriApiError,
 } from "./core/client.js";
 import { type RequestSigner } from "./core/method.js";
+import { type RequestOptions } from "./core/request-options.js";
 import { ApiSession, type SessionSnapshot } from "./core/session.js";
 import {
   isOfficialBaseUrl,
@@ -207,68 +208,80 @@ export class HolodoriApi {
   }
 
   /** @deprecated Use `api.auth.create()`. */
-  authCreate(): Promise<string> {
-    return this.auth.create();
+  authCreate(requestOptions?: RequestOptions): Promise<string> {
+    return this.auth.create(requestOptions);
   }
 
   /** @deprecated Use `api.auth.login()`. */
-  authLogin(credential?: string): Promise<string> {
-    return this.auth.login(credential);
+  authLogin(
+    credential?: string,
+    requestOptions?: RequestOptions,
+  ): Promise<string> {
+    return this.auth.login(credential, requestOptions);
   }
 
   /** @deprecated Use `api.master.get()`. */
-  masterGet(): Promise<string> {
-    return this.master.get();
+  masterGet(requestOptions?: RequestOptions): Promise<string> {
+    return this.master.get(requestOptions);
   }
 
   /** @deprecated Use `api.accountMigration.preparePassword()`. */
   callAccountMigrationPreparePassword(
     accountMigrationId: string,
     password: string,
+    requestOptions?: RequestOptions,
   ): Promise<AccountMigrationPreparePasswordResponse> {
     return this.accountMigration.preparePasswordResponse(
       accountMigrationId,
       password,
+      requestOptions,
     );
   }
 
   /** @deprecated Use `api.accountMigration.migrate()`. */
   callAccountMigrationMigrate(
     request: AccountMigrationMigrateRequest,
+    requestOptions?: RequestOptions,
   ): Promise<AccountMigrationMigrateResponse> {
-    return this.accountMigration.migrate(request);
+    return this.accountMigration.migrate(request, requestOptions);
   }
 
   /** @deprecated Use `api.notice.top()`. */
-  callNoticeTop(): Promise<NoticeTopResponse> {
-    return this.notice.top();
+  callNoticeTop(requestOptions?: RequestOptions): Promise<NoticeTopResponse> {
+    return this.notice.top(requestOptions);
   }
 
   /** @deprecated Use `api.notice.listInCategory()`. */
   callNoticeListInCategory(
     categoryId: string,
     offset: number,
+    requestOptions?: RequestOptions,
   ): Promise<NoticeListInCategoryResponse> {
-    return this.notice.listInCategory(categoryId, offset);
+    return this.notice.listInCategory(categoryId, offset, requestOptions);
   }
 
   /** @deprecated Use `api.notice.get()`. */
-  callNoticeGet(noticeId: string): Promise<NoticeGetResponse> {
-    return this.notice.get(noticeId);
+  callNoticeGet(
+    noticeId: string,
+    requestOptions?: RequestOptions,
+  ): Promise<NoticeGetResponse> {
+    return this.notice.get(noticeId, requestOptions);
   }
 
   /** @deprecated Use `api.notice.updateCategoryReadTime()`. */
   callNoticeUpdateCategoryReadTime(
     categoryIds: readonly string[],
+    requestOptions?: RequestOptions,
   ): Promise<NoticeUpdateResponse> {
-    return this.notice.updateCategoryReadTime(categoryIds);
+    return this.notice.updateCategoryReadTime(categoryIds, requestOptions);
   }
 
   /** @deprecated Use `api.notice.updateDetailReadTime()`. */
   callNoticeUpdateDetailReadTime(
     noticeIds: readonly string[],
+    requestOptions?: RequestOptions,
   ): Promise<NoticeUpdateResponse> {
-    return this.notice.updateDetailReadTime(noticeIds);
+    return this.notice.updateDetailReadTime(noticeIds, requestOptions);
   }
 
   private async authenticateInternal(): Promise<AuthenticatedSession> {

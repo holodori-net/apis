@@ -5,6 +5,7 @@ import {
 } from "../codecs/system.js";
 import { type ApiClient, HolodoriApiError } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 import { type ApiSession } from "../core/session.js";
 
 const SYSTEM_GET_SYSTEM_INFO: ApiMethod<
@@ -36,13 +37,14 @@ export class SystemApi {
    */
   getSystemInfo(
     credential = this.session.credentialValue,
+    options?: RequestOptions,
   ): Promise<SystemGetSystemInfoResponse> {
     if (!credential)
       throw new HolodoriApiError(
         "credential is required for System/GetSystemInfo",
         SYSTEM_GET_SYSTEM_INFO.path,
       );
-    return this.client.call(SYSTEM_GET_SYSTEM_INFO, { credential });
+    return this.client.call(SYSTEM_GET_SYSTEM_INFO, { credential }, options);
   }
 }
 

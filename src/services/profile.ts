@@ -6,6 +6,7 @@ import {
 } from "../codecs/profile.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const PROFILE_GET_USER_PROFILE_DETAIL: ApiMethod<
   ProfileGetUserProfileDetailRequest,
@@ -34,9 +35,10 @@ export class ProfileApi {
    */
   async getUserProfileDetail(
     request: ProfileGetUserProfileDetailRequest,
+    options?: RequestOptions,
   ): Promise<ProfileGetUserProfileDetailResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(PROFILE_GET_USER_PROFILE_DETAIL, request);
+    return this.client.call(PROFILE_GET_USER_PROFILE_DETAIL, request, options);
   }
 }
 

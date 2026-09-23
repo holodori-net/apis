@@ -14,6 +14,7 @@ import {
 } from "../codecs/live.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const LIVE_GET_DECK_CANDIDATE_CARD_PARAMETERS: ApiMethod<
   LiveGetDeckCandidateCardParametersRequest,
@@ -61,23 +62,32 @@ export class LiveApi {
   /** Evaluates owned cards for a character, costume, and optional song. @rpc /rpc.api.Live/GetDeckCandidateCardParameters */
   async getDeckCandidateCardParameters(
     request: LiveGetDeckCandidateCardParametersRequest,
+    options?: RequestOptions,
   ): Promise<LiveGetDeckCandidateCardParametersResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(LIVE_GET_DECK_CANDIDATE_CARD_PARAMETERS, request);
+    return this.client.call(
+      LIVE_GET_DECK_CANDIDATE_CARD_PARAMETERS,
+      request,
+      options,
+    );
   }
 
   /** Calculates deck power for an unsaved candidate deck. @rpc /rpc.api.Live/GetDraftDeckInfo */
   async getDraftDeckInfo(
     request: LiveGetDraftDeckInfoRequest,
+    options?: RequestOptions,
   ): Promise<LiveGetDraftDeckInfoResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(LIVE_GET_DRAFT_DECK_INFO, request);
+    return this.client.call(LIVE_GET_DRAFT_DECK_INFO, request, options);
   }
 
   /** Returns a saved deck with its evaluation and in-game effects. @rpc /rpc.api.Live/GetDeck */
-  async getDeck(request: LiveGetDeckRequest): Promise<LiveGetDeckResponse> {
+  async getDeck(
+    request: LiveGetDeckRequest,
+    options?: RequestOptions,
+  ): Promise<LiveGetDeckResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(LIVE_GET_DECK, request);
+    return this.client.call(LIVE_GET_DECK, request, options);
   }
 }
 

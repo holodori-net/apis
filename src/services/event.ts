@@ -8,6 +8,7 @@ import {
 } from "../codecs/event.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const EVENT_LIST_EVENT_INFO: ApiMethod<void, EventListEventInfoResponse> = {
   path: "/rpc.api.Event/ListEventInfo",
@@ -46,9 +47,11 @@ export class EventApi {
    *
    * @rpc /rpc.api.Event/ListEventInfo
    */
-  async listEventInfo(): Promise<EventListEventInfoResponse> {
+  async listEventInfo(
+    options?: RequestOptions,
+  ): Promise<EventListEventInfoResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(EVENT_LIST_EVENT_INFO, undefined);
+    return this.client.call(EVENT_LIST_EVENT_INFO, undefined, options);
   }
 
   /**
@@ -58,9 +61,15 @@ export class EventApi {
    *
    * @rpc /rpc.api.Event/ListEventInfoForPortal
    */
-  async listEventInfoForPortal(): Promise<EventListEventInfoForPortalResponse> {
+  async listEventInfoForPortal(
+    options?: RequestOptions,
+  ): Promise<EventListEventInfoForPortalResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(EVENT_LIST_EVENT_INFO_FOR_PORTAL, undefined);
+    return this.client.call(
+      EVENT_LIST_EVENT_INFO_FOR_PORTAL,
+      undefined,
+      options,
+    );
   }
 }
 

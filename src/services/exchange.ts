@@ -5,6 +5,7 @@ import {
 } from "../codecs/exchange.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const EXCHANGE_LIST: ApiMethod<
   { readonly boothGroupId: string },
@@ -35,9 +36,12 @@ export class ExchangeApi {
    * @param boothGroupId Master-data booth group ID to query.
    * @returns The exchange group as visible to the authenticated account.
    */
-  async list(boothGroupId: string): Promise<ExchangeResponse> {
+  async list(
+    boothGroupId: string,
+    options?: RequestOptions,
+  ): Promise<ExchangeResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(EXCHANGE_LIST, { boothGroupId });
+    return this.client.call(EXCHANGE_LIST, { boothGroupId }, options);
   }
 }
 

@@ -22,6 +22,7 @@ import {
 } from "../codecs/music.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const MUSIC_GET_HIGHEST_SCORE_LIVE_DECK: ApiMethod<
   MusicGetHighestScoreLiveDeckRequest,
@@ -100,9 +101,14 @@ export class MusicApi {
   /** Returns a public player's deck used for their highest score on a song. @rpc /rpc.api.Music/GetHighestScoreLiveDeck */
   async getHighestScoreLiveDeck(
     request: MusicGetHighestScoreLiveDeckRequest,
+    options?: RequestOptions,
   ): Promise<MusicGetHighestScoreLiveDeckResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(MUSIC_GET_HIGHEST_SCORE_LIVE_DECK, request);
+    return this.client.call(
+      MUSIC_GET_HIGHEST_SCORE_LIVE_DECK,
+      request,
+      options,
+    );
   }
 
   /**
@@ -112,19 +118,26 @@ export class MusicApi {
    */
   async getHighestScoreRankingInfo(
     request: MusicGetHighestScoreRankingInfoRequest,
+    options?: RequestOptions,
   ): Promise<MusicGetHighestScoreRankingInfoResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(MUSIC_GET_HIGHEST_SCORE_RANKING_INFO, request);
+    return this.client.call(
+      MUSIC_GET_HIGHEST_SCORE_RANKING_INFO,
+      request,
+      options,
+    );
   }
 
   /** Returns ranks for the requested characters in the highest-score rating ranking. @rpc /rpc.api.Music/ListHighestScoreRatingRankingRank */
   async listHighestScoreRatingRankingRank(
     request: MusicListHighestScoreRatingRankingRankRequest,
+    options?: RequestOptions,
   ): Promise<MusicListHighestScoreRatingRankingRankResponse> {
     await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_RANK,
       request,
+      options,
     );
   }
 
@@ -134,22 +147,26 @@ export class MusicApi {
    */
   async getHighestScoreRatingRankingInfo(
     request: MusicGetHighestScoreRatingRankingInfoRequest,
+    options?: RequestOptions,
   ): Promise<MusicGetHighestScoreRatingRankingInfoResponse> {
     await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_GET_HIGHEST_SCORE_RATING_RANKING_INFO,
       request,
+      options,
     );
   }
 
   /** Returns the score thresholds and last update time for a character's rating ranking. @rpc /rpc.api.Music/ListHighestScoreRatingRankingRewardThresholdRankingRankInfo */
   async listHighestScoreRatingRankingRewardThresholdRankingRankInfo(
     request: MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequest,
+    options?: RequestOptions,
   ): Promise<MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse> {
     await this.ensureAuthenticated();
     return this.client.call(
       MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_REWARD_THRESHOLD_RANKING_RANK_INFO,
       request,
+      options,
     );
   }
 }

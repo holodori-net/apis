@@ -5,6 +5,7 @@ import {
 } from "../codecs/asset.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const ASSET_LIST_EXPIRED_ASSET_ID: ApiMethod<
   void,
@@ -30,9 +31,11 @@ export class AssetApi {
    *
    * @rpc /rpc.api.Asset/ListExpiredAssetId
    */
-  async listExpiredAssetId(): Promise<AssetListExpiredAssetIdResponse> {
+  async listExpiredAssetId(
+    options?: RequestOptions,
+  ): Promise<AssetListExpiredAssetIdResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(ASSET_LIST_EXPIRED_ASSET_ID, undefined);
+    return this.client.call(ASSET_LIST_EXPIRED_ASSET_ID, undefined, options);
   }
 }
 

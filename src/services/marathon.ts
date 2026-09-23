@@ -14,6 +14,7 @@ import {
 } from "../codecs/marathon.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const MARATHON_TOP: ApiMethod<MarathonTopRequest, MarathonTopResponse> = {
   path: "/rpc.api.Marathon/Top",
@@ -116,9 +117,12 @@ export class MarathonApi {
    * @rpc /rpc.api.Marathon/Top
    * @remarks The ranking result includes ranks and rewards for the authenticated account.
    */
-  async top(request: MarathonTopRequest): Promise<MarathonTopResponse> {
+  async top(
+    request: MarathonTopRequest,
+    options?: RequestOptions,
+  ): Promise<MarathonTopResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(MARATHON_TOP, request);
+    return this.client.call(MARATHON_TOP, request, options);
   }
 
   /**
@@ -129,11 +133,13 @@ export class MarathonApi {
    */
   async listMusicHighestScoreRankingGrade(
     request: MarathonListMusicHighestScoreRankingRequest,
+    options?: RequestOptions,
   ): Promise<MarathonMusicRankingResponse> {
     await this.ensureAuthenticated();
     return this.client.call(
       MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_GRADE,
       request,
+      options,
     );
   }
 
@@ -145,11 +151,13 @@ export class MarathonApi {
    */
   async listMusicHighestScoreRankingTop(
     request: MarathonListMusicHighestScoreRankingRequest,
+    options?: RequestOptions,
   ): Promise<MarathonMusicRankingResponse> {
     await this.ensureAuthenticated();
     return this.client.call(
       MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_TOP,
       request,
+      options,
     );
   }
 
@@ -161,9 +169,14 @@ export class MarathonApi {
    */
   async listMarathonScoreRankingGrade(
     request: MarathonListRankingRequest,
+    options?: RequestOptions,
   ): Promise<MarathonScoreRankingResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(MARATHON_LIST_SCORE_RANKING_GRADE, request);
+    return this.client.call(
+      MARATHON_LIST_SCORE_RANKING_GRADE,
+      request,
+      options,
+    );
   }
 
   /**
@@ -174,9 +187,10 @@ export class MarathonApi {
    */
   async listMarathonScoreRankingTop(
     request: MarathonListRankingRequest,
+    options?: RequestOptions,
   ): Promise<MarathonScoreRankingResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(MARATHON_LIST_SCORE_RANKING_TOP, request);
+    return this.client.call(MARATHON_LIST_SCORE_RANKING_TOP, request, options);
   }
 
   /**
@@ -187,11 +201,13 @@ export class MarathonApi {
    */
   async listTotalMusicHighestScoreRankingGrade(
     request: MarathonListRankingRequest,
+    options?: RequestOptions,
   ): Promise<MarathonScoreRankingResponse> {
     await this.ensureAuthenticated();
     return this.client.call(
       MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_GRADE,
       request,
+      options,
     );
   }
 
@@ -203,11 +219,13 @@ export class MarathonApi {
    */
   async listTotalMusicHighestScoreRankingTop(
     request: MarathonListRankingRequest,
+    options?: RequestOptions,
   ): Promise<MarathonScoreRankingResponse> {
     await this.ensureAuthenticated();
     return this.client.call(
       MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_TOP,
       request,
+      options,
     );
   }
 }

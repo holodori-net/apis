@@ -4,6 +4,7 @@ import {
 } from "../codecs/master.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 import { type ApiSession } from "../core/session.js";
 
 const MASTER_GET: ApiMethod<void, string> = {
@@ -24,8 +25,12 @@ export class MasterApi {
   ) {}
 
   /** Fetches and stores the current master-data version. @rpc /rpc.api.Master/Get */
-  async get(): Promise<string> {
-    const masterVersion = await this.client.call(MASTER_GET, undefined);
+  async get(options?: RequestOptions): Promise<string> {
+    const masterVersion = await this.client.call(
+      MASTER_GET,
+      undefined,
+      options,
+    );
     this.session.setMasterVersion(masterVersion);
     return masterVersion;
   }

@@ -5,6 +5,7 @@ import {
 } from "../codecs/health.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const HEALTH_CHECK: ApiMethod<string, HealthCheckResponse> = {
   path: "/rpc.api.Health/Check",
@@ -24,8 +25,8 @@ export class HealthApi {
    *
    * @rpc /rpc.api.Health/Check
    */
-  check(service = ""): Promise<HealthCheckResponse> {
-    return this.client.call(HEALTH_CHECK, service);
+  check(service = "", options?: RequestOptions): Promise<HealthCheckResponse> {
+    return this.client.call(HEALTH_CHECK, service, options);
   }
 }
 

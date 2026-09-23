@@ -5,6 +5,7 @@ import {
 } from "../codecs/home.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const HOME_LOGIN: ApiMethod<void, HomeLoginResponse> = {
   path: "/rpc.api.Home/Login",
@@ -24,9 +25,9 @@ export class HomeApi {
   ) {}
 
   /** Enters the home session and applies server-side rollover processing. @rpc /rpc.api.Home/Login */
-  async login(): Promise<HomeLoginResponse> {
+  async login(options?: RequestOptions): Promise<HomeLoginResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(HOME_LOGIN, undefined);
+    return this.client.call(HOME_LOGIN, undefined, options);
   }
 }
 

@@ -5,6 +5,7 @@ import {
 } from "../codecs/notification.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const NOTIFICATION_LIST: ApiMethod<void, NotificationListResponse> = {
   path: "/rpc.api.Notification/List",
@@ -29,9 +30,9 @@ export class NotificationApi {
    *
    * @rpc /rpc.api.Notification/List
    */
-  async list(): Promise<NotificationListResponse> {
+  async list(options?: RequestOptions): Promise<NotificationListResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(NOTIFICATION_LIST, undefined);
+    return this.client.call(NOTIFICATION_LIST, undefined, options);
   }
 }
 

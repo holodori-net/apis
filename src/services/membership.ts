@@ -5,6 +5,7 @@ import {
 } from "../codecs/shop.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const MEMBERSHIP_GET_SHOP: ApiMethod<void, ShopInfo> = {
   path: "/rpc.api.Membership/GetShop",
@@ -31,9 +32,9 @@ export class MembershipApi {
    * @rpc /rpc.api.Membership/GetShop
    * @returns The Membership shop visible to the authenticated account.
    */
-  async getShop(): Promise<ShopInfo> {
+  async getShop(options?: RequestOptions): Promise<ShopInfo> {
     await this.ensureAuthenticated();
-    return this.client.call(MEMBERSHIP_GET_SHOP, undefined);
+    return this.client.call(MEMBERSHIP_GET_SHOP, undefined, options);
   }
 }
 

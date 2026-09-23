@@ -6,6 +6,7 @@ import {
 } from "../codecs/auth.js";
 import { type ApiClient, HolodoriApiError } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 import { type ApiSession } from "../core/session.js";
 
 const AUTH_CREATE: ApiMethod<void, string> = {
@@ -36,20 +37,23 @@ export class AuthApi {
   ) {}
 
   /** Creates a new anonymous account and stores its persistent credential. @rpc /rpc.api.Auth/Create */
-  async create(): Promise<string> {
-    const credential = await this.client.call(AUTH_CREATE, undefined);
+  async create(options?: RequestOptions): Promise<string> {
+    const credential = await this.client.call(AUTH_CREATE, undefined, options);
     this.session.setCredential(credential);
     return credential;
   }
 
   /** Logs in with a persistent credential and stores the returned game auth token. @rpc /rpc.api.Auth/Login */
-  async login(credential = this.session.credentialValue): Promise<string> {
+  async login(
+    credential = this.session.credentialValue,
+    options?: RequestOptions,
+  ): Promise<string> {
     if (!credential)
       throw new HolodoriApiError(
         "credential is required for Auth/Login",
         AUTH_LOGIN.path,
       );
-    const token = await this.client.call(AUTH_LOGIN, credential);
+    const token = await this.client.call(AUTH_LOGIN, credential, options);
     this.session.setCredential(credential);
     this.session.setGameAuthToken(token);
     return token;

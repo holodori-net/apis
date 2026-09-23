@@ -8,6 +8,7 @@ import {
 } from "../codecs/gacha.js";
 import { type ApiClient } from "../core/client.js";
 import { type ApiMethod } from "../core/method.js";
+import { type RequestOptions } from "../core/request-options.js";
 
 const GACHA_LIST: ApiMethod<void, GachaListResponse> = {
   path: "/rpc.api.Gacha/List",
@@ -59,9 +60,9 @@ export class GachaApi {
    *
    * @rpc /rpc.api.Gacha/List
    */
-  async list(): Promise<GachaListResponse> {
+  async list(options?: RequestOptions): Promise<GachaListResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(GACHA_LIST, undefined);
+    return this.client.call(GACHA_LIST, undefined, options);
   }
 
   /**
@@ -72,9 +73,14 @@ export class GachaApi {
    */
   async listNormalProbability(
     gachaId: string,
+    options?: RequestOptions,
   ): Promise<GachaListProbabilityResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(GACHA_LIST_NORMAL_PROBABILITY, { gachaId });
+    return this.client.call(
+      GACHA_LIST_NORMAL_PROBABILITY,
+      { gachaId },
+      options,
+    );
   }
 
   /**
@@ -87,9 +93,14 @@ export class GachaApi {
    */
   async listCardSelectProbability(
     gachaId: string,
+    options?: RequestOptions,
   ): Promise<GachaListProbabilityResponse> {
     await this.ensureAuthenticated();
-    return this.client.call(GACHA_LIST_CARD_SELECT_PROBABILITY, { gachaId });
+    return this.client.call(
+      GACHA_LIST_CARD_SELECT_PROBABILITY,
+      { gachaId },
+      options,
+    );
   }
 }
 
