@@ -1,5 +1,15 @@
-import { assertGrpcSuccess, decryptProto, encryptProto } from "../proto-enc.js";
-import { type ApiTransport, Http2Transport } from "../transport.js";
+import {
+  assertGrpcSuccess,
+  decryptProto,
+  encryptProto,
+  GrpcStatusError,
+} from "../proto-enc.js";
+import {
+  type ApiTransport,
+  ApiTransportError,
+  type ApiTransportErrorPhase,
+  Http2Transport,
+} from "../transport.js";
 import { type ApiMethod, type RequestSigner } from "./method.js";
 import { type ApiSession } from "./session.js";
 
@@ -20,15 +30,65 @@ export interface ApiClientOptions {
   readonly timeoutMs: number;
 }
 
+export type HolodoriApiErrorKind =
+  | "authentication"
+  | "configuration"
+  | "grpc"
+  | "http"
+  | "protocol"
+  | "transport";
+
+export interface HolodoriApiErrorOptions {
+  readonly kind: HolodoriApiErrorKind;
+  readonly rpcPath: string;
+  readonly httpStatus?: number;
+  readonly grpcStatus?: number;
+  readonly requestId?: string;
+  readonly transportPhase?: ApiTransportErrorPhase;
+  readonly cause?: unknown;
+}
+
+/** A structured failure from a high-level game API call. */
 export class HolodoriApiError extends Error {
+  readonly kind: HolodoriApiErrorKind;
+  readonly rpcPath: string;
+  readonly httpStatus: number | undefined;
+  readonly grpcStatus: number | undefined;
+  readonly requestId: string | undefined;
+  readonly transportPhase: ApiTransportErrorPhase | undefined;
+  /** @deprecated Use `httpStatus`. */
   readonly status: number | undefined;
+  /** @deprecated Use `rpcPath`. */
   readonly path: string;
 
-  constructor(message: string, path: string, status?: number) {
-    super(message);
+  constructor(message: string, path: string, status?: number);
+  constructor(message: string, options: HolodoriApiErrorOptions);
+  constructor(
+    message: string,
+    pathOrOptions: HolodoriApiErrorOptions | string,
+    status?: number,
+  ) {
+    const options: HolodoriApiErrorOptions =
+      typeof pathOrOptions === "string"
+        ? {
+            kind: status === undefined ? "configuration" : "http",
+            rpcPath: pathOrOptions,
+            ...(status === undefined ? {} : { httpStatus: status }),
+          }
+        : pathOrOptions;
+    super(
+      message,
+      options.cause === undefined ? undefined : { cause: options.cause },
+    );
     this.name = "HolodoriApiError";
-    this.path = path;
-    this.status = status;
+    this.kind = options.kind;
+    this.rpcPath = options.rpcPath;
+    this.httpStatus = options.httpStatus;
+    this.grpcStatus = options.grpcStatus;
+    this.requestId = options.requestId;
+    this.transportPhase = options.transportPhase;
+    this.path = options.rpcPath;
+    this.status = options.httpStatus;
   }
 }
 
@@ -74,7 +134,7 @@ export class ApiClient {
       if (!token)
         throw new HolodoriApiError(
           "authenticated API call requires a game auth token",
-          method.path,
+          { kind: "authentication", rpcPath: method.path },
         );
       headers["x-app-auth-token"] = token;
     }
@@ -83,7 +143,7 @@ export class ApiClient {
       if (!masterVersion)
         throw new HolodoriApiError(
           "authenticated API call requires a master version",
-          method.path,
+          { kind: "authentication", rpcPath: method.path },
         );
       headers["x-app-master-version"] = masterVersion;
     }
@@ -99,7 +159,7 @@ export class ApiClient {
       if (!signer)
         throw new HolodoriApiError(
           "request signature is required but no request signer was configured",
-          method.path,
+          { kind: "configuration", rpcPath: method.path },
         );
       Object.assign(
         headers,
@@ -107,26 +167,69 @@ export class ApiClient {
       );
     }
 
-    const result = await this.transport.request({
-      method: "POST",
-      url: `${baseUrl}${method.path}`,
-      headers,
-      body: encryptedBody,
-      timeoutMs: this.options.timeoutMs,
-    });
+    const requestId = headers["x-app-request-id"];
+    let result;
+    try {
+      result = await this.transport.request({
+        method: "POST",
+        url: `${baseUrl}${method.path}`,
+        headers,
+        body: encryptedBody,
+        timeoutMs: this.options.timeoutMs,
+      });
+    } catch (error) {
+      if (error instanceof HolodoriApiError) throw error;
+      const transportPhase =
+        error instanceof ApiTransportError ? error.phase : undefined;
+      throw new HolodoriApiError(
+        `${method.path} transport failed: ${errorMessage(error)}`,
+        {
+          kind: "transport",
+          rpcPath: method.path,
+          ...(requestId === undefined ? {} : { requestId }),
+          ...(transportPhase === undefined ? {} : { transportPhase }),
+          cause: error,
+        },
+      );
+    }
     if (result.status !== 200) {
       throw new HolodoriApiError(
         `${method.path} HTTP status ${result.status}`,
-        method.path,
-        result.status,
+        {
+          kind: "http",
+          rpcPath: method.path,
+          httpStatus: result.status,
+          ...(requestId === undefined ? {} : { requestId }),
+        },
       );
     }
-    assertGrpcSuccess(
-      { ...result.headers },
-      { ...result.trailers },
-      method.path,
-    );
-    return method.decode(decryptProto(result.body, this.options.apiSecret));
+    try {
+      assertGrpcSuccess(
+        { ...result.headers },
+        { ...result.trailers },
+        method.path,
+      );
+      return method.decode(decryptProto(result.body, this.options.apiSecret));
+    } catch (error) {
+      if (error instanceof GrpcStatusError) {
+        throw new HolodoriApiError(error.message, {
+          kind: "grpc",
+          rpcPath: method.path,
+          grpcStatus: error.status,
+          ...(requestId === undefined ? {} : { requestId }),
+          cause: error,
+        });
+      }
+      throw new HolodoriApiError(
+        `${method.path} protocol failure: ${errorMessage(error)}`,
+        {
+          kind: "protocol",
+          rpcPath: method.path,
+          ...(requestId === undefined ? {} : { requestId }),
+          cause: error,
+        },
+      );
+    }
   }
 
   close(): void {
@@ -155,6 +258,10 @@ export class ApiClient {
         : this.lastRequestTicks.value + 1n;
     return this.lastRequestTicks.value.toString();
   }
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 export { DEFAULT_TIMEOUT_MS };

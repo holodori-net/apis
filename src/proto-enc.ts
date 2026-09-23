@@ -7,9 +7,26 @@ const DOTNET_EPOCH_TICKS = 621355968000000000n;
 const COMPRESS_THRESHOLD = 2048;
 
 export class ProtoEncError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(message: string, cause?: unknown) {
+    super(message, cause === undefined ? undefined : { cause });
     this.name = "ProtoEncError";
+  }
+}
+
+/** Describes a non-zero gRPC status returned by the game API. */
+export class GrpcStatusError extends ProtoEncError {
+  readonly status: number;
+  readonly rpcPath: string;
+  readonly grpcMessage: string | undefined;
+
+  constructor(rpcPath: string, status: number, grpcMessage?: string) {
+    super(
+      `${rpcPath} grpc-status ${status}${grpcMessage ? `: ${grpcMessage}` : ""}`,
+    );
+    this.name = "GrpcStatusError";
+    this.rpcPath = rpcPath;
+    this.status = status;
+    this.grpcMessage = grpcMessage;
   }
 }
 
@@ -132,10 +149,27 @@ export function assertGrpcSuccess(
     throw new ProtoEncError(`${method} response has no grpc-status`);
   }
   if (grpcStatus !== "0") {
-    const message = trailers["grpc-message"] ?? headers["grpc-message"];
-    throw new ProtoEncError(
-      `${method} grpc-status ${grpcStatus}${message ? `: ${message}` : ""}`,
+    const status = Number(grpcStatus);
+    if (!Number.isInteger(status))
+      throw new ProtoEncError(
+        `${method} has invalid grpc-status ${grpcStatus}`,
+      );
+    const encodedMessage = trailers["grpc-message"] ?? headers["grpc-message"];
+    throw new GrpcStatusError(
+      method,
+      status,
+      encodedMessage === undefined
+        ? undefined
+        : decodeGrpcMessage(encodedMessage),
     );
+  }
+}
+
+function decodeGrpcMessage(message: string): string {
+  try {
+    return decodeURIComponent(message);
+  } catch {
+    return message;
   }
 }
 

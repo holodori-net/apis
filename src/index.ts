@@ -51,7 +51,11 @@ export {
   type UserMusicDifficulty,
   type UserSkillTreePoint,
 } from "./codecs.js";
-export { HolodoriApiError } from "./core/client.js";
+export {
+  HolodoriApiError,
+  type HolodoriApiErrorKind,
+  type HolodoriApiErrorOptions,
+} from "./core/client.js";
 export {
   type ApiMethod,
   type RequestSignatureInput,
