@@ -34,7 +34,7 @@
     "format:check": "prettier --check .",
     "lint": "eslint \"{src,test}/**/*.ts\"",
     "lint:fix": "eslint \"{src,test}/**/*.ts\" --fix",
-    "prepack": "pnpm build",
+    "prepack": "tsc",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
