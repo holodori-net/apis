@@ -4,6 +4,7 @@ export {
   type HolodoriApiOptions,
 } from "./api.js";
 export type * from "./codecs.js";
+export { HealthCheckServingStatus } from "./codecs/health.js";
 export {
   HolodoriApiError,
   type HolodoriApiErrorKind,

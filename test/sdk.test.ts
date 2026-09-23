@@ -13,6 +13,7 @@ import {
   encodeVarintField,
   encryptProto,
   HealthApi,
+  HealthCheckServingStatus,
   HolodoriApi,
   MarathonApi,
   MusicApi,
@@ -289,6 +290,7 @@ void test("exposes public information services from the high-level client", asyn
 
   assert.ok(api.asset instanceof AssetApi);
   assert.ok(api.health instanceof HealthApi);
+  assert.equal(HealthCheckServingStatus.Serving, 1);
   assert.ok(api.marathon instanceof MarathonApi);
   assert.ok(api.music instanceof MusicApi);
   assert.ok(api.profile instanceof ProfileApi);

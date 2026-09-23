@@ -7,7 +7,11 @@ export { encodeEmpty } from "./codecs/common.js";
 export * from "./codecs/event.js";
 export * from "./codecs/exchange.js";
 export * from "./codecs/gacha.js";
-export * from "./codecs/health.js";
+export {
+  decodeHealthCheckResponse,
+  encodeHealthCheckRequest,
+} from "./codecs/health.js";
+export type { HealthCheckResponse } from "./codecs/health.js";
 export * from "./codecs/home.js";
 export * from "./codecs/live.js";
 export * from "./codecs/marathon.js";
