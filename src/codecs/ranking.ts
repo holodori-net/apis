@@ -1,10 +1,10 @@
 import {
+  firstBytes,
   firstInt32,
   firstInt64,
   firstString,
-  type ProtoValue,
 } from "../protobuf.js";
-import { decodeProtoFields, isBuffer } from "./common.js";
+import { decodeProtoFields, decodeRepeatedMessages } from "./common.js";
 import {
   decodeProfileBasicUserInfo,
   type ProfileBasicUserInfo,
@@ -38,7 +38,7 @@ export interface RankingLiveDeckInfo {
 
 export function decodeBasicRankingRankInfo(data: Buffer): BasicRankingRankInfo {
   const fields = decodeProtoFields(data);
-  const userInfo = firstMessage(fields, 3);
+  const userInfo = firstBytes(fields, 3);
   return {
     rank: firstInt32(fields, 1) ?? 0,
     score: firstInt64(fields, 2) ?? 0n,
@@ -53,7 +53,7 @@ export function decodeRankingLiveDeckInfo(data: Buffer): RankingLiveDeckInfo {
   return {
     characterId: firstString(fields, 1) ?? "",
     costumeId: firstString(fields, 2) ?? "",
-    deckCards: decodeRepeated(fields, 3, decodeRankingLiveDeckCard),
+    deckCards: decodeRepeatedMessages(fields, 3, decodeRankingLiveDeckCard),
     deckPower: firstInt64(fields, 4) ?? 0n,
     deckEvaluationValue: firstInt64(fields, 5) ?? 0n,
   };
@@ -72,20 +72,4 @@ function decodeRankingLiveDeckCard(data: Buffer): RankingLiveDeckCard {
     techniqueForCardDetail: firstInt64(fields, 8) ?? 0n,
     senseForCardDetail: firstInt64(fields, 9) ?? 0n,
   };
-}
-
-function decodeRepeated<T>(
-  fields: Map<number, ProtoValue[]>,
-  field: number,
-  decode: (data: Buffer) => T,
-): T[] {
-  return (fields.get(field) ?? []).filter(isBuffer).map(decode);
-}
-
-function firstMessage(
-  fields: Map<number, ProtoValue[]>,
-  field: number,
-): Buffer | undefined {
-  const value = fields.get(field)?.[0];
-  return Buffer.isBuffer(value) ? value : undefined;
 }

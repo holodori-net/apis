@@ -39,3 +39,11 @@ export function toSafeNumber(value: bigint, name: string): number {
 export function isBuffer(value: ProtoValue): value is Buffer {
   return Buffer.isBuffer(value);
 }
+
+export function decodeRepeatedMessages<T>(
+  fields: Map<number, ProtoValue[]>,
+  field: number,
+  decode: (data: Buffer) => T,
+): T[] {
+  return (fields.get(field) ?? []).filter(isBuffer).map(decode);
+}

@@ -1,5 +1,6 @@
 import {
   firstBool,
+  firstBytes,
   firstInt32,
   firstInt64,
   firstString,
@@ -8,9 +9,9 @@ import {
 } from "../protobuf.js";
 import {
   decodeProtoFields,
+  decodeRepeatedMessages,
   encodeMessage,
   encodeStringField,
-  isBuffer,
   requireNonEmpty,
   toSafeNumber,
 } from "./common.js";
@@ -124,7 +125,7 @@ export function decodeProfileGetUserProfileDetailResponse(
   data: Buffer,
 ): ProfileGetUserProfileDetailResponse {
   const fields = decodeProtoFields(data);
-  const detail = firstMessage(fields, 1);
+  const detail = firstBytes(fields, 1);
   return detail === undefined
     ? {}
     : { userProfileDetailInfo: decodeProfileUserProfileDetailInfo(detail) };
@@ -133,7 +134,7 @@ export function decodeProfileGetUserProfileDetailResponse(
 /** Decodes the shared public user fields embedded in ranking responses. */
 export function decodeProfileBasicUserInfo(data: Buffer): ProfileBasicUserInfo {
   const fields = decodeProtoFields(data);
-  const profile = firstMessage(fields, 2);
+  const profile = firstBytes(fields, 2);
   return {
     publicUserId: firstString(fields, 1) ?? "",
     ...(profile === undefined
@@ -146,8 +147,8 @@ function decodeProfileUserProfileDetailInfo(
   data: Buffer,
 ): ProfileUserProfileDetailInfo {
   const fields = decodeProtoFields(data);
-  const userProfileInfo = firstMessage(fields, 2);
-  const highestLiveDeck = firstMessage(fields, 4);
+  const userProfileInfo = firstBytes(fields, 2);
+  const highestLiveDeck = firstBytes(fields, 4);
   return {
     publicUserId: firstString(fields, 1) ?? "",
     ...(userProfileInfo === undefined
@@ -160,27 +161,35 @@ function decodeProfileUserProfileDetailInfo(
           highestLiveDeckEvaluationLiveDeck:
             decodeProfileHighestLiveDeckEvaluationLiveDeck(highestLiveDeck),
         }),
-    characterLevels: decodeRepeated(fields, 5, decodeProfileCharacterLevel),
+    characterLevels: decodeRepeatedMessages(
+      fields,
+      5,
+      decodeProfileCharacterLevel,
+    ),
     totalMusicHighestScoreRatingValue: firstInt64(fields, 6) ?? 0n,
-    liveClearResults: decodeRepeated(fields, 7, decodeProfileLiveResultInfo),
-    liveFullComboResults: decodeRepeated(
+    liveClearResults: decodeRepeatedMessages(
+      fields,
+      7,
+      decodeProfileLiveResultInfo,
+    ),
+    liveFullComboResults: decodeRepeatedMessages(
       fields,
       8,
       decodeProfileLiveResultInfo,
     ),
-    liveAllPerfectResults: decodeRepeated(
+    liveAllPerfectResults: decodeRepeatedMessages(
       fields,
       9,
       decodeProfileLiveResultInfo,
     ),
-    miniGameResults: decodeRepeated(
+    miniGameResults: decodeRepeatedMessages(
       fields,
       10,
       decodeProfileMiniGameResultInfo,
     ),
     isBlockedUser: firstBool(fields, 11),
     friendStatusType: readNumber(fields, 12),
-    topMusicHighestScoreRatingInfos: decodeRepeated(
+    topMusicHighestScoreRatingInfos: decodeRepeatedMessages(
       fields,
       13,
       decodeProfileMusicHighestScoreRatingInfo,
@@ -199,7 +208,11 @@ function decodeProfileUserProfileInfo(data: Buffer): ProfileUserProfileInfo {
     parkCharacterId: firstString(fields, 4) ?? "",
     fanMarkId: firstString(fields, 5) ?? "",
     customPaletteImageUrl: firstString(fields, 6) ?? "",
-    emblemPositions: decodeRepeated(fields, 7, decodeProfileEmblemPosition),
+    emblemPositions: decodeRepeatedMessages(
+      fields,
+      7,
+      decodeProfileEmblemPosition,
+    ),
     loginStatusLastUpdatedTime: firstInt64(fields, 8) ?? 0n,
     customPaletteBackgroundCardPotentialUpgradeCount: readInt32(fields, 9),
     customPaletteBackgroundCardId: firstString(fields, 10) ?? "",
@@ -230,7 +243,7 @@ function decodeProfileHighestLiveDeckEvaluationLiveDeck(
   return {
     characterId: firstString(fields, 1) ?? "",
     costumeId: firstString(fields, 2) ?? "",
-    liveDeckPositions: decodeRepeated(
+    liveDeckPositions: decodeRepeatedMessages(
       fields,
       3,
       decodeProfileHighestLiveDeckPosition,
@@ -287,22 +300,6 @@ function decodeProfileMusicHighestScoreRatingInfo(
     characterId: firstString(fields, 1) ?? "",
     value: firstInt64(fields, 2) ?? 0n,
   };
-}
-
-function decodeRepeated<T>(
-  fields: Map<number, ProtoValue[]>,
-  field: number,
-  decode: (data: Buffer) => T,
-): T[] {
-  return (fields.get(field) ?? []).filter(isBuffer).map(decode);
-}
-
-function firstMessage(
-  fields: Map<number, ProtoValue[]>,
-  field: number,
-): Buffer | undefined {
-  const value = fields.get(field)?.[0];
-  return Buffer.isBuffer(value) ? value : undefined;
 }
 
 function readNumber(fields: Map<number, ProtoValue[]>, field: number): number {

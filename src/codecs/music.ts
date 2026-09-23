@@ -1,4 +1,5 @@
 import {
+  firstBytes,
   firstInt32,
   firstInt64,
   firstString,
@@ -7,9 +8,9 @@ import {
 } from "../protobuf.js";
 import {
   decodeProtoFields,
+  decodeRepeatedMessages,
   encodeMessage,
   encodeStringField,
-  isBuffer,
   requireNonEmpty,
   toSafeNumber,
 } from "./common.js";
@@ -126,7 +127,7 @@ export function decodeMusicGetHighestScoreLiveDeckResponse(
   data: Buffer,
 ): MusicGetHighestScoreLiveDeckResponse {
   const fields = decodeProtoFields(data);
-  const deck = firstMessage(fields, 1);
+  const deck = firstBytes(fields, 1);
   return deck === undefined
     ? {}
     : { rankingLiveDeckInfo: decodeRankingLiveDeckInfo(deck) };
@@ -138,8 +139,8 @@ export function decodeMusicGetHighestScoreRankingInfoResponse(
   const fields = decodeProtoFields(data);
   return {
     selfRank: firstInt32(fields, 1) ?? 0,
-    rankInfos: decodeRepeated(fields, 2, decodeBasicRankingRankInfo),
-    selfMusicDifficultyScoreInfos: decodeRepeated(
+    rankInfos: decodeRepeatedMessages(fields, 2, decodeBasicRankingRankInfo),
+    selfMusicDifficultyScoreInfos: decodeRepeatedMessages(
       fields,
       3,
       decodeMusicDifficultyScoreInfo,
@@ -152,7 +153,7 @@ export function decodeMusicListHighestScoreRatingRankingRankResponse(
 ): MusicListHighestScoreRatingRankingRankResponse {
   const fields = decodeProtoFields(data);
   return {
-    rankInfos: decodeRepeated(
+    rankInfos: decodeRepeatedMessages(
       fields,
       1,
       decodeMusicHighestScoreRatingRankingRankInfo,
@@ -165,7 +166,7 @@ export function decodeMusicGetHighestScoreRatingRankingInfoResponse(
 ): MusicGetHighestScoreRatingRankingInfoResponse {
   const fields = decodeProtoFields(data);
   return {
-    rankInfos: decodeRepeated(fields, 1, decodeBasicRankingRankInfo),
+    rankInfos: decodeRepeatedMessages(fields, 1, decodeBasicRankingRankInfo),
   };
 }
 
@@ -174,7 +175,7 @@ export function decodeMusicListHighestScoreRatingRankingRewardThresholdRankingRa
 ): MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse {
   const fields = decodeProtoFields(data);
   return {
-    thresholdRankInfos: decodeRepeated(
+    thresholdRankInfos: decodeRepeatedMessages(
       fields,
       1,
       decodeMusicThresholdRankingRankInfo,
@@ -211,22 +212,6 @@ function decodeMusicThresholdRankingRankInfo(
     rank: firstInt32(fields, 1) ?? 0,
     score: firstInt64(fields, 2) ?? 0n,
   };
-}
-
-function decodeRepeated<T>(
-  fields: Map<number, ProtoValue[]>,
-  field: number,
-  decode: (data: Buffer) => T,
-): T[] {
-  return (fields.get(field) ?? []).filter(isBuffer).map(decode);
-}
-
-function firstMessage(
-  fields: Map<number, ProtoValue[]>,
-  field: number,
-): Buffer | undefined {
-  const value = fields.get(field)?.[0];
-  return Buffer.isBuffer(value) ? value : undefined;
 }
 
 function readNumber(fields: Map<number, ProtoValue[]>, field: number): number {

@@ -1,9 +1,9 @@
-import { firstInt32, firstInt64, type ProtoValue } from "../protobuf.js";
+import { firstBytes, firstInt32, firstInt64 } from "../protobuf.js";
 import {
   decodeProtoFields,
+  decodeRepeatedMessages,
   encodeMessage,
   encodeStringField,
-  isBuffer,
 } from "./common.js";
 import {
   decodeProfileBasicUserInfo,
@@ -57,7 +57,7 @@ export function decodeComboCardGameListUserInfoResponse(
 ): ComboCardGameListUserInfoResponse {
   const fields = decodeProtoFields(data);
   return {
-    comboCardGameUserInfos: decodeRepeated(
+    comboCardGameUserInfos: decodeRepeatedMessages(
       fields,
       1,
       decodeComboCardGameUserInfo,
@@ -67,7 +67,7 @@ export function decodeComboCardGameListUserInfoResponse(
 
 function decodeComboCardGameUserInfo(data: Buffer): ComboCardGameUserInfo {
   const fields = decodeProtoFields(data);
-  const basicUserInfo = firstMessage(fields, 1);
+  const basicUserInfo = firstBytes(fields, 1);
   return {
     ...(basicUserInfo === undefined
       ? {}
@@ -75,20 +75,4 @@ function decodeComboCardGameUserInfo(data: Buffer): ComboCardGameUserInfo {
     comboCardGameAverageRankPercent: firstInt32(fields, 2) ?? 0,
     comboCardGameChipDiffTotalQuantity: firstInt64(fields, 3) ?? 0n,
   };
-}
-
-function decodeRepeated<T>(
-  fields: Map<number, ProtoValue[]>,
-  field: number,
-  decode: (data: Buffer) => T,
-): T[] {
-  return (fields.get(field) ?? []).filter(isBuffer).map(decode);
-}
-
-function firstMessage(
-  fields: Map<number, ProtoValue[]>,
-  field: number,
-): Buffer | undefined {
-  const value = fields.get(field)?.[0];
-  return Buffer.isBuffer(value) ? value : undefined;
 }
