@@ -161,6 +161,34 @@ The response also includes the authenticated account's self rank.
 getRankingInfo(options?: RequestOptions): Promise<MiniGameRankingResponse>
 ```
 
+### `listUserInfo()`
+
+Returns public Combo Card Game statistics for the requested users.
+
+RPC: `/rpc.api.ComboCardGame/ListUserInfo`
+
+A private room ID may be supplied to request room-specific user information.
+
+```ts
+listUserInfo(request: ComboCardGameListUserInfoRequest, options?: RequestOptions): Promise<ComboCardGameListUserInfoResponse>
+```
+
+## CookingPuzzleApi
+
+Reads Cooking Puzzle public information.
+
+### `getRankingInfo()`
+
+Returns the Cooking Puzzle leaderboard.
+
+RPC: `/rpc.api.CookingPuzzle/GetRankingInfo`
+
+The response also includes the authenticated account's self rank.
+
+```ts
+getRankingInfo(options?: RequestOptions): Promise<MiniGameRankingResponse>
+```
+
 ## EventApi
 
 Provides current event definitions and portal summaries.
@@ -244,6 +272,20 @@ has selected cards for the Gacha.
 
 ```ts
 listCardSelectProbability(gachaId: string, options?: RequestOptions): Promise<GachaListProbabilityResponse>
+```
+
+## GiftApi
+
+Provides access to the authenticated account's gift box.
+
+### `list()`
+
+Lists gifts using the requested sort order and offset.
+
+RPC: `/rpc.api.Gift/List`
+
+```ts
+list(request: GiftListRequest, options?: RequestOptions): Promise<GiftListResponse>
 ```
 
 ## HealthApi
@@ -440,6 +482,20 @@ RPC: `/rpc.api.Membership/GetShop`
 
 ```ts
 getShop(options?: RequestOptions): Promise<ShopInfo>
+```
+
+## MultiGameApi
+
+Provides multiplayer connection discovery.
+
+### `listPingServer()`
+
+Lists server regions and endpoints used for multiplayer ping checks.
+
+RPC: `/rpc.api.MultiGame/ListPingServer`
+
+```ts
+listPingServer(options?: RequestOptions): Promise<MultiGameListPingServerResponse>
 ```
 
 ## MusicApi
@@ -667,6 +723,21 @@ RPC: `/rpc.api.Notification/List`
 
 ```ts
 list(options?: RequestOptions): Promise<NotificationListResponse>
+```
+
+## ParkPermanenceApi
+
+Provides the authenticated account's Park character shop catalogue.
+
+### `listCharacterShopItem()`
+
+Lists the shop name, cost, available items, collection flags, and selected
+items for a Park permanence.
+
+RPC: `/rpc.api.ParkPermanence/ListCharacterShopItem`
+
+```ts
+listCharacterShopItem(request: ParkPermanenceListCharacterShopItemRequest, options?: RequestOptions): Promise<ParkPermanenceListCharacterShopItemResponse>
 ```
 
 ## ProfileApi
