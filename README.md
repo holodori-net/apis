@@ -69,6 +69,9 @@ rankings are available through `musicCreativeChart`. The `asset` client reports
 expired content asset IDs, while `health` checks the serving state without
 requiring authentication.
 
+`musicCreativeChart.listNewer()`, `listPopular()`, and `listByCreator()` search
+all music when their request omits `searchParameter`.
+
 The high-level client is grouped by service: use `api.auth`, `api.master`,
 `api.home`, `api.notice`, `api.notification`, `api.user`, `api.card`,
 `api.live`, `api.event`, `api.shop`, `api.membership`, `api.exchange`,
