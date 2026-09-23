@@ -12,6 +12,7 @@ import {
 } from "../src/index.js";
 import {
   type ApiTransport,
+  ApiTransportError,
   type ApiTransportRequest,
   type ApiTransportResponse,
 } from "../src/transport.js";
@@ -154,4 +155,81 @@ void test("creates monotonic request IDs from local DateTime ticks", async () =>
     (ticks + 1n).toString(),
   );
   vi.restoreAllMocks();
+});
+
+void test("classifies transport failures with their phase and cause", async () => {
+  const transportError = new ApiTransportError("tunnel failed", "ssh");
+  const transport: ApiTransport = {
+    request: () => Promise.reject(transportError),
+  };
+  const client = createClient(new ApiSession(), transport as FakeTransport);
+
+  await assert.rejects(client.call(CACHED, undefined), (error: unknown) => {
+    assert.ok(error instanceof HolodoriApiError);
+    assert.equal(error.kind, "transport");
+    assert.equal(error.rpcPath, CACHED.path);
+    assert.equal(error.transportPhase, "ssh");
+    assert.equal(error.cause, transportError);
+    assert.ok(error.requestId);
+    return true;
+  });
+});
+
+void test("classifies HTTP and gRPC response failures", async () => {
+  const httpClient = createClient(new ApiSession(), {
+    requests: [],
+    request: () =>
+      Promise.resolve({
+        status: 503,
+        headers: {},
+        trailers: {},
+        body: Buffer.alloc(0),
+      }),
+  });
+  await assert.rejects(httpClient.call(CACHED, undefined), (error: unknown) => {
+    assert.ok(error instanceof HolodoriApiError);
+    assert.equal(error.kind, "http");
+    assert.equal(error.httpStatus, 503);
+    assert.equal(error.status, 503);
+    assert.equal(error.path, CACHED.path);
+    return true;
+  });
+
+  const grpcClient = createClient(new ApiSession(), {
+    requests: [],
+    request: () =>
+      Promise.resolve({
+        status: 200,
+        headers: {},
+        trailers: { "grpc-status": "3", "grpc-message": "bad%20request" },
+        body: Buffer.alloc(0),
+      }),
+  });
+  await assert.rejects(grpcClient.call(CACHED, undefined), (error: unknown) => {
+    assert.ok(error instanceof HolodoriApiError);
+    assert.equal(error.kind, "grpc");
+    assert.equal(error.grpcStatus, 3);
+    assert.match(error.message, /bad request/);
+    return true;
+  });
+});
+
+void test("classifies malformed successful responses as protocol failures", async () => {
+  const client = createClient(new ApiSession(), {
+    requests: [],
+    request: () =>
+      Promise.resolve({
+        status: 200,
+        headers: {},
+        trailers: { "grpc-status": "0" },
+        body: Buffer.from([0]),
+      }),
+  });
+
+  await assert.rejects(client.call(CACHED, undefined), (error: unknown) => {
+    assert.ok(error instanceof HolodoriApiError);
+    assert.equal(error.kind, "protocol");
+    assert.ok(error.cause instanceof Error);
+    return true;
+  });
 });
