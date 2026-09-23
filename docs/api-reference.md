@@ -113,6 +113,54 @@ RPC: `/rpc.api.Card/GetParameters`
 getParameters(options?: RequestOptions): Promise<CardGetParametersResponse>
 ```
 
+## ChaseApi
+
+Reads Chase public information.
+
+### `getRankingInfo()`
+
+Returns the Chase leaderboard for a team category.
+
+RPC: `/rpc.api.Chase/GetRankingInfo`
+
+The response also includes the authenticated account's self rank.
+
+```ts
+getRankingInfo(request: ChaseRankingRequest, options?: RequestOptions): Promise<MiniGameRankingResponse>
+```
+
+## CircuitApi
+
+Reads Circuit public information.
+
+### `getRankingInfo()`
+
+Returns the Circuit leaderboard.
+
+RPC: `/rpc.api.Circuit/GetRankingInfo`
+
+The response also includes the authenticated account's self rank.
+
+```ts
+getRankingInfo(options?: RequestOptions): Promise<MiniGameRankingResponse>
+```
+
+## ComboCardGameApi
+
+Reads Combo Card Game public information.
+
+### `getRankingInfo()`
+
+Returns the Combo Card Game leaderboard.
+
+RPC: `/rpc.api.ComboCardGame/GetRankingInfo`
+
+The response also includes the authenticated account's self rank.
+
+```ts
+getRankingInfo(options?: RequestOptions): Promise<MiniGameRankingResponse>
+```
+
 ## EventApi
 
 Provides current event definitions and portal summaries.
@@ -224,6 +272,22 @@ RPC: `/rpc.api.Home/Login`
 
 ```ts
 login(options?: RequestOptions): Promise<HomeLoginResponse>
+```
+
+## JumpRopeApi
+
+Reads Jump Rope public information.
+
+### `getRankingInfo()`
+
+Returns the Jump Rope leaderboard.
+
+RPC: `/rpc.api.JumpRope/GetRankingInfo`
+
+The response also includes the authenticated account's self rank.
+
+```ts
+getRankingInfo(options?: RequestOptions): Promise<MiniGameRankingResponse>
 ```
 
 ## LiveApi
@@ -434,6 +498,104 @@ RPC: `/rpc.api.Music/ListHighestScoreRatingRankingRewardThresholdRankingRankInfo
 listHighestScoreRatingRankingRewardThresholdRankingRankInfo(request: MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequest, options?: RequestOptions): Promise<MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse>
 ```
 
+## MusicCreativeChartApi
+
+Reads public user generated charts, creator lists, and early-clear rankings.
+
+Chart `isFavorite` and `isOwn` fields reflect the authenticated account.
+
+### `listNewer()`
+
+Lists recently published charts grouped by song.
+
+RPC: `/rpc.api.MusicCreativeChart/ListNewer`
+
+```ts
+listNewer(request?: MusicCreativeChartListRequest, options?: RequestOptions): Promise<MusicCreativeChartListResponse>
+```
+
+### `listPopular()`
+
+Lists popular charts grouped by song.
+
+RPC: `/rpc.api.MusicCreativeChart/ListPopular`
+
+```ts
+listPopular(request?: MusicCreativeChartListRequest, options?: RequestOptions): Promise<MusicCreativeChartListResponse>
+```
+
+### `listPopularCreator()`
+
+Lists popular chart creators for a reset interval.
+
+RPC: `/rpc.api.MusicCreativeChart/ListPopularCreator`
+
+```ts
+listPopularCreator(request?: MusicCreativeChartListPopularCreatorRequest, options?: RequestOptions): Promise<MusicCreativeChartListPopularCreatorResponse>
+```
+
+### `listByCreator()`
+
+Lists public charts by creator public user ID.
+
+RPC: `/rpc.api.MusicCreativeChart/ListByCreator`
+
+```ts
+listByCreator(request: MusicCreativeChartListByCreatorRequest, options?: RequestOptions): Promise<MusicCreativeChartListByCreatorResponse>
+```
+
+### `getByMusicCreativeChartId()`
+
+Returns a chart by its ID.
+
+RPC: `/rpc.api.MusicCreativeChart/GetByMusicCreativeChartId`
+
+```ts
+getByMusicCreativeChartId(request: MusicCreativeChartGetByIdRequest, options?: RequestOptions): Promise<MusicCreativeChartGetByIdResponse>
+```
+
+### `getQuoteTargetChart()`
+
+Returns the chart file URL used when quoting a chart.
+
+RPC: `/rpc.api.MusicCreativeChart/GetQuoteTargetChart`
+
+```ts
+getQuoteTargetChart(request: MusicCreativeChartGetQuoteTargetChartRequest, options?: RequestOptions): Promise<MusicCreativeChartGetQuoteTargetChartResponse>
+```
+
+### `getCreatorInfoByMusicCreativeChartId()`
+
+Returns the chart creator and related creator accounts.
+
+RPC: `/rpc.api.MusicCreativeChart/GetCreatorInfoByMusicCreativeChartId`
+
+```ts
+getCreatorInfoByMusicCreativeChartId(request: MusicCreativeChartGetCreatorInfoRequest, options?: RequestOptions): Promise<MusicCreativeChartGetCreatorInfoResponse>
+```
+
+### `getEarlyClearRankingInfo()`
+
+Returns early-clear ranks for a chart and live result type.
+
+RPC: `/rpc.api.MusicCreativeChart/GetEarlyClearRankingInfo`
+
+The response also includes the authenticated account's self ranking.
+
+```ts
+getEarlyClearRankingInfo(request: MusicCreativeChartGetEarlyClearRankingInfoRequest, options?: RequestOptions): Promise<MusicCreativeChartGetEarlyClearRankingInfoResponse>
+```
+
+### `getEarlyClearLiveDeck()`
+
+Returns a listed user's deck for an early-clear chart rank.
+
+RPC: `/rpc.api.MusicCreativeChart/GetEarlyClearLiveDeck`
+
+```ts
+getEarlyClearLiveDeck(request: MusicCreativeChartGetEarlyClearLiveDeckRequest, options?: RequestOptions): Promise<MusicCreativeChartGetEarlyClearLiveDeckResponse>
+```
+
 ## NoticeApi
 
 Reads localized public notices and manages account-specific read timestamps.
@@ -538,6 +700,22 @@ RPC: `/rpc.api.Shop/List`
 
 ```ts
 list(options?: RequestOptions): Promise<ShopResponse>
+```
+
+## SplashBallApi
+
+Reads Splash Ball public information.
+
+### `getRankingInfo()`
+
+Returns the Splash Ball leaderboard.
+
+RPC: `/rpc.api.SplashBall/GetRankingInfo`
+
+The response also includes the authenticated account's self rank.
+
+```ts
+getRankingInfo(options?: RequestOptions): Promise<MiniGameRankingResponse>
 ```
 
 ## SystemApi
