@@ -32,17 +32,20 @@ const CARD_GET_PARAMETERS: ApiMethod<void, CardGetParametersResponse> = {
   decode: decodeCardGetParametersResponse,
 };
 
+/** Reads server-calculated parameters for cards owned by the current account. */
 export class CardApi {
   constructor(
     private readonly client: ApiClient,
     private readonly ensureAuthenticated: () => Promise<unknown>,
   ) {}
 
+  /** Returns one owned card's current parameters and skill-tree effects. @rpc /rpc.api.Card/GetParameter */
   async getParameter(cardId: string): Promise<CardGetParameterResponse> {
     await this.ensureAuthenticated();
     return this.client.call(CARD_GET_PARAMETER, { cardId });
   }
 
+  /** Returns current parameters for every card owned by the account. @rpc /rpc.api.Card/GetParameters */
   async getParameters(): Promise<CardGetParametersResponse> {
     await this.ensureAuthenticated();
     return this.client.call(CARD_GET_PARAMETERS, undefined);

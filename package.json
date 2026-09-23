@@ -23,10 +23,13 @@
     }
   },
   "files": [
-    "dist/src"
+    "dist/src",
+    "docs"
   ],
   "scripts": {
     "build": "tsc",
+    "docs:api": "node scripts/generate-api-docs.mjs",
+    "docs:api:check": "node scripts/generate-api-docs.mjs --check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint \"{src,test}/**/*.ts\"",

@@ -44,6 +44,7 @@ export interface AccountMigrationApiOptions {
   readonly resolveRegionBaseUrl?: RegionBaseUrlResolver;
 }
 
+/** Prepares and completes account migration without requiring an active game session. */
 export class AccountMigrationApi {
   constructor(
     private readonly client: ApiClient,
@@ -51,6 +52,7 @@ export class AccountMigrationApi {
     private readonly options: AccountMigrationApiOptions = {},
   ) {}
 
+  /** Verifies a linking ID and password and returns the target account preview. @rpc /rpc.api.AccountMigration/PrepareMigrationPassword */
   async preparePassword(
     accountMigrationId: string,
     password: string,
@@ -59,6 +61,7 @@ export class AccountMigrationApi {
       .linkResult;
   }
 
+  /** Returns the complete password-prepare response including its link result. @rpc /rpc.api.AccountMigration/PrepareMigrationPassword */
   async preparePasswordResponse(
     accountMigrationId: string,
     password: string,
@@ -66,6 +69,7 @@ export class AccountMigrationApi {
     return this.client.call(PREPARE_PASSWORD, { accountMigrationId, password });
   }
 
+  /** Exchanges a prepared one-time token for a persistent credential. @remarks A successful call replaces the credential held by this SDK session. @rpc /rpc.api.AccountMigration/Migrate */
   migrate(
     request: AccountMigrationMigrateRequest,
   ): Promise<AccountMigrationMigrateResponse>;
@@ -92,6 +96,7 @@ export class AccountMigrationApi {
     return this.migrateRequest(request);
   }
 
+  /** Runs password preparation and credential migration, switching official regions when required. @remarks A successful call replaces the credential held by this SDK session. */
   async migrateWithPassword(
     accountMigrationId: string,
     password: string,

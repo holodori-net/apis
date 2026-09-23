@@ -28,9 +28,14 @@ and the shared unary client, with authentication, master version, response
 cache, and request signature policies declared independently.
 Add new proxy mechanisms through `ApiTunnelConnector`; do not duplicate TLS,
 HTTP/2, authentication, or protobuf behavior inside connectors.
+Document each exported service class and public method with a concise JSDoc
+summary. Include `@rpc` on direct RPC methods and use `@remarks` for account
+state, side effects, or constraints. Regenerate `docs/api-reference.md` after
+public API documentation changes.
 
 ## Validation
 
 Run `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, and
-`pnpm test` after changes. Use `pnpm format` and `pnpm lint:fix` for automated
-fixes. Do not stage or commit automatically.
+`pnpm test` after changes. Run `pnpm docs:api:check` when public services or
+their JSDoc change. Use `pnpm format` and `pnpm lint:fix` for automated fixes.
+Do not stage or commit automatically.

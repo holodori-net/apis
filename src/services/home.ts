@@ -16,12 +16,14 @@ const HOME_LOGIN: ApiMethod<void, HomeLoginResponse> = {
   decode: decodeHomeLoginResponse,
 };
 
+/** Completes the authenticated home bootstrap before gameplay API calls. */
 export class HomeApi {
   constructor(
     private readonly client: ApiClient,
     private readonly ensureAuthenticated: () => Promise<unknown>,
   ) {}
 
+  /** Enters the home session and applies server-side rollover processing. @rpc /rpc.api.Home/Login */
   async login(): Promise<HomeLoginResponse> {
     await this.ensureAuthenticated();
     return this.client.call(HOME_LOGIN, undefined);

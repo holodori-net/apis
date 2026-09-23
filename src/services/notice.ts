@@ -79,17 +79,20 @@ const NOTICE_UPDATE_DETAIL_READ_TIME: ApiMethod<
   decode: decodeUpdateResponse,
 };
 
+/** Reads localized public notices and manages account-specific read timestamps. */
 export class NoticeApi {
   constructor(
     private readonly client: ApiClient,
     private readonly ensureAuthenticated: () => Promise<unknown>,
   ) {}
 
+  /** Returns notice categories and their current summaries. @rpc /rpc.api.Notice/Top */
   async top(): Promise<NoticeTopResponse> {
     await this.ensureAuthenticated();
     return this.client.call(NOTICE_TOP, undefined);
   }
 
+  /** Lists one notice category with offset-based pagination. @rpc /rpc.api.Notice/ListInCategory */
   listInCategory(
     categoryId: string,
     offset: number,
@@ -105,11 +108,13 @@ export class NoticeApi {
     return this.client.call(NOTICE_LIST_IN_CATEGORY, { categoryId, offset });
   }
 
+  /** Returns the localized detail body for one notice. @rpc /rpc.api.Notice/Get */
   async get(noticeId: string): Promise<NoticeGetResponse> {
     await this.ensureAuthenticated();
     return this.client.call(NOTICE_GET, { noticeId });
   }
 
+  /** Updates category read timestamps for the current account. @remarks This method changes account read state. @rpc /rpc.api.Notice/UpdateCategoryReadTime */
   updateCategoryReadTime(
     categoryIds: readonly string[],
   ): Promise<NoticeUpdateResponse> {
@@ -123,6 +128,7 @@ export class NoticeApi {
     return this.client.call(NOTICE_UPDATE_CATEGORY_READ_TIME, categoryIds);
   }
 
+  /** Updates notice-detail read timestamps for the current account. @remarks This method changes account read state. @rpc /rpc.api.Notice/UpdateDetailReadTime */
   updateDetailReadTime(
     noticeIds: readonly string[],
   ): Promise<NoticeUpdateResponse> {

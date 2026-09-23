@@ -28,18 +28,21 @@ const AUTH_LOGIN: ApiMethod<string, string> = {
   decode: decodeGameAuthTokenResponse,
 };
 
+/** Manages persistent credentials and authenticated game sessions. */
 export class AuthApi {
   constructor(
     private readonly client: ApiClient,
     private readonly session: ApiSession,
   ) {}
 
+  /** Creates a new anonymous account and stores its persistent credential. @rpc /rpc.api.Auth/Create */
   async create(): Promise<string> {
     const credential = await this.client.call(AUTH_CREATE, undefined);
     this.session.setCredential(credential);
     return credential;
   }
 
+  /** Logs in with a persistent credential and stores the returned game auth token. @rpc /rpc.api.Auth/Login */
   async login(credential = this.session.credentialValue): Promise<string> {
     if (!credential)
       throw new HolodoriApiError(
