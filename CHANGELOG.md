@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.1](https://github.com/holodori-net/apis/compare/v0.1.0...v0.1.1) (2026-09-24)
+
+### Refactoring
+
+* use generated protobuf contracts ([01d3fdc](https://github.com/holodori-net/apis/commit/01d3fdcd567e1b94c50be8ebfd68377a23e1a813))
+
 ## 0.1.0 (2026-09-24)
 
 ### Features
