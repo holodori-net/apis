@@ -186,7 +186,7 @@ state.
 ### Recovered API catalog
 
 This catalog mirrors
-`contract-extraction/work/contract-extraction/descriptors/rpc/api/*.gen.proto`.
+`extract-protos/work/extract-protos/descriptors/rpc/api/*.gen.proto`.
 Methods listed here are recovered contracts, not necessarily implemented SDK
 methods. A struck-through method is already implemented by the SDK.
 
