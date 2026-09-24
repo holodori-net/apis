@@ -10,7 +10,12 @@ import globals from "globals";
 export default defineConfig([
   {
     name: "project/ignores",
-    ignores: ["**/node_modules/**", "**/dist/**", "**/coverage/**"],
+    ignores: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/coverage/**",
+      "src/protos/gen/**",
+    ],
   },
   {
     name: "project/typescript",

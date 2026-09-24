@@ -28,6 +28,14 @@
     "./low-level": {
       "types": "./dist/src/low-level.d.ts",
       "import": "./dist/src/low-level.js"
+    },
+    "./protos": {
+      "types": "./dist/src/protos/index.d.ts",
+      "import": "./dist/src/protos/index.js"
+    },
+    "./protos/*": {
+      "types": "./dist/src/protos/gen/*.d.ts",
+      "import": "./dist/src/protos/gen/*.js"
     }
   },
   "files": [
@@ -49,13 +57,16 @@
     "lint:fix": "eslint \"{src,test}/**/*.ts\" \"scripts/**/*.mjs\" --fix",
     "package:check": "node scripts/check-package.mjs && npm pack --dry-run",
     "prepack": "pnpm build",
+    "protos:check": "node scripts/generate-protos.mjs --check",
+    "protos:generate": "node scripts/generate-protos.mjs",
     "release": "release-it --ci",
     "release:dry-run": "release-it --ci --dry-run",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "validate": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm docs:api:check && pnpm test && pnpm build && pnpm package:check"
+    "validate": "pnpm format:check && pnpm lint && pnpm protos:check && pnpm typecheck && pnpm docs:api:check && pnpm test && pnpm build && pnpm package:check"
   },
   "devDependencies": {
+    "@bufbuild/protoc-gen-es": "2.15.0",
     "@eslint/js": "^10.0.1",
     "@release-it/conventional-changelog": "^11.0.1",
     "@types/node": "^24.0.0",
@@ -70,5 +81,8 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.68.0",
     "vitest": "^4.1.11"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "2.15.0"
   }
 }

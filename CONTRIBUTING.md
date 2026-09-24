@@ -8,6 +8,21 @@ pnpm install
 pnpm validate
 ```
 
+## Protobuf contracts
+
+`proto/descriptor-set.pb` is the source of truth for generated protobuf
+messages and schemas. After replacing it, regenerate and verify the checked-in
+output:
+
+```sh
+pnpm protos:generate
+pnpm protos:check
+```
+
+Generated files under `src/protos/gen/` must not be edited directly. Add a new
+API descriptor root to `scripts/generate-protos.mjs` when implementing a domain
+that is not already generated.
+
 ## API documentation
 
 Public service classes and methods require concise JSDoc summaries. Add an
