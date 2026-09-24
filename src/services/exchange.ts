@@ -1,23 +1,28 @@
-import {
-  decodeExchangeListResponse,
-  encodeExchangeListRequest,
-  type ExchangeResponse,
-} from "../codecs/exchange.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import {
+  ExchangeListRequestSchema,
+  type ExchangeListResponse,
+  ExchangeListResponseSchema,
+} from "../protos/gen/rpc/api/exchange.gen_pb.js";
 
 const EXCHANGE_LIST: ApiMethod<
   { readonly boothGroupId: string },
-  ExchangeResponse
+  ExchangeListResponse
 > = {
   path: "/rpc.api.Exchange/List",
   requiresGameAuth: true,
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: ({ boothGroupId }) => encodeExchangeListRequest(boothGroupId),
-  decode: decodeExchangeListResponse,
+  encode: ({ boothGroupId }) => {
+    if (!boothGroupId)
+      throw new TypeError("exchange booth group ID must not be empty");
+    return encodeProtobuf(ExchangeListRequestSchema, { boothGroupId });
+  },
+  decode: (data) => decodeProtobuf(ExchangeListResponseSchema, data),
 };
 
 /** Provides exchange booth catalogues and account stock state. */
@@ -36,15 +41,10 @@ export class ExchangeApi {
   async list(
     boothGroupId: string,
     options?: RequestOptions,
-  ): Promise<ExchangeResponse> {
+  ): Promise<ExchangeListResponse> {
     return this.client.call(EXCHANGE_LIST, { boothGroupId }, options);
   }
 }
 
 export { EXCHANGE_LIST };
-export type {
-  ExchangeBooth,
-  ExchangeConsumption,
-  ExchangeItem,
-  ExchangeResponse,
-} from "../codecs/exchange.js";
+export type * from "../protos/gen/rpc/api/exchange.gen_pb.js";

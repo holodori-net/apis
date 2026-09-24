@@ -37,7 +37,10 @@ const top = await api.notice.top();
 console.log(top.categories);
 const snapshot = await api.user.getSnapshot();
 const parameters = await api.card.getParameters();
-console.log(snapshot.cards.length, parameters.parameterInfos.length);
+console.log(
+  snapshot.userData?.userCardList.length,
+  parameters.parameterInfos.length,
+);
 await api.close();
 ```
 
@@ -61,10 +64,15 @@ The notice client exposes `top`, `listInCategory`, `get`,
 `updateCategoryReadTime`, and `updateDetailReadTime`. Notice `startTime` values
 are returned as `bigint` to preserve protobuf `int64` precision.
 
-The user client exposes `listCards()` for owned cards and `getSnapshot()` for
-characters, character skill trees, costumes, items, live decks, music
-progress, and skill-tree points. Protobuf `int64` values are returned as
-`bigint`.
+The user client exposes `listCards()` for owned cards and `get()` or
+`getSnapshot()` for the complete `User/Get` response. Protobuf `int64` values
+are returned as `bigint`.
+
+Service methods return generated protobuf messages without projecting away
+contract fields. Generated schemas and types are exported from
+`@holodori-net/apis/protos`; individual generated modules are available below
+`@holodori-net/apis/protos/*`. Unknown protobuf fields are retained on the
+message `$unknown` property and are preserved when re-encoded.
 
 The card client exposes `getParameter(cardId)` and `getParameters()`. The live
 client exposes `getDeckCandidateCardParameters()`, `getDraftDeckInfo()`, and
@@ -102,7 +110,8 @@ The high-level client is grouped by service: use `api.auth`, `api.master`,
 `api.gift`, `api.parkPermanence`, `api.health`, `api.system`, and
 `api.accountMigration`. The older top-level authentication and master methods
 remain available as deprecated delegations. Transport implementations are
-also available from `@holodori-net/apis/transports`; protobuf and gRPC helpers are
+also available from `@holodori-net/apis/transports`; generated contracts are
+available from `@holodori-net/apis/protos`; protobuf and gRPC helpers are
 available from `@holodori-net/apis/low-level`.
 
 Every service method accepts optional per-call controls as its final argument.
@@ -185,8 +194,7 @@ state.
 
 ### Recovered API catalog
 
-This catalog mirrors
-`extract-protos/work/extract-protos/descriptors/rpc/api/*.gen.proto`.
+This catalog mirrors the pinned contract in `proto/descriptor-set.pb`.
 Methods listed here are recovered contracts, not necessarily implemented SDK
 methods. A struck-through method is already implemented by the SDK.
 

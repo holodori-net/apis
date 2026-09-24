@@ -2,10 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeShopListResponse,
-  encodeShopListRequest,
-} from "../src/codecs/shop.js";
-import {
   encodeBytesField,
   encodeMessage,
   encodeStringField,
@@ -14,6 +10,7 @@ import {
 } from "../src/low-level.js";
 import { SHOP_LIST, ShopApi } from "../src/services/shop.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
+import { withoutTypeNames } from "./support/without-type-names.js";
 
 const shop = encodeMessage(
   encodeStringField(1, "shop-main"),
@@ -71,59 +68,64 @@ const shop = encodeMessage(
 );
 
 void test("encodes an empty Shop/List request", () => {
-  assert.equal(encodeShopListRequest().length, 0);
+  assert.equal(SHOP_LIST.encode(undefined).length, 0);
 });
 
 void test("decodes shop catalogue fields and int64 values", () => {
-  assert.deepEqual(decodeShopListResponse(encodeBytesField(1, shop)), {
-    shops: [
-      {
-        id: "shop-main",
-        items: [
-          {
-            type: 1,
-            consumptionItem: {
-              id: "item-stamina",
-              name: "Stamina",
-              consumption: {
-                resourceType: 3,
-                resourceId: "ticket-1",
-                quantity: 5_000_000_000n,
+  assert.deepEqual(
+    withoutTypeNames(SHOP_LIST.decode(encodeBytesField(1, shop))),
+    {
+      shops: [
+        {
+          id: "shop-main",
+          items: [
+            {
+              type: 1,
+              consumptionItem: {
+                id: "item-stamina",
+                name: "Stamina",
+                consumption: {
+                  consumption: {
+                    resourceType: 3,
+                    resourceId: "ticket-1",
+                    quantity: 5_000_000_000n,
+                  },
+                  discountPermilDown: 250,
+                  discountedQuantity: 37n,
+                },
+                rewards: [
+                  { resourceType: 2, resourceId: "card-1", quantity: 3n },
+                ],
+                isUnlocked: true,
+                unlockConditionGroupId: "",
+                endTime: 0n,
+                resetIntervalType: 0,
+                nextResetTime: 0n,
+                limitCount: 2,
+                purchasedCount: 1,
+                assetId: "",
+                lastResetTime: 0n,
+                isBackgroundSpecial: false,
+                color: "",
+                isNew: true,
+                isEnableMultiplePurchase: false,
               },
-              discountPermilDown: 250,
-              discountedQuantity: 37n,
-              rewards: [
-                { resourceType: 2, resourceId: "card-1", quantity: 3n },
-              ],
-              isUnlocked: true,
-              unlockConditionGroupId: "",
-              endTime: 0n,
-              resetIntervalType: 0,
-              nextResetTime: 0n,
-              limitCount: 2,
-              purchasedCount: 1,
-              assetId: "",
-              lastResetTime: 0n,
-              isBackgroundSpecial: false,
-              color: "",
-              isNew: true,
-              isEnableMultiplePurchase: false,
             },
-          },
-        ],
-        type: 4,
-        name: "Membership",
-        endTime: 9_000_000_000n,
-        resetIntervalType: 1,
-        nextResetTime: 8_000_000_000n,
-        thumbnailAssetId: "asset-shop",
-        descriptionTitle: "Welcome",
-        descriptionText: "Description",
-        displayPossessionResourceTypes: [1002, 1001],
-        displayPossessionResourceIds: ["stone-paid"],
-      },
-    ],
-  });
+          ],
+          type: 4,
+          name: "Membership",
+          endTime: 9_000_000_000n,
+          resetIntervalType: 1,
+          nextResetTime: 8_000_000_000n,
+          thumbnailAssetId: "asset-shop",
+          descriptionTitle: "Welcome",
+          descriptionText: "Description",
+          displayPossessionResourceTypes: [1002, 1001],
+          displayPossessionResourceIds: ["stone-paid"],
+        },
+      ],
+    },
+  );
 });
 
 void test("decodes charge item products, rewards, and account purchase state", () => {
@@ -171,8 +173,8 @@ void test("decodes charge item products, rewards, and account purchase state", (
     ),
   );
 
-  const item = decodeShopListResponse(response).shops[0]?.items[0]?.chargeItem;
-  assert.deepEqual(item, {
+  const item = SHOP_LIST.decode(response).shops[0]?.items[0]?.chargeItem;
+  assert.deepEqual(withoutTypeNames(item), {
     id: "stone-pack",
     type: 1,
     consumable: {

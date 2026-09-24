@@ -1,15 +1,15 @@
-import {
-  decodeParkPermanenceListCharacterShopItemResponse,
-  encodeParkPermanenceListCharacterShopItemRequest,
-  type ParkPermanenceListCharacterShopItemRequest,
-  type ParkPermanenceListCharacterShopItemResponse,
-} from "../codecs/park-permanence.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import {
+  ParkPermanenceListCharacterShopItemRequestSchema,
+  type ParkPermanenceListCharacterShopItemResponse,
+  ParkPermanenceListCharacterShopItemResponseSchema,
+} from "../protos/gen/rpc/api/park_permanence.gen_pb.js";
 
 const PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM: ApiMethod<
-  ParkPermanenceListCharacterShopItemRequest,
+  { readonly actionNumber: number; readonly parkPermanenceId: string },
   ParkPermanenceListCharacterShopItemResponse
 > = {
   path: "/rpc.api.ParkPermanence/ListCharacterShopItem",
@@ -17,8 +17,21 @@ const PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeParkPermanenceListCharacterShopItemRequest,
-  decode: decodeParkPermanenceListCharacterShopItemResponse,
+  encode: ({ actionNumber, parkPermanenceId }) => {
+    if (!parkPermanenceId)
+      throw new RangeError("park permanence ID must not be empty");
+    if (!Number.isSafeInteger(actionNumber) || actionNumber < 1) {
+      throw new RangeError("action number must be a positive integer");
+    }
+    return encodeProtobuf(ParkPermanenceListCharacterShopItemRequestSchema, {
+      parkPermanenceCommonRequestParam: {
+        parkPermanenceId,
+        actionNumber,
+      },
+    });
+  },
+  decode: (data) =>
+    decodeProtobuf(ParkPermanenceListCharacterShopItemResponseSchema, data),
 };
 
 /** Provides the authenticated account's Park character shop catalogue. */
@@ -34,7 +47,10 @@ export class ParkPermanenceApi {
    * @returns The shop catalogue as returned for the authenticated account.
    */
   async listCharacterShopItem(
-    request: ParkPermanenceListCharacterShopItemRequest,
+    request: {
+      readonly actionNumber: number;
+      readonly parkPermanenceId: string;
+    },
     options?: RequestOptions,
   ): Promise<ParkPermanenceListCharacterShopItemResponse> {
     return this.client.call(
@@ -46,11 +62,4 @@ export class ParkPermanenceApi {
 }
 
 export { PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM };
-export type {
-  ParkPermanenceCharacterShopItem,
-  ParkPermanenceCharacterShopItemWithCollectedInfo,
-  ParkPermanenceConsumption,
-  ParkPermanenceListCharacterShopItemRequest,
-  ParkPermanenceListCharacterShopItemResponse,
-  ParkPermanenceReward,
-} from "../codecs/park-permanence.js";
+export type { ParkPermanenceListCharacterShopItemResponse } from "../protos/gen/rpc/api/park_permanence.gen_pb.js";

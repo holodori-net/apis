@@ -6,14 +6,17 @@ by other Node.js projects.
 
 ## Interface
 
-- Runtime target: Node.js >= 24, ESM, zero runtime dependencies.
+- Runtime target: Node.js >= 24 and ESM. `@bufbuild/protobuf` is the protobuf
+  runtime dependency.
 - High-level package entrypoint: `src/index.ts`; transports and protocol helpers
   also have the `@holodori-net/apis/transports` and `@holodori-net/apis/low-level`
   subpath exports.
 - Transport contracts and implementations live under `src/transports/`; keep
   `src/transports/index.ts` as the public transport barrel.
-- Protocol framing, encryption, and protobuf primitives live under
-  `src/protocol/`; keep `src/low-level.ts` as their public compatibility barrel.
+- Generated protobuf messages and schemas live under `src/protos/gen/`; never
+  edit them manually. `proto/descriptor-set.pb` is their source of truth.
+- Protocol framing and encryption live under `src/protocol/`; keep
+  `src/low-level.ts` as their public compatibility barrel.
 - Releases are generated from Conventional Commits after `main` passes CI.
   `release-it` owns package versions, `CHANGELOG.md`, release commits, and tags.
 - Transport is injectable for deterministic tests and offline consumers.
@@ -27,11 +30,12 @@ by other Node.js projects.
 
 ## Scope
 
-Protocol helpers implement HTTP/2, gRPC framing, proto-enc encryption, and the
-protobuf fields required by game APIs. Keep each domain in matching
-`src/services/` and `src/codecs/` modules. Add methods through typed descriptors
-and the shared unary client, with authentication, master version, response
-cache, and request signature policies declared independently.
+Protocol helpers implement HTTP/2, gRPC framing, and proto-enc encryption.
+Generate protobuf contracts with `pnpm protos:generate`, then use their schemas
+through `src/protos/codec.ts`. Keep each API domain in a matching
+`src/services/` module. Add methods through typed descriptors and the shared
+unary client, with authentication, master version, response cache, and request
+signature policies declared independently.
 Add new proxy mechanisms through `ApiTunnelConnector`; do not duplicate TLS,
 HTTP/2, authentication, or protobuf behavior inside connectors.
 Document each exported service class and public method with a concise JSDoc
@@ -42,6 +46,7 @@ public API documentation changes.
 ## Validation
 
 Run `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, and
-`pnpm test` after changes. Run `pnpm docs:api:check` when public services or
-their JSDoc change. Use `pnpm format` and `pnpm lint:fix` for automated fixes.
-Do not stage or commit automatically.
+`pnpm test` after changes. Run `pnpm protos:check` after descriptor or generated
+protobuf changes. Run `pnpm docs:api:check` when public services or their JSDoc
+change. Use `pnpm format` and `pnpm lint:fix` for automated fixes. Do not stage
+or commit automatically.

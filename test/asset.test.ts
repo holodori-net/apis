@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "vitest";
 
-import { decodeAssetListExpiredAssetIdResponse } from "../src/codecs/asset.js";
 import {
   encodeBytesField,
   encodeMessage,
@@ -12,6 +11,7 @@ import {
   AssetApi,
 } from "../src/services/asset.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
+import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("decodes feature-specific expired asset IDs", () => {
   const response = encodeMessage(
@@ -62,32 +62,35 @@ void test("decodes feature-specific expired asset IDs", () => {
     ),
   );
 
-  assert.deepEqual(decodeAssetListExpiredAssetIdResponse(response), {
-    homeBanner: { assetIds: ["home-old", "home-unused"] },
-    parkBanner: { assetIds: ["park-old"] },
-    event: {
-      logoAssetIds: ["event-logo-old"],
-      backgroundAssetIds: ["event-bg-old"],
+  assert.deepEqual(
+    withoutTypeNames(ASSET_LIST_EXPIRED_ASSET_ID.decode(response)),
+    {
+      homeBanner: { assetIds: ["home-old", "home-unused"] },
+      parkBanner: { assetIds: ["park-old"] },
+      event: {
+        logoAssetIds: ["event-logo-old"],
+        backgroundAssetIds: ["event-bg-old"],
+      },
+      marathon: {
+        logoAssetIds: ["marathon-logo-old"],
+        backgroundAssetIds: ["marathon-bg-old"],
+      },
+      loginBonus: {
+        logoAssetIds: ["bonus-logo-old"],
+        backgroundAssetIds: ["bonus-bg-old"],
+        thumbnailAssetIds: ["bonus-thumb-old"],
+      },
+      shop: { thumbnailAssetIds: ["shop-thumbnail-old"] },
+      startupNotification: { assetIds: ["startup-old"] },
+      gacha: {
+        iconAssetIds: ["gacha-icon-old"],
+        promotionImageAssetIds: ["gacha-image-old"],
+        promotionMovieAssetIds: ["gacha-movie-old"],
+        bgmAssetIds: ["gacha-bgm-old"],
+        gachaAnimationAssetIds: ["gacha-animation-old"],
+      },
     },
-    marathon: {
-      logoAssetIds: ["marathon-logo-old"],
-      backgroundAssetIds: ["marathon-bg-old"],
-    },
-    loginBonus: {
-      logoAssetIds: ["bonus-logo-old"],
-      backgroundAssetIds: ["bonus-bg-old"],
-      thumbnailAssetIds: ["bonus-thumb-old"],
-    },
-    shop: { thumbnailAssetIds: ["shop-thumbnail-old"] },
-    startupNotification: { assetIds: ["startup-old"] },
-    gacha: {
-      iconAssetIds: ["gacha-icon-old"],
-      promotionImageAssetIds: ["gacha-image-old"],
-      promotionMovieAssetIds: ["gacha-movie-old"],
-      bgmAssetIds: ["gacha-bgm-old"],
-      gachaAnimationAssetIds: ["gacha-animation-old"],
-    },
-  });
+  );
 });
 
 void test("AssetApi authenticates and uses the contract policies", async () => {

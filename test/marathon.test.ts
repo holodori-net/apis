@@ -2,14 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeMarathonMusicRankingResponse,
-  decodeMarathonScoreRankingResponse,
-  decodeMarathonTopResponse,
-  encodeMarathonListMusicHighestScoreRankingRequest,
-  encodeMarathonListRankingRequest,
-  encodeMarathonTopRequest,
-} from "../src/codecs/marathon.js";
-import {
   encodeBytesField,
   encodeMessage,
   encodeStringField,
@@ -27,11 +19,11 @@ import {
 
 void test("encodes Marathon requests with their contract field numbers", () => {
   assert.deepEqual(
-    encodeMarathonTopRequest({ marathonId: "marathon-1" }),
+    MARATHON_TOP.encode({ marathonId: "marathon-1" }),
     encodeMessage(encodeStringField(1, "marathon-1")),
   );
   assert.deepEqual(
-    encodeMarathonListMusicHighestScoreRankingRequest({
+    MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_GRADE.encode({
       marathonChapterId: "chapter-1",
       musicId: "music-1",
     }),
@@ -41,13 +33,12 @@ void test("encodes Marathon requests with their contract field numbers", () => {
     ),
   );
   assert.deepEqual(
-    encodeMarathonListRankingRequest({ marathonChapterId: "chapter-1" }),
+    MARATHON_LIST_SCORE_RANKING_GRADE.encode({
+      marathonChapterId: "chapter-1",
+    }),
     encodeMessage(encodeStringField(1, "chapter-1")),
   );
-  assert.throws(
-    () => encodeMarathonTopRequest({ marathonId: "" }),
-    /Marathon ID/,
-  );
+  assert.throws(() => MARATHON_TOP.encode({ marathonId: "" }), /Marathon ID/);
 });
 
 void test("decodes full Marathon top metadata and personal ranking state", () => {
@@ -178,7 +169,7 @@ void test("decodes full Marathon top metadata and personal ranking state", () =>
     encodeVarintField(5, 4n),
     encodeBytesField(6, reward),
   );
-  const response = decodeMarathonTopResponse(
+  const response = MARATHON_TOP.decode(
     encodeMessage(
       encodeBytesField(1, marathon),
       encodeBytesField(2, encodeMessage(encodeBytesField(1, personalChapter))),
@@ -194,26 +185,37 @@ void test("decodes full Marathon top metadata and personal ranking state", () =>
   );
   assert.equal(response.marathon?.marathonChapters[0]?.score, 99_999n);
   assert.equal(
-    response.marathon?.marathonChapters[0]?.scoreRewards[0]?.score,
+    response.marathon?.marathonChapters[0]?.marathonScoreRewards[0]?.score,
     10_000n,
   );
-  assert.equal(response.marathon?.musicScoreBonuses[0]?.scoreUpPermilUp, 150);
   assert.equal(
-    response.marathon?.miniGameScoreBonuses[0]?.cardPotentialUpgradeCount,
+    response.marathon?.marathonMusicScoreBonuses[0]?.scoreUpPermilUp,
+    150,
+  );
+  assert.equal(
+    response.marathon?.marathonMiniGameMarathonScoreBonuses[0]
+      ?.cardPotentialUpgradeCount,
     3n,
   );
   assert.equal(
-    response.marathon?.liveScoreBonuses[0]?.marathonScoreQuantityUpPermilUp,
+    response.marathon?.marathonLiveMarathonScoreBonuses[0]
+      ?.marathonScoreQuantityUpPermilUp,
     300,
   );
-  assert.equal(response.marathon?.miniGameScoreRates[0]?.bonusPermilUp, 100);
-  assert.equal(response.marathon?.scoreRankingRankRewards[0]?.endRank, 100n);
   assert.equal(
-    response.marathon?.musicHighestScoreRankingRankRewards[0]?.musicId,
+    response.marathon?.marathonMiniGameMarathonScoreRates[0]?.bonusPermilUp,
+    100,
+  );
+  assert.equal(
+    response.marathon?.marathonScoreRankingRankRewards[0]?.endRank,
+    100n,
+  );
+  assert.equal(
+    response.marathon?.marathonMusicHighestScoreRankingRankRewards[0]?.musicId,
     "music-1",
   );
   assert.equal(
-    response.marathon?.totalMusicHighestScoreRankingRewards[0]?.groupId,
+    response.marathon?.marathonTotalMusicHighestScoreRankingRewards[0]?.groupId,
     "rank-reward-group",
   );
   assert.equal(response.marathon?.isMarathonScoreRankingDisable, true);
@@ -232,7 +234,7 @@ void test("decodes full Marathon top metadata and personal ranking state", () =>
   );
   assert.equal(
     response.marathon?.marathonChapters[0]
-      ?.musicHighestScoreRankingRankRewardGroupId,
+      ?.marathonMusicHighestScoreRankingRankRewardGroupId,
     "music-rank-group",
   );
   assert.equal(
@@ -296,10 +298,10 @@ void test("decodes all ranking response shapes with full shared rank entries", (
     encodeVarintField(3, 1),
     encodeBytesField(4, rankInfo),
   );
-  const musicResponse = decodeMarathonMusicRankingResponse(
+  const musicResponse = MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_GRADE.decode(
     encodeBytesField(1, ranking),
   );
-  const scoreResponse = decodeMarathonScoreRankingResponse(
+  const scoreResponse = MARATHON_LIST_SCORE_RANKING_GRADE.decode(
     encodeBytesField(1, ranking),
   );
 

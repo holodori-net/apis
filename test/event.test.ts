@@ -2,10 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeEventListEventInfoForPortalResponse,
-  decodeEventListEventInfoResponse,
-} from "../src/codecs/event.js";
-import {
   encodeBytesField,
   encodeMessage,
   encodeStringField,
@@ -17,6 +13,7 @@ import {
   EventApi,
 } from "../src/services/event.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
+import { withoutTypeNames } from "./support/without-type-names.js";
 
 function portalEvent(): Buffer {
   return encodeMessage(
@@ -38,8 +35,10 @@ function portalEvent(): Buffer {
 
 void test("decodes portal event summaries", () => {
   assert.deepEqual(
-    decodeEventListEventInfoForPortalResponse(
-      encodeBytesField(1, portalEvent()),
+    withoutTypeNames(
+      EVENT_LIST_EVENT_INFO_FOR_PORTAL.decode(
+        encodeBytesField(1, portalEvent()),
+      ),
     ),
     {
       eventInfos: [
@@ -178,102 +177,105 @@ void test("decodes detailed Marathon chapters, rewards, and bonuses", () => {
       ),
     ),
   ]);
-  const result = decodeEventListEventInfoResponse(encodeBytesField(1, event));
+  const result = EVENT_LIST_EVENT_INFO.decode(encodeBytesField(1, event));
   const detailed = result.eventInfos[0];
 
   assert.equal(detailed?.eventId, "event-001");
   assert.equal(detailed?.marathonInfo?.exchangeBoothGroupId, "exchange-group");
   assert.equal(detailed?.marathonInfo?.marathonChapters.length, 1);
-  assert.deepEqual(detailed?.marathonInfo?.marathonChapters[0], {
-    id: "chapter-1",
-    chapterNumber: 1,
-    characterId: "character-1",
-    endTime: 1_700_100_000_000n,
-    scoreName: "Score",
-    scoreIconAssetId: "score-icon",
-    marathonEventBadgeItemId: "badge-item",
-    missionGroupId: "chapter-missions",
-    marathonScoreRewards: [
-      {
-        score: 1000n,
-        rewards: [{ resourceType: 3, resourceId: "item-1", quantity: 25n }],
-      },
-    ],
-    score: 1000n,
-    eventStoryChapterId: "story-chapter",
-    autoPlayStoryId: "auto-story",
-    backgroundAssetId: "chapter-bg",
-    bgmAssetId: "chapter-bgm",
-    rankingRevealStartTime: 1_700_050_000_000n,
-    marathonScoreRankingRankRewards: [
-      {
-        groupId: "rank-group",
-        endRank: 10n,
-        rewards: [{ resourceType: 3, resourceId: "item-1", quantity: 25n }],
-        marathonRankingGradeId: "grade-1",
-      },
-    ],
-    marathonMusicHighestScoreRankingRankRewards: [
-      {
-        groupId: "music-rank-group",
-        musicId: "music-1",
-        endRank: 5n,
-        rewards: [{ resourceType: 3, resourceId: "item-1", quantity: 25n }],
-        marathonRankingGradeId: "grade-2",
-      },
-    ],
-    marathonTotalMusicHighestScoreRankingRewards: [
-      {
-        groupId: "total-rank-group",
-        endRank: 3n,
-        rewards: [{ resourceType: 3, resourceId: "item-1", quantity: 25n }],
-        marathonRankingGradeId: "grade-3",
-      },
-    ],
-    marathonMusicScoreBonuses: [
-      {
-        groupId: "music-bonus",
-        musicId: "music-1",
-        number: 1,
-        characterId: "character-1",
-        cardId: "card-1",
-        cardAttributeType: 2,
-        cardRarity: 3,
-        cardPotentialUpgradeCount: 4n,
-        scoreUpPermilUp: 150,
-      },
-    ],
-    marathonMiniGameMarathonScoreBonuses: [
-      {
-        groupId: "mini-bonus",
-        number: 2,
-        cardId: "card-2",
-        cardRarity: 3,
-        cardPotentialUpgradeCount: 5n,
-        marathonScoreQuantityUpPermilUp: 200,
-      },
-    ],
-    marathonLiveMarathonScoreBonuses: [
-      {
-        groupId: "live-bonus",
-        number: 3,
-        characterId: "character-1",
-        cardId: "card-3",
-        cardAttributeType: 1,
-        cardRarity: 4,
-        cardPotentialUpgradeCount: 6n,
-        marathonScoreQuantityUpPermilUp: 250,
-      },
-    ],
-    marathonMiniGameScoreRates: [
-      {
-        groupId: "game-rate",
-        miniGameType: 4,
-        marathonScorePermilMultiply: 1500,
-        bonusPermilUp: 50,
-      },
-    ],
-  });
+  assert.deepEqual(
+    withoutTypeNames(detailed?.marathonInfo?.marathonChapters[0]),
+    {
+      id: "chapter-1",
+      chapterNumber: 1,
+      characterId: "character-1",
+      endTime: 1_700_100_000_000n,
+      scoreName: "Score",
+      scoreIconAssetId: "score-icon",
+      marathonEventBadgeItemId: "badge-item",
+      missionGroupId: "chapter-missions",
+      marathonScoreRewards: [
+        {
+          score: 1000n,
+          rewards: [{ resourceType: 3, resourceId: "item-1", quantity: 25n }],
+        },
+      ],
+      score: 1000n,
+      eventStoryChapterId: "story-chapter",
+      autoPlayStoryId: "auto-story",
+      backgroundAssetId: "chapter-bg",
+      bgmAssetId: "chapter-bgm",
+      rankingRevealStartTime: 1_700_050_000_000n,
+      marathonScoreRankingRankRewards: [
+        {
+          groupId: "rank-group",
+          endRank: 10n,
+          rewards: [{ resourceType: 3, resourceId: "item-1", quantity: 25n }],
+          marathonRankingGradeId: "grade-1",
+        },
+      ],
+      marathonMusicHighestScoreRankingRankRewards: [
+        {
+          groupId: "music-rank-group",
+          musicId: "music-1",
+          endRank: 5n,
+          rewards: [{ resourceType: 3, resourceId: "item-1", quantity: 25n }],
+          marathonRankingGradeId: "grade-2",
+        },
+      ],
+      marathonTotalMusicHighestScoreRankingRewards: [
+        {
+          groupId: "total-rank-group",
+          endRank: 3n,
+          rewards: [{ resourceType: 3, resourceId: "item-1", quantity: 25n }],
+          marathonRankingGradeId: "grade-3",
+        },
+      ],
+      marathonMusicScoreBonuses: [
+        {
+          groupId: "music-bonus",
+          musicId: "music-1",
+          number: 1,
+          characterId: "character-1",
+          cardId: "card-1",
+          cardAttributeType: 2,
+          cardRarity: 3,
+          cardPotentialUpgradeCount: 4n,
+          scoreUpPermilUp: 150,
+        },
+      ],
+      marathonMiniGameMarathonScoreBonuses: [
+        {
+          groupId: "mini-bonus",
+          number: 2,
+          cardId: "card-2",
+          cardRarity: 3,
+          cardPotentialUpgradeCount: 5n,
+          marathonScoreQuantityUpPermilUp: 200,
+        },
+      ],
+      marathonLiveMarathonScoreBonuses: [
+        {
+          groupId: "live-bonus",
+          number: 3,
+          characterId: "character-1",
+          cardId: "card-3",
+          cardAttributeType: 1,
+          cardRarity: 4,
+          cardPotentialUpgradeCount: 6n,
+          marathonScoreQuantityUpPermilUp: 250,
+        },
+      ],
+      marathonMiniGameMarathonScoreRates: [
+        {
+          groupId: "game-rate",
+          miniGameType: 4,
+          marathonScorePermilMultiply: 1500,
+          bonusPermilUp: 50,
+        },
+      ],
+    },
+  );
   assert.equal(detailed?.marathonInfo?.tipsHintType, 2);
   assert.equal(detailed?.marathonInfo?.isMarathonScoreRankingDisable, true);
 });

@@ -1,12 +1,23 @@
-import {
-  decodeProfileGetUserProfileDetailResponse,
-  encodeProfileGetUserProfileDetailRequest,
-  type ProfileGetUserProfileDetailRequest,
-  type ProfileGetUserProfileDetailResponse,
-} from "../codecs/profile.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import {
+  decodeProtobuf,
+  encodeProtobuf,
+  type ProtobufMessageInit,
+} from "../protos/codec.js";
+import {
+  ProfileGetUserProfileDetailRequestSchema,
+  type ProfileGetUserProfileDetailResponse,
+  ProfileGetUserProfileDetailResponseSchema,
+} from "../protos/gen/rpc/api/profile.gen_pb.js";
+
+export type ProfileGetUserProfileDetailRequest = Required<
+  Pick<
+    ProtobufMessageInit<typeof ProfileGetUserProfileDetailRequestSchema>,
+    "publicUserId"
+  >
+>;
 
 const PROFILE_GET_USER_PROFILE_DETAIL: ApiMethod<
   ProfileGetUserProfileDetailRequest,
@@ -17,8 +28,13 @@ const PROFILE_GET_USER_PROFILE_DETAIL: ApiMethod<
   requiresMasterVersion: false,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeProfileGetUserProfileDetailRequest,
-  decode: decodeProfileGetUserProfileDetailResponse,
+  encode: (request) => {
+    if (!request.publicUserId)
+      throw new TypeError("public user ID must not be empty");
+    return encodeProtobuf(ProfileGetUserProfileDetailRequestSchema, request);
+  },
+  decode: (data) =>
+    decodeProtobuf(ProfileGetUserProfileDetailResponseSchema, data),
 };
 
 /** Reads a player's public profile and gameplay summary. */
@@ -39,17 +55,16 @@ export class ProfileApi {
 }
 
 export { PROFILE_GET_USER_PROFILE_DETAIL };
+export type { EmblemPosition as ProfileEmblemPosition } from "../protos/gen/common/emblem_position.gen_pb.js";
 export type {
-  ProfileBasicUserInfo,
-  ProfileCharacterLevel,
-  ProfileEmblemPosition,
-  ProfileGetUserProfileDetailRequest,
-  ProfileGetUserProfileDetailResponse,
-  ProfileHighestLiveDeckEvaluationLiveDeck,
-  ProfileHighestLiveDeckPosition,
-  ProfileLiveResultInfo,
-  ProfileMiniGameResultInfo,
-  ProfileMusicHighestScoreRatingInfo,
-  ProfileUserProfileDetailInfo,
-  ProfileUserProfileInfo,
-} from "../codecs/profile.js";
+  BasicUserInfo as ProfileBasicUserInfo,
+  UserProfileDetailInfo_CharacterLevel as ProfileCharacterLevel,
+  UserProfileDetailInfo_HighestLiveDeckEvaluationLiveDeck as ProfileHighestLiveDeckEvaluationLiveDeck,
+  UserProfileDetailInfo_HighestLiveDeckEvaluationLiveDeck_LiveDeckPosition as ProfileHighestLiveDeckPosition,
+  UserProfileDetailInfo_LiveResultInfo as ProfileLiveResultInfo,
+  UserProfileDetailInfo_MiniGameResultInfo as ProfileMiniGameResultInfo,
+  UserProfileDetailInfo_MusicHighestScoreRatingInfo as ProfileMusicHighestScoreRatingInfo,
+  UserProfileDetailInfo as ProfileUserProfileDetailInfo,
+  UserProfileInfo as ProfileUserProfileInfo,
+} from "../protos/gen/rpc/api/common/profile.gen_pb.js";
+export type { ProfileGetUserProfileDetailResponse } from "../protos/gen/rpc/api/profile.gen_pb.js";

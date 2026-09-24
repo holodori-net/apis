@@ -1,11 +1,12 @@
-import {
-  decodeMultiGameListPingServerResponse,
-  encodeMultiGameListPingServerRequest,
-  type MultiGameListPingServerResponse,
-} from "../codecs/multi-game.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import { EmptySchema } from "../protos/gen/google/protobuf/empty_pb.js";
+import {
+  type MultiGameListPingServerResponse,
+  MultiGameListPingServerResponseSchema,
+} from "../protos/gen/rpc/api/multi_game.gen_pb.js";
 
 const MULTI_GAME_LIST_PING_SERVER: ApiMethod<
   void,
@@ -16,8 +17,8 @@ const MULTI_GAME_LIST_PING_SERVER: ApiMethod<
   requiresMasterVersion: false,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMultiGameListPingServerRequest,
-  decode: decodeMultiGameListPingServerResponse,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (data) => decodeProtobuf(MultiGameListPingServerResponseSchema, data),
 };
 
 /** Provides multiplayer connection discovery. */
@@ -36,7 +37,4 @@ export class MultiGameApi {
 }
 
 export { MULTI_GAME_LIST_PING_SERVER };
-export type {
-  MultiGameListPingServerResponse,
-  MultiGamePingServer,
-} from "../codecs/multi-game.js";
+export type { MultiGameListPingServerResponse } from "../protos/gen/rpc/api/multi_game.gen_pb.js";

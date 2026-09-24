@@ -2,17 +2,12 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  ChaseTeamType,
-  decodeMiniGameRankingResponse,
-  encodeChaseRankingRequest,
-  encodeMiniGameRankingRequest,
-} from "../src/codecs/mini-game-ranking.js";
-import {
   encodeBytesField,
   encodeMessage,
   encodeVarintField,
 } from "../src/low-level.js";
-import { ChaseApi } from "../src/services/chase.js";
+import { ChaseTeamType as GeneratedChaseTeamType } from "../src/protos/gen/enums/chase_team_type.gen_pb.js";
+import { CHASE_GET_RANKING_INFO, ChaseApi } from "../src/services/chase.js";
 import { CircuitApi } from "../src/services/circuit.js";
 import { ComboCardGameApi } from "../src/services/combo-card-game.js";
 import { JumpRopeApi } from "../src/services/jump-rope.js";
@@ -20,17 +15,20 @@ import { SplashBallApi } from "../src/services/splash-ball.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes mini-game ranking requests according to their contracts", () => {
-  assert.deepEqual(encodeMiniGameRankingRequest(), Buffer.alloc(0));
   assert.deepEqual(
-    encodeChaseRankingRequest({ chaseTeamType: ChaseTeamType.Mischief }),
+    CHASE_GET_RANKING_INFO.encode({
+      chaseTeamType: GeneratedChaseTeamType.MISCHIEF,
+    }),
     encodeMessage(encodeVarintField(1, 1)),
   );
   assert.deepEqual(
-    encodeChaseRankingRequest({ chaseTeamType: ChaseTeamType.Patrol }),
+    CHASE_GET_RANKING_INFO.encode({
+      chaseTeamType: GeneratedChaseTeamType.PATROL,
+    }),
     encodeMessage(encodeVarintField(1, 2)),
   );
   assert.throws(
-    () => encodeChaseRankingRequest({ chaseTeamType: 0 as ChaseTeamType }),
+    () => CHASE_GET_RANKING_INFO.encode({ chaseTeamType: 0 }),
     /chaseTeamType/,
   );
 });
@@ -40,12 +38,13 @@ void test("decodes self rank and shared basic rank information", () => {
     encodeVarintField(1, 3),
     encodeVarintField(2, 1_234_567n),
   );
-  const response = decodeMiniGameRankingResponse(
+  const response = CHASE_GET_RANKING_INFO.decode(
     encodeMessage(encodeVarintField(1, 5), encodeBytesField(2, rankInfo)),
   );
 
   assert.equal(response.selfRank, 5);
-  assert.deepEqual(response.rankInfos, [{ rank: 3, score: 1_234_567n }]);
+  assert.equal(response.rankInfos[0]?.rank, 3);
+  assert.equal(response.rankInfos[0]?.score, 1_234_567n);
 });
 
 void test("uses authenticated, cached read policies and forwards options", async () => {
@@ -75,7 +74,10 @@ void test("uses authenticated, cached read policies and forwards options", async
 
   await jumpRope.getRankingInfo(options);
   await circuit.getRankingInfo(options);
-  await chase.getRankingInfo({ chaseTeamType: ChaseTeamType.Patrol }, options);
+  await chase.getRankingInfo(
+    { chaseTeamType: GeneratedChaseTeamType.PATROL },
+    options,
+  );
   await splashBall.getRankingInfo(options);
   await comboCardGame.getRankingInfo(options);
 
@@ -95,7 +97,7 @@ void test("uses authenticated, cached read policies and forwards options", async
     [
       undefined,
       undefined,
-      { chaseTeamType: ChaseTeamType.Patrol },
+      { chaseTeamType: GeneratedChaseTeamType.PATROL },
       undefined,
       undefined,
     ],

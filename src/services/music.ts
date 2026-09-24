@@ -1,28 +1,45 @@
-import {
-  decodeMusicGetHighestScoreLiveDeckResponse,
-  decodeMusicGetHighestScoreRankingInfoResponse,
-  decodeMusicGetHighestScoreRatingRankingInfoResponse,
-  decodeMusicListHighestScoreRatingRankingRankResponse,
-  decodeMusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse,
-  encodeMusicGetHighestScoreLiveDeckRequest,
-  encodeMusicGetHighestScoreRankingInfoRequest,
-  encodeMusicGetHighestScoreRatingRankingInfoRequest,
-  encodeMusicListHighestScoreRatingRankingRankRequest,
-  encodeMusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequest,
-  type MusicGetHighestScoreLiveDeckRequest,
-  type MusicGetHighestScoreLiveDeckResponse,
-  type MusicGetHighestScoreRankingInfoRequest,
-  type MusicGetHighestScoreRankingInfoResponse,
-  type MusicGetHighestScoreRatingRankingInfoRequest,
-  type MusicGetHighestScoreRatingRankingInfoResponse,
-  type MusicListHighestScoreRatingRankingRankRequest,
-  type MusicListHighestScoreRatingRankingRankResponse,
-  type MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequest,
-  type MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse,
-} from "../codecs/music.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import {
+  decodeProtobuf,
+  encodeProtobuf,
+  type ProtobufMessageInit,
+} from "../protos/codec.js";
+import {
+  MusicGetHighestScoreLiveDeckRequestSchema,
+  type MusicGetHighestScoreLiveDeckResponse,
+  MusicGetHighestScoreLiveDeckResponseSchema,
+  MusicGetHighestScoreRankingInfoRequestSchema,
+  type MusicGetHighestScoreRankingInfoResponse,
+  MusicGetHighestScoreRankingInfoResponseSchema,
+  MusicGetHighestScoreRatingRankingInfoRequestSchema,
+  type MusicGetHighestScoreRatingRankingInfoResponse,
+  MusicGetHighestScoreRatingRankingInfoResponseSchema,
+  MusicListHighestScoreRatingRankingRankRequestSchema,
+  type MusicListHighestScoreRatingRankingRankResponse,
+  MusicListHighestScoreRatingRankingRankResponseSchema,
+  MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequestSchema,
+  type MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse,
+  MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponseSchema,
+} from "../protos/gen/rpc/api/music.gen_pb.js";
+
+export type MusicGetHighestScoreLiveDeckRequest = ProtobufMessageInit<
+  typeof MusicGetHighestScoreLiveDeckRequestSchema
+> & { publicUserId: string; musicId: string };
+export type MusicGetHighestScoreRankingInfoRequest = ProtobufMessageInit<
+  typeof MusicGetHighestScoreRankingInfoRequestSchema
+> & { musicId: string };
+export type MusicListHighestScoreRatingRankingRankRequest = ProtobufMessageInit<
+  typeof MusicListHighestScoreRatingRankingRankRequestSchema
+> & { characterIds: readonly string[] };
+export type MusicGetHighestScoreRatingRankingInfoRequest = ProtobufMessageInit<
+  typeof MusicGetHighestScoreRatingRankingInfoRequestSchema
+> & { characterId: string };
+export type MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequest =
+  ProtobufMessageInit<
+    typeof MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequestSchema
+  > & { characterId: string };
 
 const MUSIC_GET_HIGHEST_SCORE_LIVE_DECK: ApiMethod<
   MusicGetHighestScoreLiveDeckRequest,
@@ -33,8 +50,13 @@ const MUSIC_GET_HIGHEST_SCORE_LIVE_DECK: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicGetHighestScoreLiveDeckRequest,
-  decode: decodeMusicGetHighestScoreLiveDeckResponse,
+  encode: (request) =>
+    encodeProtobuf(MusicGetHighestScoreLiveDeckRequestSchema, {
+      publicUserId: requireNonEmpty(request.publicUserId, "public user ID"),
+      musicId: requireNonEmpty(request.musicId, "music ID"),
+    }),
+  decode: (data) =>
+    decodeProtobuf(MusicGetHighestScoreLiveDeckResponseSchema, data),
 };
 
 const MUSIC_GET_HIGHEST_SCORE_RANKING_INFO: ApiMethod<
@@ -46,8 +68,12 @@ const MUSIC_GET_HIGHEST_SCORE_RANKING_INFO: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicGetHighestScoreRankingInfoRequest,
-  decode: decodeMusicGetHighestScoreRankingInfoResponse,
+  encode: (request) =>
+    encodeProtobuf(MusicGetHighestScoreRankingInfoRequestSchema, {
+      musicId: requireNonEmpty(request.musicId, "music ID"),
+    }),
+  decode: (data) =>
+    decodeProtobuf(MusicGetHighestScoreRankingInfoResponseSchema, data),
 };
 
 const MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_RANK: ApiMethod<
@@ -59,8 +85,15 @@ const MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_RANK: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicListHighestScoreRatingRankingRankRequest,
-  decode: decodeMusicListHighestScoreRatingRankingRankResponse,
+  encode: (request) => {
+    validateUniqueNonEmpty(request.characterIds, "character IDs");
+    return encodeProtobuf(
+      MusicListHighestScoreRatingRankingRankRequestSchema,
+      request,
+    );
+  },
+  decode: (data) =>
+    decodeProtobuf(MusicListHighestScoreRatingRankingRankResponseSchema, data),
 };
 
 const MUSIC_GET_HIGHEST_SCORE_RATING_RANKING_INFO: ApiMethod<
@@ -72,8 +105,12 @@ const MUSIC_GET_HIGHEST_SCORE_RATING_RANKING_INFO: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicGetHighestScoreRatingRankingInfoRequest,
-  decode: decodeMusicGetHighestScoreRatingRankingInfoResponse,
+  encode: (request) =>
+    encodeProtobuf(MusicGetHighestScoreRatingRankingInfoRequestSchema, {
+      characterId: requireNonEmpty(request.characterId, "character ID"),
+    }),
+  decode: (data) =>
+    decodeProtobuf(MusicGetHighestScoreRatingRankingInfoResponseSchema, data),
 };
 
 const MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_REWARD_THRESHOLD_RANKING_RANK_INFO: ApiMethod<
@@ -85,10 +122,16 @@ const MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_REWARD_THRESHOLD_RANKING_RANK_INFO
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode:
-    encodeMusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequest,
-  decode:
-    decodeMusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse,
+  encode: (request) =>
+    encodeProtobuf(
+      MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequestSchema,
+      { characterId: requireNonEmpty(request.characterId, "character ID") },
+    ),
+  decode: (data) =>
+    decodeProtobuf(
+      MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponseSchema,
+      data,
+    ),
 };
 
 /** Reads music score and per-character rating rankings. */
@@ -170,23 +213,26 @@ export {
   MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_RANK,
   MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_REWARD_THRESHOLD_RANKING_RANK_INFO,
 };
+export type { RankingLiveDeckInfo } from "../protos/gen/rpc/api/common/ranking.gen_pb.js";
 export type {
-  MusicDifficultyScoreInfo,
-  MusicGetHighestScoreLiveDeckRequest,
   MusicGetHighestScoreLiveDeckResponse,
-  MusicGetHighestScoreRankingInfoRequest,
   MusicGetHighestScoreRankingInfoResponse,
-  MusicGetHighestScoreRatingRankingInfoRequest,
   MusicGetHighestScoreRatingRankingInfoResponse,
-  MusicHighestScoreRatingRankingRankInfo,
-  MusicListHighestScoreRatingRankingRankRequest,
   MusicListHighestScoreRatingRankingRankResponse,
-  MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequest,
   MusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse,
-  MusicThresholdRankingRankInfo,
-} from "../codecs/music.js";
-export type {
-  BasicRankingRankInfo,
-  RankingLiveDeckCard,
-  RankingLiveDeckInfo,
-} from "../codecs/ranking.js";
+} from "../protos/gen/rpc/api/music.gen_pb.js";
+
+function requireNonEmpty(value: string, name: string): string {
+  if (value.length === 0) throw new RangeError(`${name} must not be empty`);
+  return value;
+}
+
+function validateUniqueNonEmpty(values: readonly string[], name: string): void {
+  if (values.length === 0) throw new RangeError(`${name} must not be empty`);
+  const seen = new Set<string>();
+  for (const value of values) {
+    requireNonEmpty(value, name);
+    if (seen.has(value)) throw new RangeError(`${name} must be unique`);
+    seen.add(value);
+  }
+}

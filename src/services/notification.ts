@@ -1,11 +1,12 @@
-import {
-  decodeNotificationListResponse,
-  encodeNotificationListRequest,
-  type NotificationListResponse,
-} from "../codecs/notification.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import { EmptySchema } from "../protos/gen/google/protobuf/empty_pb.js";
+import {
+  type NotificationListResponse,
+  NotificationListResponseSchema,
+} from "../protos/gen/rpc/api/notification.gen_pb.js";
 
 const NOTIFICATION_LIST: ApiMethod<void, NotificationListResponse> = {
   path: "/rpc.api.Notification/List",
@@ -13,8 +14,8 @@ const NOTIFICATION_LIST: ApiMethod<void, NotificationListResponse> = {
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeNotificationListRequest,
-  decode: decodeNotificationListResponse,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (data) => decodeProtobuf(NotificationListResponseSchema, data),
 };
 
 /** Provides account-level unread and content update indicators. */
@@ -33,8 +34,4 @@ export class NotificationApi {
 }
 
 export { NOTIFICATION_LIST };
-export type {
-  NotificationListResponse,
-  ParkNotificationInfo,
-  UpdatedExchangeBoothGroup,
-} from "../codecs/notification.js";
+export type { NotificationListResponse } from "../protos/gen/rpc/api/notification.gen_pb.js";

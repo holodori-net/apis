@@ -2,18 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeMusicGetHighestScoreLiveDeckResponse,
-  decodeMusicGetHighestScoreRankingInfoResponse,
-  decodeMusicGetHighestScoreRatingRankingInfoResponse,
-  decodeMusicListHighestScoreRatingRankingRankResponse,
-  decodeMusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse,
-  encodeMusicGetHighestScoreLiveDeckRequest,
-  encodeMusicGetHighestScoreRankingInfoRequest,
-  encodeMusicGetHighestScoreRatingRankingInfoRequest,
-  encodeMusicListHighestScoreRatingRankingRankRequest,
-  encodeMusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequest,
-} from "../src/codecs/music.js";
-import {
   decodeProtoFields,
   encodeBytesField,
   encodeMessage,
@@ -36,7 +24,7 @@ void test("encodes Music read requests using contract field numbers", () => {
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeMusicGetHighestScoreLiveDeckRequest({
+        MUSIC_GET_HIGHEST_SCORE_LIVE_DECK.encode({
           publicUserId: "public-1",
           musicId: "music-1",
         }),
@@ -50,7 +38,7 @@ void test("encodes Music read requests using contract field numbers", () => {
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeMusicGetHighestScoreRankingInfoRequest({
+        MUSIC_GET_HIGHEST_SCORE_RANKING_INFO.encode({
           musicId: "music-1",
         }),
       ),
@@ -60,7 +48,7 @@ void test("encodes Music read requests using contract field numbers", () => {
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeMusicListHighestScoreRatingRankingRankRequest({
+        MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_RANK.encode({
           characterIds: ["character-1", "character-2"],
         }),
       ),
@@ -69,7 +57,7 @@ void test("encodes Music read requests using contract field numbers", () => {
   );
   assert.throws(
     () =>
-      encodeMusicListHighestScoreRatingRankingRankRequest({
+      MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_RANK.encode({
         characterIds: ["same", "same"],
       }),
     /unique/,
@@ -77,7 +65,7 @@ void test("encodes Music read requests using contract field numbers", () => {
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeMusicGetHighestScoreRatingRankingInfoRequest({
+        MUSIC_GET_HIGHEST_SCORE_RATING_RANKING_INFO.encode({
           characterId: "character-1",
         }),
       ),
@@ -87,7 +75,7 @@ void test("encodes Music read requests using contract field numbers", () => {
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeMusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoRequest(
+        MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_REWARD_THRESHOLD_RANKING_RANK_INFO.encode(
           {
             characterId: "character-1",
           },
@@ -170,7 +158,7 @@ void test("decodes Music ranking responses and shared ranking structures", () =>
     encodeVarintField(5, 80_000n),
   );
 
-  const liveDeck = decodeMusicGetHighestScoreLiveDeckResponse(
+  const liveDeck = MUSIC_GET_HIGHEST_SCORE_LIVE_DECK.decode(
     encodeBytesField(1, deck),
   );
   assert.equal(
@@ -179,7 +167,7 @@ void test("decodes Music ranking responses and shared ranking structures", () =>
   );
   assert.equal(liveDeck.rankingLiveDeckInfo?.deckEvaluationValue, 80_000n);
 
-  const scoreRanking = decodeMusicGetHighestScoreRankingInfoResponse(
+  const scoreRanking = MUSIC_GET_HIGHEST_SCORE_RANKING_INFO.decode(
     encodeMessage(
       encodeVarintField(1, 12),
       encodeBytesField(2, basicRank),
@@ -203,7 +191,7 @@ void test("decodes Music ranking responses and shared ranking structures", () =>
     987_654_321n,
   );
 
-  const deckResponseRank = decodeMusicGetHighestScoreRatingRankingInfoResponse(
+  const deckResponseRank = MUSIC_GET_HIGHEST_SCORE_RATING_RANKING_INFO.decode(
     encodeBytesField(1, basicRank),
   );
   assert.equal(
@@ -211,7 +199,7 @@ void test("decodes Music ranking responses and shared ranking structures", () =>
     "public-1",
   );
 
-  const characterRanks = decodeMusicListHighestScoreRatingRankingRankResponse(
+  const characterRanks = MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_RANK.decode(
     encodeBytesField(
       1,
       encodeMessage(
@@ -221,11 +209,16 @@ void test("decodes Music ranking responses and shared ranking structures", () =>
     ),
   );
   assert.deepEqual(characterRanks.rankInfos, [
-    { rank: 20, characterId: "character-1" },
+    {
+      $typeName:
+        "rpc.api.MusicListHighestScoreRatingRankingRankResponse.RankInfo",
+      rank: 20,
+      characterId: "character-1",
+    },
   ]);
 
   const thresholds =
-    decodeMusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse(
+    MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_REWARD_THRESHOLD_RANKING_RANK_INFO.decode(
       encodeMessage(
         encodeBytesField(
           1,
@@ -242,7 +235,7 @@ void test("decodes Music ranking responses and shared ranking structures", () =>
 });
 
 void test("decodes signed Music and shared ranking int32/int64 fields", () => {
-  const rankingInfo = decodeMusicGetHighestScoreRankingInfoResponse(
+  const rankingInfo = MUSIC_GET_HIGHEST_SCORE_RANKING_INFO.decode(
     encodeMessage(
       signedVarintField(1, -3),
       encodeBytesField(
@@ -254,7 +247,7 @@ void test("decodes signed Music and shared ranking int32/int64 fields", () => {
   assert.equal(rankingInfo.selfRank, -3);
   assert.equal(rankingInfo.selfMusicDifficultyScoreInfos[0]?.score, -100n);
 
-  const sharedRank = decodeMusicGetHighestScoreRatingRankingInfoResponse(
+  const sharedRank = MUSIC_GET_HIGHEST_SCORE_RATING_RANKING_INFO.decode(
     encodeBytesField(
       1,
       encodeMessage(signedVarintField(1, -5), signedVarintField(2, -200n)),
@@ -264,7 +257,7 @@ void test("decodes signed Music and shared ranking int32/int64 fields", () => {
   assert.equal(sharedRank.rankInfos[0]?.score, -200n);
 
   const threshold =
-    decodeMusicListHighestScoreRatingRankingRewardThresholdRankingRankInfoResponse(
+    MUSIC_LIST_HIGHEST_SCORE_RATING_RANKING_REWARD_THRESHOLD_RANKING_RANK_INFO.decode(
       encodeMessage(
         encodeBytesField(
           1,
@@ -277,7 +270,7 @@ void test("decodes signed Music and shared ranking int32/int64 fields", () => {
   assert.equal(threshold.thresholdRankInfos[0]?.score, -300n);
   assert.equal(threshold.updatedRankingTime, -400n);
 
-  const liveDeck = decodeMusicGetHighestScoreLiveDeckResponse(
+  const liveDeck = MUSIC_GET_HIGHEST_SCORE_LIVE_DECK.decode(
     encodeBytesField(
       1,
       encodeMessage(

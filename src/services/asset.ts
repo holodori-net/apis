@@ -1,11 +1,12 @@
-import {
-  type AssetListExpiredAssetIdResponse,
-  decodeAssetListExpiredAssetIdResponse,
-  encodeAssetListExpiredAssetIdRequest,
-} from "../codecs/asset.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import { EmptySchema } from "../protos/gen/google/protobuf/empty_pb.js";
+import {
+  type AssetListExpiredAssetIdResponse,
+  AssetListExpiredAssetIdResponseSchema,
+} from "../protos/gen/rpc/api/asset.gen_pb.js";
 
 const ASSET_LIST_EXPIRED_ASSET_ID: ApiMethod<
   void,
@@ -16,8 +17,8 @@ const ASSET_LIST_EXPIRED_ASSET_ID: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeAssetListExpiredAssetIdRequest,
-  decode: decodeAssetListExpiredAssetIdResponse,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (data) => decodeProtobuf(AssetListExpiredAssetIdResponseSchema, data),
 };
 
 /** Provides asset identifiers reported as expired by the game service. */
@@ -36,11 +37,4 @@ export class AssetApi {
 }
 
 export { ASSET_LIST_EXPIRED_ASSET_ID };
-export type {
-  AssetListExpiredAssetIdResponse,
-  ExpiredAssetIdList,
-  ExpiredEventAssetIds,
-  ExpiredGachaAssetIds,
-  ExpiredLoginBonusAssetIds,
-  ExpiredShopAssetIds,
-} from "../codecs/asset.js";
+export type { AssetListExpiredAssetIdResponse } from "../protos/gen/rpc/api/asset.gen_pb.js";

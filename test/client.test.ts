@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { test, vi } from "vitest";
 
-import { decodeCredentialResponse } from "../src/codecs/auth.js";
 import { ApiClient } from "../src/core/client.js";
 import { HolodoriApiError } from "../src/core/errors.js";
 import { type ApiMethod } from "../src/core/method.js";
@@ -11,6 +10,8 @@ import {
   encodeStringField,
   encryptProto,
 } from "../src/index.js";
+import { decodeProtobuf } from "../src/protos/codec.js";
+import { AuthCreateResponseSchema } from "../src/protos/gen/rpc/api/auth.gen_pb.js";
 import {
   type ApiTransport,
   ApiTransportError,
@@ -19,6 +20,10 @@ import {
 } from "../src/transports/index.js";
 
 const SECRET = "test-api-secret";
+
+function decodeCredentialResponse(data: Buffer): string {
+  return decodeProtobuf(AuthCreateResponseSchema, data).credential;
+}
 
 class FakeTransport implements ApiTransport {
   readonly requests: ApiTransportRequest[] = [];

@@ -1,20 +1,21 @@
-import {
-  decodeMembershipGetShopResponse,
-  encodeMembershipGetShopRequest,
-  type ShopInfo,
-} from "../codecs/shop.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import { EmptySchema } from "../protos/gen/google/protobuf/empty_pb.js";
+import {
+  type MembershipGetShopResponse,
+  MembershipGetShopResponseSchema,
+} from "../protos/gen/rpc/api/membership.gen_pb.js";
 
-const MEMBERSHIP_GET_SHOP: ApiMethod<void, ShopInfo> = {
+const MEMBERSHIP_GET_SHOP: ApiMethod<void, MembershipGetShopResponse> = {
   path: "/rpc.api.Membership/GetShop",
   requiresGameAuth: true,
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMembershipGetShopRequest,
-  decode: decodeMembershipGetShopResponse,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (data) => decodeProtobuf(MembershipGetShopResponseSchema, data),
 };
 
 /** Provides the Membership subscription shop. */
@@ -29,10 +30,10 @@ export class MembershipApi {
    * @rpc /rpc.api.Membership/GetShop
    * @returns The Membership shop visible to the authenticated account.
    */
-  async getShop(options?: RequestOptions): Promise<ShopInfo> {
+  async getShop(options?: RequestOptions): Promise<MembershipGetShopResponse> {
     return this.client.call(MEMBERSHIP_GET_SHOP, undefined, options);
   }
 }
 
 export { MEMBERSHIP_GET_SHOP };
-export type { ShopInfo } from "../codecs/shop.js";
+export type { MembershipGetShopResponse } from "../protos/gen/rpc/api/membership.gen_pb.js";

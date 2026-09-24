@@ -2,23 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeMusicCreativeChartGetByIdResponse,
-  decodeMusicCreativeChartGetCreatorInfoResponse,
-  decodeMusicCreativeChartGetEarlyClearLiveDeckResponse,
-  decodeMusicCreativeChartGetEarlyClearRankingInfoResponse,
-  decodeMusicCreativeChartGetQuoteTargetChartResponse,
-  decodeMusicCreativeChartListByCreatorResponse,
-  decodeMusicCreativeChartListPopularCreatorResponse,
-  decodeMusicCreativeChartListResponse,
-  encodeMusicCreativeChartGetByIdRequest,
-  encodeMusicCreativeChartGetEarlyClearLiveDeckRequest,
-  encodeMusicCreativeChartGetEarlyClearRankingInfoRequest,
-  encodeMusicCreativeChartIdRequest,
-  encodeMusicCreativeChartListByCreatorRequest,
-  encodeMusicCreativeChartListPopularCreatorRequest,
-  encodeMusicCreativeChartListRequest,
-} from "../src/codecs/music-creative-chart.js";
-import {
   decodeProtoFields,
   encodeBytesField,
   encodeMessage,
@@ -40,13 +23,13 @@ import {
 import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes MusicCreativeChart query requests using contract fields", () => {
-  const listRequest = encodeMusicCreativeChartListRequest({
+  const listRequest = MUSIC_CREATIVE_CHART_LIST_NEWER.encode({
     searchParameter: {
       isSearchAllMusic: true,
       musicIds: ["music-1", "music-2"],
       isQuoteAllowedOnly: true,
       resetIntervalType: 2,
-      textSearchTypes: [1, 3],
+      textSearchTypes: [1, 2],
       searchText: "title",
       difficultyValueFrom: 10,
       difficultyValueTo: 50,
@@ -63,15 +46,15 @@ void test("encodes MusicCreativeChart query requests using contract fields", () 
   ]);
   assert.equal(search.get(3)?.[0], 1n);
   assert.equal(search.get(4)?.[0], 2n);
-  assert.deepEqual(search.get(5), [1n, 3n]);
+  assert.deepEqual(search.get(5), [Buffer.from([1, 2])]);
   assert.equal(search.get(6)?.[0]?.toString(), "title");
   assert.equal(search.get(7)?.[0], 10n);
   assert.equal(search.get(8)?.[0], 50n);
-  assert.deepEqual(search.get(9), [1n, 2n]);
+  assert.deepEqual(search.get(9), [Buffer.from([1, 2])]);
   assert.deepEqual(search.get(10), [Buffer.from("tag-1")]);
 
   const byCreator = decodeProtoFields(
-    encodeMusicCreativeChartListByCreatorRequest({
+    MUSIC_CREATIVE_CHART_LIST_BY_CREATOR.encode({
       publicUserId: "public-1",
       searchParameter: { musicIds: ["music-1"] },
     }),
@@ -82,7 +65,7 @@ void test("encodes MusicCreativeChart query requests using contract fields", () 
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeMusicCreativeChartListPopularCreatorRequest({
+        MUSIC_CREATIVE_CHART_LIST_POPULAR_CREATOR.encode({
           resetIntervalType: 3,
         }),
       ),
@@ -92,7 +75,7 @@ void test("encodes MusicCreativeChart query requests using contract fields", () 
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeMusicCreativeChartGetByIdRequest({
+        MUSIC_CREATIVE_CHART_GET_BY_ID.encode({
           musicCreativeChartId: "chart-1",
           isQuoteAllowedOnly: true,
         }),
@@ -106,7 +89,9 @@ void test("encodes MusicCreativeChart query requests using contract fields", () 
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeMusicCreativeChartIdRequest({ musicCreativeChartId: "chart-1" }),
+        MUSIC_CREATIVE_CHART_GET_QUOTE_TARGET.encode({
+          musicCreativeChartId: "chart-1",
+        }),
       ),
     ],
     [[1, [Buffer.from("chart-1")]]],
@@ -114,7 +99,7 @@ void test("encodes MusicCreativeChart query requests using contract fields", () 
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeMusicCreativeChartGetEarlyClearRankingInfoRequest({
+        MUSIC_CREATIVE_CHART_GET_EARLY_CLEAR_RANKING_INFO.encode({
           musicCreativeChartId: "chart-1",
           liveResultType: 2,
         }),
@@ -128,7 +113,7 @@ void test("encodes MusicCreativeChart query requests using contract fields", () 
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeMusicCreativeChartGetEarlyClearLiveDeckRequest({
+        MUSIC_CREATIVE_CHART_GET_EARLY_CLEAR_LIVE_DECK.encode({
           publicUserId: "public-1",
           musicCreativeChartId: "chart-1",
           liveResultType: 3,
@@ -142,7 +127,7 @@ void test("encodes MusicCreativeChart query requests using contract fields", () 
     ],
   );
   assert.throws(
-    () => encodeMusicCreativeChartGetByIdRequest({ musicCreativeChartId: "" }),
+    () => MUSIC_CREATIVE_CHART_GET_BY_ID.encode({ musicCreativeChartId: "" }),
     /must not be empty/,
   );
 });
@@ -150,21 +135,21 @@ void test("encodes MusicCreativeChart query requests using contract fields", () 
 void test("rejects invalid MusicCreativeChart query parameters", () => {
   assert.throws(
     () =>
-      encodeMusicCreativeChartListRequest({
+      MUSIC_CREATIVE_CHART_LIST_NEWER.encode({
         searchParameter: { musicIds: ["music-1", "music-1"] },
       }),
     /music IDs must be unique/,
   );
   assert.throws(
     () =>
-      encodeMusicCreativeChartListRequest({
+      MUSIC_CREATIVE_CHART_LIST_NEWER.encode({
         searchParameter: { chartTypes: [0] },
       }),
     /chart types must be a positive integer/,
   );
   assert.throws(
     () =>
-      encodeMusicCreativeChartListRequest({
+      MUSIC_CREATIVE_CHART_LIST_NEWER.encode({
         searchParameter: {
           difficultyValueFrom: 20,
           difficultyValueTo: 10,
@@ -174,7 +159,7 @@ void test("rejects invalid MusicCreativeChart query parameters", () => {
   );
   assert.throws(
     () =>
-      encodeMusicCreativeChartGetEarlyClearRankingInfoRequest({
+      MUSIC_CREATIVE_CHART_GET_EARLY_CLEAR_RANKING_INFO.encode({
         musicCreativeChartId: "chart-1",
         liveResultType: 0,
       }),
@@ -299,7 +284,7 @@ void test("decodes MusicCreativeChart discovery, creator, and ranking responses"
     encodeStringField(18, "https://cdn/preview.png"),
     encodeVarintField(19, 1),
   );
-  const grouped = decodeMusicCreativeChartListResponse(
+  const grouped = MUSIC_CREATIVE_CHART_LIST_NEWER.decode(
     encodeBytesField(
       1,
       encodeMessage(
@@ -323,13 +308,13 @@ void test("decodes MusicCreativeChart discovery, creator, and ranking responses"
   assert.equal(grouped.chartInfoMusicGroupings[0]?.chartInfos[0]?.isOwn, true);
 
   assert.equal(
-    decodeMusicCreativeChartListByCreatorResponse(encodeBytesField(1, chart))
+    MUSIC_CREATIVE_CHART_LIST_BY_CREATOR.decode(encodeBytesField(1, chart))
       .chartInfos[0]?.title,
     "Chart title",
   );
   assert.equal(
-    decodeMusicCreativeChartGetByIdResponse(encodeBytesField(1, chart))
-      .chartInfo?.playCount,
+    MUSIC_CREATIVE_CHART_GET_BY_ID.decode(encodeBytesField(1, chart)).chartInfo
+      ?.playCount,
     9_000_000_000n,
   );
 
@@ -337,7 +322,7 @@ void test("decodes MusicCreativeChart discovery, creator, and ranking responses"
     encodeStringField(1, "public-1"),
     encodeBytesField(2, encodeMessage(encodeStringField(1, "Creator name"))),
   );
-  const popularCreators = decodeMusicCreativeChartListPopularCreatorResponse(
+  const popularCreators = MUSIC_CREATIVE_CHART_LIST_POPULAR_CREATOR.decode(
     encodeBytesField(
       1,
       encodeMessage(
@@ -353,7 +338,7 @@ void test("decodes MusicCreativeChart discovery, creator, and ranking responses"
   );
   assert.equal(popularCreators.creatorInfos[0]?.publishedChartCount, 12n);
 
-  const creator = decodeMusicCreativeChartGetCreatorInfoResponse(
+  const creator = MUSIC_CREATIVE_CHART_GET_CREATOR_INFO.decode(
     encodeMessage(
       encodeBytesField(1, basicUser),
       encodeStringField(2, "public-2"),
@@ -365,7 +350,7 @@ void test("decodes MusicCreativeChart discovery, creator, and ranking responses"
   assert.equal(creator.relatedCreatorUserInfos[0]?.publicUserId, "public-1");
 
   assert.equal(
-    decodeMusicCreativeChartGetQuoteTargetChartResponse(
+    MUSIC_CREATIVE_CHART_GET_QUOTE_TARGET.decode(
       encodeStringField(1, "https://cdn/chart-file"),
     ).chartFileUrl,
     "https://cdn/chart-file",
@@ -376,13 +361,13 @@ void test("decodes MusicCreativeChart discovery, creator, and ranking responses"
     encodeVarintField(2, 123_456),
     encodeBytesField(3, basicUser),
   );
-  const earlyRanking = decodeMusicCreativeChartGetEarlyClearRankingInfoResponse(
+  const earlyRanking = MUSIC_CREATIVE_CHART_GET_EARLY_CLEAR_RANKING_INFO.decode(
     encodeMessage(encodeBytesField(1, rank), encodeVarintField(2, 10)),
   );
   assert.equal(earlyRanking.rankInfos[0]?.userInfo?.publicUserId, "public-1");
   assert.equal(earlyRanking.selfRankingRank, 10);
 
-  const earlyDeck = decodeMusicCreativeChartGetEarlyClearLiveDeckResponse(
+  const earlyDeck = MUSIC_CREATIVE_CHART_GET_EARLY_CLEAR_LIVE_DECK.decode(
     encodeBytesField(
       1,
       encodeMessage(

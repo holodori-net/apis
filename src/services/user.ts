@@ -1,13 +1,14 @@
-import {
-  type AccountCard,
-  decodeUserGetResponse,
-  encodeUserGetRequest,
-  type UserDataSnapshot,
-  type UserGetResponse,
-} from "../codecs/user.js";
+import type { UserCard } from "../protos/gen/entity/transaction/user_card.gen_pb.js";
+
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import { EmptySchema } from "../protos/gen/google/protobuf/empty_pb.js";
+import {
+  type UserGetResponse,
+  UserGetResponseSchema,
+} from "../protos/gen/rpc/api/user.gen_pb.js";
 
 const USER_GET: ApiMethod<void, UserGetResponse> = {
   path: "/rpc.api.User/Get",
@@ -15,24 +16,29 @@ const USER_GET: ApiMethod<void, UserGetResponse> = {
   requiresMasterVersion: true,
   usesResponseCache: false,
   requiresRequestSignature: false,
-  encode: encodeUserGetRequest,
-  decode: decodeUserGetResponse,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (response) => decodeProtobuf(UserGetResponseSchema, response),
 };
 
-/** Reads the current account's user-data snapshot. */
+/** Reads the current account's complete user-data response. */
 export class UserApi {
   constructor(private readonly client: ApiCaller) {}
 
-  /** Returns the cards currently owned by the account. @rpc /rpc.api.User/Get */
-  async listCards(options?: RequestOptions): Promise<readonly AccountCard[]> {
-    return (await this.client.call(USER_GET, undefined, options)).cards;
+  /** Returns the complete User/Get response. @rpc /rpc.api.User/Get */
+  get(options?: RequestOptions): Promise<UserGetResponse> {
+    return this.client.call(USER_GET, undefined, options);
   }
 
-  /** Returns decoded card, character, deck, music, item, and skill-tree state. @rpc /rpc.api.User/Get */
-  async getSnapshot(options?: RequestOptions): Promise<UserDataSnapshot> {
-    return this.client.call(USER_GET, undefined, options);
+  /** Returns the cards currently owned by the account. @rpc /rpc.api.User/Get */
+  async listCards(options?: RequestOptions): Promise<readonly UserCard[]> {
+    return (await this.get(options)).userData?.userCardList ?? [];
+  }
+
+  /** Returns the complete User/Get response for compatibility with snapshot callers. @rpc /rpc.api.User/Get */
+  getSnapshot(options?: RequestOptions): Promise<UserGetResponse> {
+    return this.get(options);
   }
 }
 
 export { USER_GET };
-export type { AccountCard, UserDataSnapshot, UserGetResponse };
+export type { UserCard, UserGetResponse };

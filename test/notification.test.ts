@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "vitest";
 
-import { decodeNotificationListResponse } from "../src/codecs/notification.js";
 import {
   decodeProtoFields,
   encodeBytesField,
@@ -36,19 +35,21 @@ void test("decodes account notification flags and updated Park exchange groups",
       ),
     ),
   );
-  assert.deepEqual(decodeNotificationListResponse(response), {
-    isGachaUnread: true,
-    isNoticeUnread: true,
-    isFriendOfferReceived: true,
-    isFriendExists: true,
-    isMembershipUnread: true,
-    isShopItemUnread: true,
-    parkNotificationInfo: {
-      updatedExchangeBoothGroups: [
-        { groupId: "exchange-group", name: "Spring Exchange" },
-      ],
-    },
-  });
+  const decoded = NOTIFICATION_LIST.decode(response);
+  assert.equal(decoded.isGachaUnread, true);
+  assert.equal(decoded.isNoticeUnread, true);
+  assert.equal(decoded.isFriendOfferReceived, true);
+  assert.equal(decoded.isFriendExists, true);
+  assert.equal(decoded.isMembershipUnread, true);
+  assert.equal(decoded.isShopItemUnread, true);
+  assert.equal(
+    decoded.parkNotificationInfo?.updatedExchangeBoothGroups[0]?.groupId,
+    "exchange-group",
+  );
+  assert.equal(
+    decoded.parkNotificationInfo?.updatedExchangeBoothGroups[0]?.name,
+    "Spring Exchange",
+  );
 });
 
 void test("Notification API authenticates and uses its declared transport policy", async () => {

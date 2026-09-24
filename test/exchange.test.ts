@@ -2,10 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeExchangeListResponse,
-  encodeExchangeListRequest,
-} from "../src/codecs/exchange.js";
-import {
   decodeProtoFields,
   encodeBytesField,
   encodeMessage,
@@ -14,15 +10,21 @@ import {
 } from "../src/low-level.js";
 import { EXCHANGE_LIST, ExchangeApi } from "../src/services/exchange.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
+import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("encodes Exchange/List booth group ID", () => {
   assert.equal(
-    decodeProtoFields(encodeExchangeListRequest("membership-group"))
+    decodeProtoFields(
+      EXCHANGE_LIST.encode({ boothGroupId: "membership-group" }),
+    )
       .get(1)?.[0]
       ?.toString(),
     "membership-group",
   );
-  assert.throws(() => encodeExchangeListRequest(""), /exchange booth group ID/);
+  assert.throws(
+    () => EXCHANGE_LIST.encode({ boothGroupId: "" }),
+    /exchange booth group ID/,
+  );
 });
 
 void test("decodes booth items, costs, rewards, schedules, and int64 values", () => {
@@ -89,18 +91,18 @@ void test("decodes booth items, costs, rewards, schedules, and int64 values", ()
     encodeStringField(103, "#4"),
   );
 
-  assert.deepEqual(decodeExchangeListResponse(response), {
+  assert.deepEqual(withoutTypeNames(EXCHANGE_LIST.decode(response)), {
     id: "membership-group",
     name: "Membership Exchange",
     booths: [
       {
         id: "booth-1",
         name: "Main",
-        type: 2,
+        boothType: 2,
         items: [
           {
-            type: 2,
-            id: "item-1",
+            boothItemType: 2,
+            boothItemId: "item-1",
             name: "Card",
             thumbnailAssetId: "thumb-1",
             limitQuantity: 10,

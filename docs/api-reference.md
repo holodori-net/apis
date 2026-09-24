@@ -25,7 +25,7 @@ Returns the complete password-prepare response including its link result.
 RPC: `/rpc.api.AccountMigration/PrepareMigrationPassword`
 
 ```ts
-preparePasswordResponse(accountMigrationId: string, password: string, options?: RequestOptions): Promise<AccountMigrationPreparePasswordResponse>
+preparePasswordResponse(accountMigrationId: string, password: string, options?: RequestOptions): Promise<AccountMigrationPrepareMigrationPasswordResponse>
 ```
 
 ### `migrate()`
@@ -75,8 +75,10 @@ Creates a new anonymous account and stores its persistent credential.
 
 RPC: `/rpc.api.Auth/Create`
 
+Stores the returned credential in this SDK session.
+
 ```ts
-create(options?: RequestOptions): Promise<string>
+create(options?: RequestOptions): Promise<AuthCreateResponse>
 ```
 
 ### `login()`
@@ -85,8 +87,10 @@ Logs in with a persistent credential and stores the returned game auth token.
 
 RPC: `/rpc.api.Auth/Login`
 
+Stores the credential and token in this SDK session.
+
 ```ts
-login(credential?: string, options?: RequestOptions): Promise<string>
+login(credential?: string, options?: RequestOptions): Promise<AuthLoginResponse>
 ```
 
 ## CardApi
@@ -126,7 +130,7 @@ RPC: `/rpc.api.Chase/GetRankingInfo`
 The response also includes the authenticated account's self rank.
 
 ```ts
-getRankingInfo(request: ChaseRankingRequest, options?: RequestOptions): Promise<MiniGameRankingResponse>
+getRankingInfo(request: ChaseRankingRequest, options?: RequestOptions): Promise<ChaseGetRankingInfoResponse>
 ```
 
 ## CircuitApi
@@ -142,7 +146,7 @@ RPC: `/rpc.api.Circuit/GetRankingInfo`
 The response also includes the authenticated account's self rank.
 
 ```ts
-getRankingInfo(options?: RequestOptions): Promise<MiniGameRankingResponse>
+getRankingInfo(options?: RequestOptions): Promise<CircuitGetRankingInfoResponse>
 ```
 
 ## ComboCardGameApi
@@ -158,7 +162,7 @@ RPC: `/rpc.api.ComboCardGame/GetRankingInfo`
 The response also includes the authenticated account's self rank.
 
 ```ts
-getRankingInfo(options?: RequestOptions): Promise<MiniGameRankingResponse>
+getRankingInfo(options?: RequestOptions): Promise<ComboCardGameGetRankingInfoResponse>
 ```
 
 ### `listUserInfo()`
@@ -186,7 +190,7 @@ RPC: `/rpc.api.CookingPuzzle/GetRankingInfo`
 The response also includes the authenticated account's self rank.
 
 ```ts
-getRankingInfo(options?: RequestOptions): Promise<MiniGameRankingResponse>
+getRankingInfo(options?: RequestOptions): Promise<CookingPuzzleGetRankingInfoResponse>
 ```
 
 ## EventApi
@@ -230,7 +234,7 @@ quantities and unlock flags are specific to the authenticated account.
 RPC: `/rpc.api.Exchange/List`
 
 ```ts
-list(boothGroupId: string, options?: RequestOptions): Promise<ExchangeResponse>
+list(boothGroupId: string, options?: RequestOptions): Promise<ExchangeListResponse>
 ```
 
 ## GachaApi
@@ -257,7 +261,7 @@ Probabilities are returned as integer parts per ten million.
 RPC: `/rpc.api.Gacha/ListNormalProbability`
 
 ```ts
-listNormalProbability(gachaId: string, options?: RequestOptions): Promise<GachaListProbabilityResponse>
+listNormalProbability(gachaId: string, options?: RequestOptions): Promise<GachaListNormalProbabilityResponse>
 ```
 
 ### `listCardSelectProbability()`
@@ -271,7 +275,7 @@ The server may reject the request until the authenticated account
 has selected cards for the Gacha.
 
 ```ts
-listCardSelectProbability(gachaId: string, options?: RequestOptions): Promise<GachaListProbabilityResponse>
+listCardSelectProbability(gachaId: string, options?: RequestOptions): Promise<GachaListCardSelectProbabilityResponse>
 ```
 
 ## GiftApi
@@ -329,7 +333,7 @@ RPC: `/rpc.api.JumpRope/GetRankingInfo`
 The response also includes the authenticated account's self rank.
 
 ```ts
-getRankingInfo(options?: RequestOptions): Promise<MiniGameRankingResponse>
+getRankingInfo(options?: RequestOptions): Promise<JumpRopeGetRankingInfoResponse>
 ```
 
 ## LiveApi
@@ -391,7 +395,7 @@ RPC: `/rpc.api.Marathon/ListMusicHighestScoreRankingGrade`
 Each result includes the authenticated account's self rank and score.
 
 ```ts
-listMusicHighestScoreRankingGrade(request: MarathonListMusicHighestScoreRankingRequest, options?: RequestOptions): Promise<MarathonMusicRankingResponse>
+listMusicHighestScoreRankingGrade(request: MarathonListMusicHighestScoreRankingGradeRequest, options?: RequestOptions): Promise<MarathonListMusicHighestScoreRankingGradeResponse>
 ```
 
 ### `listMusicHighestScoreRankingTop()`
@@ -403,7 +407,7 @@ RPC: `/rpc.api.Marathon/ListMusicHighestScoreRankingTop`
 Each result includes the authenticated account's self rank and score.
 
 ```ts
-listMusicHighestScoreRankingTop(request: MarathonListMusicHighestScoreRankingRequest, options?: RequestOptions): Promise<MarathonMusicRankingResponse>
+listMusicHighestScoreRankingTop(request: MarathonListMusicHighestScoreRankingTopRequest, options?: RequestOptions): Promise<MarathonListMusicHighestScoreRankingTopResponse>
 ```
 
 ### `listMarathonScoreRankingGrade()`
@@ -415,7 +419,7 @@ RPC: `/rpc.api.Marathon/ListMarathonScoreRankingGrade`
 Each result includes the authenticated account's self rank and score.
 
 ```ts
-listMarathonScoreRankingGrade(request: MarathonListRankingRequest, options?: RequestOptions): Promise<MarathonScoreRankingResponse>
+listMarathonScoreRankingGrade(request: MarathonListMarathonScoreRankingGradeRequest, options?: RequestOptions): Promise<MarathonListMarathonScoreRankingGradeResponse>
 ```
 
 ### `listMarathonScoreRankingTop()`
@@ -427,7 +431,7 @@ RPC: `/rpc.api.Marathon/ListMarathonScoreRankingTop`
 Each result includes the authenticated account's self rank and score.
 
 ```ts
-listMarathonScoreRankingTop(request: MarathonListRankingRequest, options?: RequestOptions): Promise<MarathonScoreRankingResponse>
+listMarathonScoreRankingTop(request: MarathonListMarathonScoreRankingTopRequest, options?: RequestOptions): Promise<MarathonListMarathonScoreRankingTopResponse>
 ```
 
 ### `listTotalMusicHighestScoreRankingGrade()`
@@ -439,7 +443,7 @@ RPC: `/rpc.api.Marathon/ListTotalMusicHighestScoreRankingGrade`
 Each result includes the authenticated account's self rank and score.
 
 ```ts
-listTotalMusicHighestScoreRankingGrade(request: MarathonListRankingRequest, options?: RequestOptions): Promise<MarathonScoreRankingResponse>
+listTotalMusicHighestScoreRankingGrade(request: MarathonListTotalMusicHighestScoreRankingGradeRequest, options?: RequestOptions): Promise<MarathonListTotalMusicHighestScoreRankingGradeResponse>
 ```
 
 ### `listTotalMusicHighestScoreRankingTop()`
@@ -451,21 +455,31 @@ RPC: `/rpc.api.Marathon/ListTotalMusicHighestScoreRankingTop`
 Each result includes the authenticated account's self rank and score.
 
 ```ts
-listTotalMusicHighestScoreRankingTop(request: MarathonListRankingRequest, options?: RequestOptions): Promise<MarathonScoreRankingResponse>
+listTotalMusicHighestScoreRankingTop(request: MarathonListTotalMusicHighestScoreRankingTopRequest, options?: RequestOptions): Promise<MarathonListTotalMusicHighestScoreRankingTopResponse>
 ```
 
 ## MasterApi
 
-Retrieves the master-data version required by authenticated game APIs.
+Retrieves master data required by authenticated game APIs.
 
 ### `get()`
 
-Fetches and stores the current master-data version.
+Fetches and stores the current master-data version and tag packs.
 
 RPC: `/rpc.api.Master/Get`
 
+The version is stored in this SDK session.
+
 ```ts
-get(options?: RequestOptions): Promise<string>
+get(options?: RequestOptions): Promise<MasterGetResponse>
+```
+
+### `getVersion()`
+
+Returns the current master-data version.
+
+```ts
+getVersion(options?: RequestOptions): Promise<string>
 ```
 
 ## MembershipApi
@@ -481,7 +495,7 @@ and subscribed flags reflect the authenticated account.
 RPC: `/rpc.api.Membership/GetShop`
 
 ```ts
-getShop(options?: RequestOptions): Promise<ShopInfo>
+getShop(options?: RequestOptions): Promise<MembershipGetShopResponse>
 ```
 
 ## MultiGameApi
@@ -567,7 +581,7 @@ Lists recently published charts grouped by song.
 RPC: `/rpc.api.MusicCreativeChart/ListNewer`
 
 ```ts
-listNewer(request?: MusicCreativeChartListRequest, options?: RequestOptions): Promise<MusicCreativeChartListResponse>
+listNewer(request?: MusicCreativeChartListRequest, options?: RequestOptions): Promise<MusicCreativeChartListNewerResponse>
 ```
 
 ### `listPopular()`
@@ -577,7 +591,7 @@ Lists popular charts grouped by song.
 RPC: `/rpc.api.MusicCreativeChart/ListPopular`
 
 ```ts
-listPopular(request?: MusicCreativeChartListRequest, options?: RequestOptions): Promise<MusicCreativeChartListResponse>
+listPopular(request?: MusicCreativeChartListRequest, options?: RequestOptions): Promise<MusicCreativeChartListPopularResponse>
 ```
 
 ### `listPopularCreator()`
@@ -607,7 +621,7 @@ Returns a chart by its ID.
 RPC: `/rpc.api.MusicCreativeChart/GetByMusicCreativeChartId`
 
 ```ts
-getByMusicCreativeChartId(request: MusicCreativeChartGetByIdRequest, options?: RequestOptions): Promise<MusicCreativeChartGetByIdResponse>
+getByMusicCreativeChartId(request: MusicCreativeChartGetByIdRequest, options?: RequestOptions): Promise<MusicCreativeChartGetByMusicCreativeChartIdResponse>
 ```
 
 ### `getQuoteTargetChart()`
@@ -627,7 +641,7 @@ Returns the chart creator and related creator accounts.
 RPC: `/rpc.api.MusicCreativeChart/GetCreatorInfoByMusicCreativeChartId`
 
 ```ts
-getCreatorInfoByMusicCreativeChartId(request: MusicCreativeChartGetCreatorInfoRequest, options?: RequestOptions): Promise<MusicCreativeChartGetCreatorInfoResponse>
+getCreatorInfoByMusicCreativeChartId(request: MusicCreativeChartGetCreatorInfoRequest, options?: RequestOptions): Promise<MusicCreativeChartGetCreatorInfoByMusicCreativeChartIdResponse>
 ```
 
 ### `getEarlyClearRankingInfo()`
@@ -695,7 +709,7 @@ RPC: `/rpc.api.Notice/UpdateCategoryReadTime`
 This method changes account read state.
 
 ```ts
-updateCategoryReadTime(categoryIds: readonly string[], options?: RequestOptions): Promise<NoticeUpdateResponse>
+updateCategoryReadTime(categoryIds: readonly string[], options?: RequestOptions): Promise<NoticeUpdateCategoryReadTimeResponse>
 ```
 
 ### `updateDetailReadTime()`
@@ -707,7 +721,7 @@ RPC: `/rpc.api.Notice/UpdateDetailReadTime`
 This method changes account read state.
 
 ```ts
-updateDetailReadTime(noticeIds: readonly string[], options?: RequestOptions): Promise<NoticeUpdateResponse>
+updateDetailReadTime(noticeIds: readonly string[], options?: RequestOptions): Promise<NoticeUpdateDetailReadTimeResponse>
 ```
 
 ## NotificationApi
@@ -737,7 +751,7 @@ items for a Park permanence.
 RPC: `/rpc.api.ParkPermanence/ListCharacterShopItem`
 
 ```ts
-listCharacterShopItem(request: ParkPermanenceListCharacterShopItemRequest, options?: RequestOptions): Promise<ParkPermanenceListCharacterShopItemResponse>
+listCharacterShopItem(request: { readonly actionNumber: number; readonly parkPermanenceId: string; }, options?: RequestOptions): Promise<ParkPermanenceListCharacterShopItemResponse>
 ```
 
 ## ProfileApi
@@ -770,7 +784,7 @@ specific to the authenticated account.
 RPC: `/rpc.api.Shop/List`
 
 ```ts
-list(options?: RequestOptions): Promise<ShopResponse>
+list(options?: RequestOptions): Promise<ShopListResponse>
 ```
 
 ## SplashBallApi
@@ -786,7 +800,7 @@ RPC: `/rpc.api.SplashBall/GetRankingInfo`
 The response also includes the authenticated account's self rank.
 
 ```ts
-getRankingInfo(options?: RequestOptions): Promise<MiniGameRankingResponse>
+getRankingInfo(options?: RequestOptions): Promise<SplashBallGetRankingInfoResponse>
 ```
 
 ## SystemApi
@@ -807,7 +821,17 @@ getSystemInfo(credential?: string, options?: RequestOptions): Promise<SystemGetS
 
 ## UserApi
 
-Reads the current account's user-data snapshot.
+Reads the current account's complete user-data response.
+
+### `get()`
+
+Returns the complete User/Get response.
+
+RPC: `/rpc.api.User/Get`
+
+```ts
+get(options?: RequestOptions): Promise<UserGetResponse>
+```
 
 ### `listCards()`
 
@@ -816,15 +840,15 @@ Returns the cards currently owned by the account.
 RPC: `/rpc.api.User/Get`
 
 ```ts
-listCards(options?: RequestOptions): Promise<readonly AccountCard[]>
+listCards(options?: RequestOptions): Promise<readonly UserCard[]>
 ```
 
 ### `getSnapshot()`
 
-Returns decoded card, character, deck, music, item, and skill-tree state.
+Returns the complete User/Get response for compatibility with snapshot callers.
 
 RPC: `/rpc.api.User/Get`
 
 ```ts
-getSnapshot(options?: RequestOptions): Promise<UserDataSnapshot>
+getSnapshot(options?: RequestOptions): Promise<UserGetResponse>
 ```

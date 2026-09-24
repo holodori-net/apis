@@ -2,11 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeGachaListProbabilityResponse,
-  decodeGachaListResponse,
-  encodeGachaListProbabilityRequest,
-} from "../src/codecs/gacha.js";
-import {
   decodeProtoFields,
   encodeBytesField,
   encodeMessage,
@@ -20,15 +15,21 @@ import {
   GachaApi,
 } from "../src/services/gacha.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
+import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("encodes probability requests with a required Gacha ID", () => {
   assert.equal(
-    decodeProtoFields(encodeGachaListProbabilityRequest("gacha-1"))
+    decodeProtoFields(
+      GACHA_LIST_NORMAL_PROBABILITY.encode({ gachaId: "gacha-1" }),
+    )
       .get(1)?.[0]
       ?.toString(),
     "gacha-1",
   );
-  assert.throws(() => encodeGachaListProbabilityRequest(""), /Gacha ID/);
+  assert.throws(
+    () => GACHA_LIST_NORMAL_PROBABILITY.encode({ gachaId: "" }),
+    /Gacha ID/,
+  );
 });
 
 void test("decodes Gacha list content and account-specific draw state", () => {
@@ -115,7 +116,7 @@ void test("decodes Gacha list content and account-specific draw state", () => {
     encodeStringField(29, "Subtext"),
     encodeVarintField(30, 24),
   );
-  const decoded = decodeGachaListResponse(
+  const decoded = GACHA_LIST.decode(
     encodeMessage(
       encodeBytesField(
         1,
@@ -128,7 +129,7 @@ void test("decodes Gacha list content and account-specific draw state", () => {
     ),
   );
 
-  assert.deepEqual(decoded.gachaGroups[0], {
+  assert.deepEqual(withoutTypeNames(decoded.gachaGroups[0]), {
     gachaGroupId: "group-1",
     iconAssetId: "group-icon",
     gachas: [
@@ -208,10 +209,12 @@ void test("decodes probability values as exact integer parts per ten million", (
     encodeBytesField(3, cardProbability),
   );
   assert.deepEqual(
-    decodeGachaListProbabilityResponse(
-      encodeMessage(
-        encodeBytesField(1, rarityProbability),
-        encodeBytesField(2, rarityProbability),
+    withoutTypeNames(
+      GACHA_LIST_NORMAL_PROBABILITY.decode(
+        encodeMessage(
+          encodeBytesField(1, rarityProbability),
+          encodeBytesField(2, rarityProbability),
+        ),
       ),
     ),
     {

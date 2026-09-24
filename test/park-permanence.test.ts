@@ -2,10 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeParkPermanenceListCharacterShopItemResponse,
-  encodeParkPermanenceListCharacterShopItemRequest,
-} from "../src/codecs/park-permanence.js";
-import {
   encodeBytesField,
   encodeMessage,
   encodeStringField,
@@ -16,6 +12,7 @@ import {
   ParkPermanenceApi,
 } from "../src/services/park-permanence.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
+import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("encodes the complete Park permanence common request parameter", () => {
   const request = encodeMessage(
@@ -25,7 +22,7 @@ void test("encodes the complete Park permanence common request parameter", () =>
     ),
   );
   assert.deepEqual(
-    encodeParkPermanenceListCharacterShopItemRequest({
+    PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM.encode({
       parkPermanenceId: "park-001",
       actionNumber: 7,
     }),
@@ -33,7 +30,7 @@ void test("encodes the complete Park permanence common request parameter", () =>
   );
   assert.throws(
     () =>
-      encodeParkPermanenceListCharacterShopItemRequest({
+      PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM.encode({
         parkPermanenceId: "",
         actionNumber: 7,
       }),
@@ -41,7 +38,7 @@ void test("encodes the complete Park permanence common request parameter", () =>
   );
   assert.throws(
     () =>
-      encodeParkPermanenceListCharacterShopItemRequest({
+      PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM.encode({
         parkPermanenceId: "park-001",
         actionNumber: 0,
       }),
@@ -79,7 +76,7 @@ void test("decodes the full character shop response including collection state",
   );
 
   assert.deepEqual(
-    decodeParkPermanenceListCharacterShopItemResponse(response),
+    withoutTypeNames(PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM.decode(response)),
     {
       shopName: "Character Shop",
       consumption: {
@@ -124,8 +121,10 @@ void test("decodes the full character shop response including collection state",
 
 void test("preserves absent optional nested fields and empty repeated fields", () => {
   assert.deepEqual(
-    decodeParkPermanenceListCharacterShopItemResponse(
-      encodeBytesField(3, encodeMessage(encodeVarintField(2, 0))),
+    withoutTypeNames(
+      PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM.decode(
+        encodeBytesField(3, encodeMessage(encodeVarintField(2, 0))),
+      ),
     ),
     {
       shopName: "",

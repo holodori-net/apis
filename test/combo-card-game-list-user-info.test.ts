@@ -2,21 +2,21 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeComboCardGameListUserInfoResponse,
-  encodeComboCardGameListUserInfoRequest,
-} from "../src/codecs/combo-card-game.js";
-import {
   encodeBytesField,
   encodeMessage,
   encodeStringField,
   encodeVarintField,
 } from "../src/low-level.js";
-import { ComboCardGameApi } from "../src/services/combo-card-game.js";
+import {
+  COMBO_CARD_GAME_LIST_USER_INFO,
+  ComboCardGameApi,
+} from "../src/services/combo-card-game.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
+import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("encodes public user IDs and optional private room ID", () => {
   assert.deepEqual(
-    encodeComboCardGameListUserInfoRequest({
+    COMBO_CARD_GAME_LIST_USER_INFO.encode({
       publicUserIds: ["user-1", "user-2"],
       privateRoomId: "room-1",
     }),
@@ -27,15 +27,15 @@ void test("encodes public user IDs and optional private room ID", () => {
     ),
   );
   assert.deepEqual(
-    encodeComboCardGameListUserInfoRequest({ publicUserIds: ["user-1"] }),
+    COMBO_CARD_GAME_LIST_USER_INFO.encode({ publicUserIds: ["user-1"] }),
     encodeStringField(1, "user-1"),
   );
   assert.throws(
-    () => encodeComboCardGameListUserInfoRequest({ publicUserIds: [] }),
+    () => COMBO_CARD_GAME_LIST_USER_INFO.encode({ publicUserIds: [] }),
     /at least one public user ID/,
   );
   assert.throws(
-    () => encodeComboCardGameListUserInfoRequest({ publicUserIds: [""] }),
+    () => COMBO_CARD_GAME_LIST_USER_INFO.encode({ publicUserIds: [""] }),
     /empty public user IDs/,
   );
 });
@@ -59,8 +59,10 @@ void test("decodes basic user info, average rank percent, and bigint chip differ
   );
 
   assert.deepEqual(
-    decodeComboCardGameListUserInfoResponse(
-      encodeMessage(encodeBytesField(1, userInfo)),
+    withoutTypeNames(
+      COMBO_CARD_GAME_LIST_USER_INFO.decode(
+        encodeMessage(encodeBytesField(1, userInfo)),
+      ),
     ),
     {
       comboCardGameUserInfos: [

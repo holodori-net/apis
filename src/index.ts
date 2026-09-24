@@ -3,10 +3,6 @@ export {
   HolodoriApi,
   type HolodoriApiOptions,
 } from "./api.js";
-export type * from "./codecs.js";
-export { GiftSortType } from "./codecs/gift.js";
-export { HealthCheckServingStatus } from "./codecs/health.js";
-export { ChaseTeamType } from "./codecs/mini-game-ranking.js";
 export {
   HolodoriApiError,
   type HolodoriApiErrorKind,
@@ -20,20 +16,21 @@ export {
 export type { RequestOptions } from "./core/request-options.js";
 export { type SessionSnapshot } from "./core/session.js";
 export * from "./low-level.js";
+export type * from "./protos/index.js";
 export { Region, type RegionBaseUrlResolver } from "./region.js";
 export { AccountMigrationApi } from "./services/account-migration.js";
 export { AssetApi } from "./services/asset.js";
 export { AuthApi } from "./services/auth.js";
 export { CardApi } from "./services/card.js";
-export { ChaseApi } from "./services/chase.js";
+export { ChaseApi, ChaseTeamType } from "./services/chase.js";
 export { CircuitApi } from "./services/circuit.js";
 export { ComboCardGameApi } from "./services/combo-card-game.js";
 export { CookingPuzzleApi } from "./services/cooking-puzzle.js";
 export { EventApi } from "./services/event.js";
 export { ExchangeApi } from "./services/exchange.js";
 export { GachaApi } from "./services/gacha.js";
-export { GiftApi } from "./services/gift.js";
-export { HealthApi } from "./services/health.js";
+export { GiftApi, GiftSortType } from "./services/gift.js";
+export { HealthApi, HealthCheckServingStatus } from "./services/health.js";
 export { HomeApi } from "./services/home.js";
 export { JumpRopeApi } from "./services/jump-rope.js";
 export { LiveApi } from "./services/live.js";

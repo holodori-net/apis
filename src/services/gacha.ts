@@ -1,14 +1,18 @@
-import {
-  decodeGachaListProbabilityResponse,
-  decodeGachaListResponse,
-  encodeGachaListProbabilityRequest,
-  encodeGachaListRequest,
-  type GachaListProbabilityResponse,
-  type GachaListResponse,
-} from "../codecs/gacha.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import { EmptySchema } from "../protos/gen/google/protobuf/empty_pb.js";
+import {
+  GachaListCardSelectProbabilityRequestSchema,
+  type GachaListCardSelectProbabilityResponse,
+  GachaListCardSelectProbabilityResponseSchema,
+  GachaListNormalProbabilityRequestSchema,
+  type GachaListNormalProbabilityResponse,
+  GachaListNormalProbabilityResponseSchema,
+  type GachaListResponse,
+  GachaListResponseSchema,
+} from "../protos/gen/rpc/api/gacha.gen_pb.js";
 
 const GACHA_LIST: ApiMethod<void, GachaListResponse> = {
   path: "/rpc.api.Gacha/List",
@@ -16,34 +20,44 @@ const GACHA_LIST: ApiMethod<void, GachaListResponse> = {
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeGachaListRequest,
-  decode: decodeGachaListResponse,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (data) => decodeProtobuf(GachaListResponseSchema, data),
 };
 
 const GACHA_LIST_NORMAL_PROBABILITY: ApiMethod<
   { readonly gachaId: string },
-  GachaListProbabilityResponse
+  GachaListNormalProbabilityResponse
 > = {
   path: "/rpc.api.Gacha/ListNormalProbability",
   requiresGameAuth: true,
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: ({ gachaId }) => encodeGachaListProbabilityRequest(gachaId),
-  decode: decodeGachaListProbabilityResponse,
+  encode: ({ gachaId }) => {
+    if (!gachaId) throw new TypeError("Gacha ID must not be empty");
+    return encodeProtobuf(GachaListNormalProbabilityRequestSchema, { gachaId });
+  },
+  decode: (data) =>
+    decodeProtobuf(GachaListNormalProbabilityResponseSchema, data),
 };
 
 const GACHA_LIST_CARD_SELECT_PROBABILITY: ApiMethod<
   { readonly gachaId: string },
-  GachaListProbabilityResponse
+  GachaListCardSelectProbabilityResponse
 > = {
   path: "/rpc.api.Gacha/ListCardSelectProbability",
   requiresGameAuth: true,
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: ({ gachaId }) => encodeGachaListProbabilityRequest(gachaId),
-  decode: decodeGachaListProbabilityResponse,
+  encode: ({ gachaId }) => {
+    if (!gachaId) throw new TypeError("Gacha ID must not be empty");
+    return encodeProtobuf(GachaListCardSelectProbabilityRequestSchema, {
+      gachaId,
+    });
+  },
+  decode: (data) =>
+    decodeProtobuf(GachaListCardSelectProbabilityResponseSchema, data),
 };
 
 /** Provides Gacha banners, draw configuration, and probabilities. */
@@ -70,7 +84,7 @@ export class GachaApi {
   async listNormalProbability(
     gachaId: string,
     options?: RequestOptions,
-  ): Promise<GachaListProbabilityResponse> {
+  ): Promise<GachaListNormalProbabilityResponse> {
     return this.client.call(
       GACHA_LIST_NORMAL_PROBABILITY,
       { gachaId },
@@ -89,7 +103,7 @@ export class GachaApi {
   async listCardSelectProbability(
     gachaId: string,
     options?: RequestOptions,
-  ): Promise<GachaListProbabilityResponse> {
+  ): Promise<GachaListCardSelectProbabilityResponse> {
     return this.client.call(
       GACHA_LIST_CARD_SELECT_PROBABILITY,
       { gachaId },
@@ -103,17 +117,4 @@ export {
   GACHA_LIST_CARD_SELECT_PROBABILITY,
   GACHA_LIST_NORMAL_PROBABILITY,
 };
-export type {
-  GachaButton,
-  GachaCardBonus,
-  GachaCardProbability,
-  GachaCardSelect,
-  GachaConsumption,
-  GachaGroup,
-  GachaInfo,
-  GachaListProbabilityResponse,
-  GachaListResponse,
-  GachaPoint,
-  GachaRarityProbability,
-  GachaReward,
-} from "../codecs/gacha.js";
+export type * from "../protos/gen/rpc/api/gacha.gen_pb.js";

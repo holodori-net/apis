@@ -2,22 +2,18 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeGiftListResponse,
-  encodeGiftListRequest,
-  GiftSortType,
-} from "../src/codecs/gift.js";
-import {
   decodeProtoFields,
   encodeBytesField,
   encodeMessage,
   encodeStringField,
   encodeVarintField,
 } from "../src/low-level.js";
-import { GIFT_LIST, GiftApi } from "../src/services/gift.js";
+import { GIFT_LIST, GiftApi, GiftSortType } from "../src/services/gift.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
+import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("encodes Gift/List request fields and validates them", () => {
-  const encoded = encodeGiftListRequest({
+  const encoded = GIFT_LIST.encode({
     offset: 20,
     sortType: GiftSortType.LimitTime,
     isDesc: true,
@@ -32,7 +28,7 @@ void test("encodes Gift/List request fields and validates them", () => {
   );
   assert.throws(
     () =>
-      encodeGiftListRequest({
+      GIFT_LIST.encode({
         offset: -1,
         sortType: GiftSortType.PostedTime,
         isDesc: false,
@@ -41,7 +37,7 @@ void test("encodes Gift/List request fields and validates them", () => {
   );
   assert.throws(
     () =>
-      encodeGiftListRequest({
+      GIFT_LIST.encode({
         offset: 2_147_483_648,
         sortType: GiftSortType.PostedTime,
         isDesc: false,
@@ -50,9 +46,9 @@ void test("encodes Gift/List request fields and validates them", () => {
   );
   assert.throws(
     () =>
-      encodeGiftListRequest({
+      GIFT_LIST.encode({
         offset: 0,
-        sortType: 0 as GiftSortType,
+        sortType: 0,
         isDesc: false,
       }),
     /sortType/,
@@ -70,11 +66,13 @@ void test("decodes every Gift/List business field", () => {
     encodeVarintField(7, 1_800_000_000_000n),
   );
   assert.deepEqual(
-    decodeGiftListResponse(
-      encodeMessage(
-        encodeBytesField(1, gift),
-        encodeVarintField(2, 35),
-        encodeVarintField(3, 1),
+    withoutTypeNames(
+      GIFT_LIST.decode(
+        encodeMessage(
+          encodeBytesField(1, gift),
+          encodeVarintField(2, 35),
+          encodeVarintField(3, 1),
+        ),
       ),
     ),
     {

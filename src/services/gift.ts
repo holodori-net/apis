@@ -1,12 +1,32 @@
-import {
-  decodeGiftListResponse,
-  encodeGiftListRequest,
-  type GiftListRequest,
-  type GiftListResponse,
-} from "../codecs/gift.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import {
+  decodeProtobuf,
+  encodeProtobuf,
+  type ProtobufMessageInit,
+} from "../protos/codec.js";
+import { GiftSortType as ProtoGiftSortType } from "../protos/gen/enums/gift_sort_type.gen_pb.js";
+import {
+  type GiftItem,
+  GiftListRequestSchema,
+  type GiftListResponse,
+  GiftListResponseSchema,
+} from "../protos/gen/rpc/api/gift.gen_pb.js";
+
+/** Gift ordering accepted by Gift/List. */
+export const GiftSortType = {
+  PostedTime: ProtoGiftSortType.POSTED_TIME,
+  LimitTime: ProtoGiftSortType.LIMIT_TIME,
+} as const;
+export type GiftSortType = ProtoGiftSortType;
+
+export type GiftListRequest = Required<
+  Pick<
+    ProtobufMessageInit<typeof GiftListRequestSchema>,
+    "isDesc" | "offset" | "sortType"
+  >
+>;
 
 const GIFT_LIST: ApiMethod<GiftListRequest, GiftListResponse> = {
   path: "/rpc.api.Gift/List",
@@ -14,8 +34,25 @@ const GIFT_LIST: ApiMethod<GiftListRequest, GiftListResponse> = {
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeGiftListRequest,
-  decode: decodeGiftListResponse,
+  encode: (request) => {
+    if (
+      !Number.isInteger(request.offset) ||
+      request.offset < 0 ||
+      request.offset > 2_147_483_647
+    ) {
+      throw new RangeError("offset must be a non-negative int32");
+    }
+    if (
+      request.sortType !== GiftSortType.PostedTime &&
+      request.sortType !== GiftSortType.LimitTime
+    ) {
+      throw new RangeError("sortType must be PostedTime or LimitTime");
+    }
+    if (typeof request.isDesc !== "boolean")
+      throw new TypeError("isDesc must be a boolean");
+    return encodeProtobuf(GiftListRequestSchema, request);
+  },
+  decode: (data) => decodeProtobuf(GiftListResponseSchema, data),
 };
 
 /** Provides access to the authenticated account's gift box. */
@@ -35,9 +72,4 @@ export class GiftApi {
 }
 
 export { GIFT_LIST };
-export { GiftSortType } from "../codecs/gift.js";
-export type {
-  GiftItem,
-  GiftListRequest,
-  GiftListResponse,
-} from "../codecs/gift.js";
+export type { GiftItem, GiftListResponse };

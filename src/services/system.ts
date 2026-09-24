@@ -1,13 +1,14 @@
-import {
-  decodeSystemGetSystemInfoResponse,
-  encodeSystemGetSystemInfoRequest,
-  type SystemGetSystemInfoResponse,
-} from "../codecs/system.js";
 import { type ApiClient } from "../core/client.js";
 import { HolodoriApiError } from "../core/errors.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
 import { type ApiSession } from "../core/session.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import {
+  SystemGetSystemInfoRequestSchema,
+  type SystemGetSystemInfoResponse,
+  SystemGetSystemInfoResponseSchema,
+} from "../protos/gen/rpc/api/system.gen_pb.js";
 
 const SYSTEM_GET_SYSTEM_INFO: ApiMethod<
   { readonly credential: string },
@@ -18,8 +19,10 @@ const SYSTEM_GET_SYSTEM_INFO: ApiMethod<
   requiresMasterVersion: false,
   usesResponseCache: false,
   requiresRequestSignature: false,
-  encode: ({ credential }) => encodeSystemGetSystemInfoRequest(credential),
-  decode: decodeSystemGetSystemInfoResponse,
+  encode: (request) =>
+    encodeProtobuf(SystemGetSystemInfoRequestSchema, request),
+  decode: (response) =>
+    decodeProtobuf(SystemGetSystemInfoResponseSchema, response),
 };
 
 /** Provides unauthenticated region and maintenance information. */
@@ -50,9 +53,4 @@ export class SystemApi {
 }
 
 export { SYSTEM_GET_SYSTEM_INFO };
-export type {
-  SystemGachaAssetInfo,
-  SystemGetSystemInfoResponse,
-  SystemMaintenanceInfo,
-  SystemReviewInfo,
-} from "../codecs/system.js";
+export type { SystemGetSystemInfoResponse };

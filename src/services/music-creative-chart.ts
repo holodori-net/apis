@@ -1,64 +1,114 @@
-import {
-  decodeMusicCreativeChartGetByIdResponse,
-  decodeMusicCreativeChartGetCreatorInfoResponse,
-  decodeMusicCreativeChartGetEarlyClearLiveDeckResponse,
-  decodeMusicCreativeChartGetEarlyClearRankingInfoResponse,
-  decodeMusicCreativeChartGetQuoteTargetChartResponse,
-  decodeMusicCreativeChartListByCreatorResponse,
-  decodeMusicCreativeChartListPopularCreatorResponse,
-  decodeMusicCreativeChartListResponse,
-  encodeMusicCreativeChartGetByIdRequest,
-  encodeMusicCreativeChartGetEarlyClearLiveDeckRequest,
-  encodeMusicCreativeChartGetEarlyClearRankingInfoRequest,
-  encodeMusicCreativeChartIdRequest,
-  encodeMusicCreativeChartListByCreatorRequest,
-  encodeMusicCreativeChartListPopularCreatorRequest,
-  encodeMusicCreativeChartListRequest,
-  type MusicCreativeChartGetByIdRequest,
-  type MusicCreativeChartGetByIdResponse,
-  type MusicCreativeChartGetCreatorInfoRequest,
-  type MusicCreativeChartGetCreatorInfoResponse,
-  type MusicCreativeChartGetEarlyClearLiveDeckRequest,
-  type MusicCreativeChartGetEarlyClearLiveDeckResponse,
-  type MusicCreativeChartGetEarlyClearRankingInfoRequest,
-  type MusicCreativeChartGetEarlyClearRankingInfoResponse,
-  type MusicCreativeChartGetQuoteTargetChartRequest,
-  type MusicCreativeChartGetQuoteTargetChartResponse,
-  type MusicCreativeChartListByCreatorRequest,
-  type MusicCreativeChartListByCreatorResponse,
-  type MusicCreativeChartListPopularCreatorRequest,
-  type MusicCreativeChartListPopularCreatorResponse,
-  type MusicCreativeChartListRequest,
-  type MusicCreativeChartListResponse,
-} from "../codecs/music-creative-chart.js";
+import type { MusicCreativeChartSearchParameterSchema } from "../protos/gen/rpc/api/common/music_creative_chart.gen_pb.js";
+
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import {
+  decodeProtobuf,
+  encodeProtobuf,
+  type ProtobufMessageInit,
+} from "../protos/codec.js";
+import {
+  MusicCreativeChartGetByMusicCreativeChartIdRequestSchema,
+  type MusicCreativeChartGetByMusicCreativeChartIdResponse,
+  MusicCreativeChartGetByMusicCreativeChartIdResponseSchema,
+  MusicCreativeChartGetCreatorInfoByMusicCreativeChartIdRequestSchema,
+  type MusicCreativeChartGetCreatorInfoByMusicCreativeChartIdResponse,
+  MusicCreativeChartGetCreatorInfoByMusicCreativeChartIdResponseSchema,
+  MusicCreativeChartGetEarlyClearLiveDeckRequestSchema,
+  type MusicCreativeChartGetEarlyClearLiveDeckResponse,
+  MusicCreativeChartGetEarlyClearLiveDeckResponseSchema,
+  MusicCreativeChartGetEarlyClearRankingInfoRequestSchema,
+  type MusicCreativeChartGetEarlyClearRankingInfoResponse,
+  MusicCreativeChartGetEarlyClearRankingInfoResponseSchema,
+  MusicCreativeChartGetQuoteTargetChartRequestSchema,
+  type MusicCreativeChartGetQuoteTargetChartResponse,
+  MusicCreativeChartGetQuoteTargetChartResponseSchema,
+  MusicCreativeChartListByCreatorRequestSchema,
+  type MusicCreativeChartListByCreatorResponse,
+  MusicCreativeChartListByCreatorResponseSchema,
+  MusicCreativeChartListNewerRequestSchema,
+  type MusicCreativeChartListNewerResponse,
+  MusicCreativeChartListNewerResponseSchema,
+  MusicCreativeChartListPopularCreatorRequestSchema,
+  type MusicCreativeChartListPopularCreatorResponse,
+  MusicCreativeChartListPopularCreatorResponseSchema,
+  MusicCreativeChartListPopularRequestSchema,
+  type MusicCreativeChartListPopularResponse,
+  MusicCreativeChartListPopularResponseSchema,
+} from "../protos/gen/rpc/api/music_creative_chart.gen_pb.js";
+
+export type MusicCreativeChartListRequest = Omit<
+  ProtobufMessageInit<typeof MusicCreativeChartListNewerRequestSchema>,
+  "$typeName"
+>;
+export type MusicCreativeChartListByCreatorRequest = ProtobufMessageInit<
+  typeof MusicCreativeChartListByCreatorRequestSchema
+>;
+export type MusicCreativeChartListPopularCreatorRequest = ProtobufMessageInit<
+  typeof MusicCreativeChartListPopularCreatorRequestSchema
+>;
+export type MusicCreativeChartGetByIdRequest = Omit<
+  ProtobufMessageInit<
+    typeof MusicCreativeChartGetByMusicCreativeChartIdRequestSchema
+  >,
+  "$typeName"
+>;
+export type MusicCreativeChartGetCreatorInfoRequest = Omit<
+  ProtobufMessageInit<
+    typeof MusicCreativeChartGetCreatorInfoByMusicCreativeChartIdRequestSchema
+  >,
+  "$typeName"
+>;
+export type MusicCreativeChartGetQuoteTargetChartRequest = Omit<
+  ProtobufMessageInit<
+    typeof MusicCreativeChartGetQuoteTargetChartRequestSchema
+  >,
+  "$typeName"
+>;
+export type MusicCreativeChartGetEarlyClearRankingInfoRequest =
+  ProtobufMessageInit<
+    typeof MusicCreativeChartGetEarlyClearRankingInfoRequestSchema
+  >;
+export type MusicCreativeChartGetEarlyClearLiveDeckRequest =
+  ProtobufMessageInit<
+    typeof MusicCreativeChartGetEarlyClearLiveDeckRequestSchema
+  >;
 
 const MUSIC_CREATIVE_CHART_LIST_NEWER: ApiMethod<
   MusicCreativeChartListRequest,
-  MusicCreativeChartListResponse
+  MusicCreativeChartListNewerResponse
 > = {
   path: "/rpc.api.MusicCreativeChart/ListNewer",
   requiresGameAuth: true,
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicCreativeChartListRequest,
-  decode: decodeMusicCreativeChartListResponse,
+  encode: (request) => {
+    validateSearchParameter(request.searchParameter);
+    return encodeProtobuf(MusicCreativeChartListNewerRequestSchema, request);
+  },
+  decode: (data) =>
+    decodeProtobuf(MusicCreativeChartListNewerResponseSchema, data),
 };
 
 const MUSIC_CREATIVE_CHART_LIST_POPULAR: ApiMethod<
   MusicCreativeChartListRequest,
-  MusicCreativeChartListResponse
+  MusicCreativeChartListPopularResponse
 > = {
   path: "/rpc.api.MusicCreativeChart/ListPopular",
   requiresGameAuth: true,
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicCreativeChartListRequest,
-  decode: decodeMusicCreativeChartListResponse,
+  encode: (request) => {
+    validateSearchParameter(request.searchParameter);
+    return encodeProtobuf(MusicCreativeChartListPopularRequestSchema, {
+      searchParameter: request.searchParameter,
+    });
+  },
+  decode: (data) =>
+    decodeProtobuf(MusicCreativeChartListPopularResponseSchema, data),
 };
 
 const MUSIC_CREATIVE_CHART_LIST_POPULAR_CREATOR: ApiMethod<
@@ -70,8 +120,19 @@ const MUSIC_CREATIVE_CHART_LIST_POPULAR_CREATOR: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicCreativeChartListPopularCreatorRequest,
-  decode: decodeMusicCreativeChartListPopularCreatorResponse,
+  encode: (request) => {
+    if (request.resetIntervalType !== undefined)
+      requireNonNegativeInteger(
+        request.resetIntervalType,
+        "reset interval type",
+      );
+    return encodeProtobuf(
+      MusicCreativeChartListPopularCreatorRequestSchema,
+      request,
+    );
+  },
+  decode: (data) =>
+    decodeProtobuf(MusicCreativeChartListPopularCreatorResponseSchema, data),
 };
 
 const MUSIC_CREATIVE_CHART_LIST_BY_CREATOR: ApiMethod<
@@ -83,21 +144,39 @@ const MUSIC_CREATIVE_CHART_LIST_BY_CREATOR: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicCreativeChartListByCreatorRequest,
-  decode: decodeMusicCreativeChartListByCreatorResponse,
+  encode: (request) => {
+    validateSearchParameter(request.searchParameter);
+    return encodeProtobuf(MusicCreativeChartListByCreatorRequestSchema, {
+      ...request,
+      publicUserId: requireNonEmpty(request.publicUserId, "public user ID"),
+    });
+  },
+  decode: (data) =>
+    decodeProtobuf(MusicCreativeChartListByCreatorResponseSchema, data),
 };
 
 const MUSIC_CREATIVE_CHART_GET_BY_ID: ApiMethod<
   MusicCreativeChartGetByIdRequest,
-  MusicCreativeChartGetByIdResponse
+  MusicCreativeChartGetByMusicCreativeChartIdResponse
 > = {
   path: "/rpc.api.MusicCreativeChart/GetByMusicCreativeChartId",
   requiresGameAuth: true,
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicCreativeChartGetByIdRequest,
-  decode: decodeMusicCreativeChartGetByIdResponse,
+  encode: (request) =>
+    encodeProtobuf(MusicCreativeChartGetByMusicCreativeChartIdRequestSchema, {
+      ...request,
+      musicCreativeChartId: requireNonEmpty(
+        request.musicCreativeChartId,
+        "music creative chart ID",
+      ),
+    }),
+  decode: (data) =>
+    decodeProtobuf(
+      MusicCreativeChartGetByMusicCreativeChartIdResponseSchema,
+      data,
+    ),
 };
 
 const MUSIC_CREATIVE_CHART_GET_QUOTE_TARGET: ApiMethod<
@@ -109,21 +188,41 @@ const MUSIC_CREATIVE_CHART_GET_QUOTE_TARGET: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicCreativeChartIdRequest,
-  decode: decodeMusicCreativeChartGetQuoteTargetChartResponse,
+  encode: (request) =>
+    encodeProtobuf(MusicCreativeChartGetQuoteTargetChartRequestSchema, {
+      musicCreativeChartId: requireNonEmpty(
+        request.musicCreativeChartId,
+        "music creative chart ID",
+      ),
+    }),
+  decode: (data) =>
+    decodeProtobuf(MusicCreativeChartGetQuoteTargetChartResponseSchema, data),
 };
 
 const MUSIC_CREATIVE_CHART_GET_CREATOR_INFO: ApiMethod<
   MusicCreativeChartGetCreatorInfoRequest,
-  MusicCreativeChartGetCreatorInfoResponse
+  MusicCreativeChartGetCreatorInfoByMusicCreativeChartIdResponse
 > = {
   path: "/rpc.api.MusicCreativeChart/GetCreatorInfoByMusicCreativeChartId",
   requiresGameAuth: true,
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicCreativeChartIdRequest,
-  decode: decodeMusicCreativeChartGetCreatorInfoResponse,
+  encode: (request) =>
+    encodeProtobuf(
+      MusicCreativeChartGetCreatorInfoByMusicCreativeChartIdRequestSchema,
+      {
+        musicCreativeChartId: requireNonEmpty(
+          request.musicCreativeChartId,
+          "music creative chart ID",
+        ),
+      },
+    ),
+  decode: (data) =>
+    decodeProtobuf(
+      MusicCreativeChartGetCreatorInfoByMusicCreativeChartIdResponseSchema,
+      data,
+    ),
 };
 
 const MUSIC_CREATIVE_CHART_GET_EARLY_CLEAR_RANKING_INFO: ApiMethod<
@@ -135,8 +234,24 @@ const MUSIC_CREATIVE_CHART_GET_EARLY_CLEAR_RANKING_INFO: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicCreativeChartGetEarlyClearRankingInfoRequest,
-  decode: decodeMusicCreativeChartGetEarlyClearRankingInfoResponse,
+  encode: (request) => {
+    requirePositiveInteger(request.liveResultType, "live result type");
+    return encodeProtobuf(
+      MusicCreativeChartGetEarlyClearRankingInfoRequestSchema,
+      {
+        ...request,
+        musicCreativeChartId: requireNonEmpty(
+          request.musicCreativeChartId,
+          "music creative chart ID",
+        ),
+      },
+    );
+  },
+  decode: (data) =>
+    decodeProtobuf(
+      MusicCreativeChartGetEarlyClearRankingInfoResponseSchema,
+      data,
+    ),
 };
 
 const MUSIC_CREATIVE_CHART_GET_EARLY_CLEAR_LIVE_DECK: ApiMethod<
@@ -148,8 +263,22 @@ const MUSIC_CREATIVE_CHART_GET_EARLY_CLEAR_LIVE_DECK: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMusicCreativeChartGetEarlyClearLiveDeckRequest,
-  decode: decodeMusicCreativeChartGetEarlyClearLiveDeckResponse,
+  encode: (request) => {
+    requirePositiveInteger(request.liveResultType, "live result type");
+    return encodeProtobuf(
+      MusicCreativeChartGetEarlyClearLiveDeckRequestSchema,
+      {
+        ...request,
+        publicUserId: requireNonEmpty(request.publicUserId, "public user ID"),
+        musicCreativeChartId: requireNonEmpty(
+          request.musicCreativeChartId,
+          "music creative chart ID",
+        ),
+      },
+    );
+  },
+  decode: (data) =>
+    decodeProtobuf(MusicCreativeChartGetEarlyClearLiveDeckResponseSchema, data),
 };
 
 /** Reads public user generated charts, creator lists, and early-clear rankings.
@@ -162,7 +291,7 @@ export class MusicCreativeChartApi {
   async listNewer(
     request: MusicCreativeChartListRequest = {},
     options?: RequestOptions,
-  ): Promise<MusicCreativeChartListResponse> {
+  ): Promise<MusicCreativeChartListNewerResponse> {
     return this.client.call(
       MUSIC_CREATIVE_CHART_LIST_NEWER,
       withDefaultSearch(request),
@@ -174,7 +303,7 @@ export class MusicCreativeChartApi {
   async listPopular(
     request: MusicCreativeChartListRequest = {},
     options?: RequestOptions,
-  ): Promise<MusicCreativeChartListResponse> {
+  ): Promise<MusicCreativeChartListPopularResponse> {
     return this.client.call(
       MUSIC_CREATIVE_CHART_LIST_POPULAR,
       withDefaultSearch(request),
@@ -210,7 +339,7 @@ export class MusicCreativeChartApi {
   async getByMusicCreativeChartId(
     request: MusicCreativeChartGetByIdRequest,
     options?: RequestOptions,
-  ): Promise<MusicCreativeChartGetByIdResponse> {
+  ): Promise<MusicCreativeChartGetByMusicCreativeChartIdResponse> {
     return this.client.call(MUSIC_CREATIVE_CHART_GET_BY_ID, request, options);
   }
 
@@ -230,7 +359,7 @@ export class MusicCreativeChartApi {
   async getCreatorInfoByMusicCreativeChartId(
     request: MusicCreativeChartGetCreatorInfoRequest,
     options?: RequestOptions,
-  ): Promise<MusicCreativeChartGetCreatorInfoResponse> {
+  ): Promise<MusicCreativeChartGetCreatorInfoByMusicCreativeChartIdResponse> {
     return this.client.call(
       MUSIC_CREATIVE_CHART_GET_CREATOR_INFO,
       request,
@@ -275,6 +404,82 @@ function withDefaultSearch<
     : request;
 }
 
+function validateSearchParameter(
+  request:
+    | ProtobufMessageInit<typeof MusicCreativeChartSearchParameterSchema>
+    | undefined,
+): void {
+  if (request === undefined) return;
+  validateUniqueNonEmptyStrings(request.musicIds, "music IDs");
+  validateUniqueNonEmptyStrings(
+    request.musicCreativeChartTagIds,
+    "music creative chart tag IDs",
+  );
+  validateUniquePositiveIntegers(request.textSearchTypes, "text search types");
+  validateUniquePositiveIntegers(request.chartTypes, "chart types");
+  if (request.resetIntervalType !== undefined)
+    requireNonNegativeInteger(request.resetIntervalType, "reset interval type");
+  if (request.difficultyValueFrom !== undefined)
+    requireNonNegativeInteger(
+      request.difficultyValueFrom,
+      "minimum difficulty value",
+    );
+  if (request.difficultyValueTo !== undefined)
+    requireNonNegativeInteger(
+      request.difficultyValueTo,
+      "maximum difficulty value",
+    );
+  if (
+    request.difficultyValueFrom !== undefined &&
+    request.difficultyValueTo !== undefined &&
+    request.difficultyValueFrom > request.difficultyValueTo
+  ) {
+    throw new RangeError(
+      "minimum difficulty value must not exceed maximum difficulty value",
+    );
+  }
+}
+
+function validateUniqueNonEmptyStrings(
+  values: readonly string[] | undefined,
+  name: string,
+): void {
+  const seen = new Set<string>();
+  for (const value of values ?? []) {
+    requireNonEmpty(value, name);
+    if (seen.has(value)) throw new RangeError(`${name} must be unique`);
+    seen.add(value);
+  }
+}
+
+function validateUniquePositiveIntegers(
+  values: readonly number[] | undefined,
+  name: string,
+): void {
+  const seen = new Set<number>();
+  for (const value of values ?? []) {
+    requirePositiveInteger(value, name);
+    if (seen.has(value)) throw new RangeError(`${name} must be unique`);
+    seen.add(value);
+  }
+}
+
+function requireNonEmpty(value: string | undefined, name: string): string {
+  if (typeof value !== "string" || value.length === 0)
+    throw new RangeError(`${name} must not be empty`);
+  return value;
+}
+
+function requirePositiveInteger(value: number | undefined, name: string): void {
+  if (value === undefined || !Number.isSafeInteger(value) || value <= 0)
+    throw new RangeError(`${name} must be a positive integer`);
+}
+
+function requireNonNegativeInteger(value: number, name: string): void {
+  if (!Number.isSafeInteger(value) || value < 0)
+    throw new RangeError(`${name} must be a non-negative integer`);
+}
+
 export {
   MUSIC_CREATIVE_CHART_GET_BY_ID,
   MUSIC_CREATIVE_CHART_GET_CREATOR_INFO,
@@ -287,25 +492,14 @@ export {
   MUSIC_CREATIVE_CHART_LIST_POPULAR_CREATOR,
 };
 
+export type { MusicCreativeChartSearchParameter } from "../protos/gen/rpc/api/common/music_creative_chart.gen_pb.js";
 export type {
-  MusicCreativeChartCreatorInfo,
-  MusicCreativeChartGetByIdRequest,
-  MusicCreativeChartGetByIdResponse,
-  MusicCreativeChartGetCreatorInfoRequest,
-  MusicCreativeChartGetCreatorInfoResponse,
-  MusicCreativeChartGetEarlyClearLiveDeckRequest,
+  MusicCreativeChartGetByMusicCreativeChartIdResponse as MusicCreativeChartGetByIdResponse,
+  MusicCreativeChartGetCreatorInfoByMusicCreativeChartIdResponse as MusicCreativeChartGetCreatorInfoResponse,
   MusicCreativeChartGetEarlyClearLiveDeckResponse,
-  MusicCreativeChartGetEarlyClearRankingInfoRequest,
   MusicCreativeChartGetEarlyClearRankingInfoResponse,
-  MusicCreativeChartGetQuoteTargetChartRequest,
   MusicCreativeChartGetQuoteTargetChartResponse,
-  MusicCreativeChartInfo,
-  MusicCreativeChartInfoMusicGrouping,
-  MusicCreativeChartListByCreatorRequest,
   MusicCreativeChartListByCreatorResponse,
-  MusicCreativeChartListPopularCreatorRequest,
   MusicCreativeChartListPopularCreatorResponse,
-  MusicCreativeChartListRequest,
-  MusicCreativeChartListResponse,
-  MusicCreativeChartSearchParameter,
-} from "../codecs/music-creative-chart.js";
+  MusicCreativeChartListNewerResponse as MusicCreativeChartListResponse,
+} from "../protos/gen/rpc/api/music_creative_chart.gen_pb.js";

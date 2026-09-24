@@ -2,11 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeCardGetParameterResponse,
-  decodeCardGetParametersResponse,
-  encodeCardGetParameterRequest,
-} from "../src/codecs/card.js";
-import {
   decodeProtoFields,
   encodeBytesField,
   encodeMessage,
@@ -19,6 +14,7 @@ import {
   CardApi,
 } from "../src/services/card.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
+import { withoutTypeNames } from "./support/without-type-names.js";
 
 function encodeFloat32Field(field: number, value: number): Buffer {
   const bytes = Buffer.alloc(4);
@@ -27,9 +23,11 @@ function encodeFloat32Field(field: number, value: number): Buffer {
 }
 
 void test("encodes Card/GetParameter card ID", () => {
-  const fields = decodeProtoFields(encodeCardGetParameterRequest("card-1"));
+  const fields = decodeProtoFields(
+    CARD_GET_PARAMETER.encode({ cardId: "card-1" }),
+  );
   assert.equal(fields.get(1)?.[0]?.toString(), "card-1");
-  assert.throws(() => encodeCardGetParameterRequest(""), /card ID/);
+  assert.throws(() => CARD_GET_PARAMETER.encode({ cardId: "" }), /card ID/);
 });
 
 void test("decodes Card/GetParameter int64 and fixed32 skill tree fields", () => {
@@ -51,7 +49,7 @@ void test("decodes Card/GetParameter int64 and fixed32 skill tree fields", () =>
     ),
   );
 
-  assert.deepEqual(decodeCardGetParameterResponse(response), {
+  assert.deepEqual(withoutTypeNames(CARD_GET_PARAMETER.decode(response)), {
     parameter: 123_456_789_012_345n,
     performance: 10_000n,
     technique: 20_000n,
@@ -82,7 +80,7 @@ void test("decodes Card/GetParameters parameter infos", () => {
     encodeVarintField(2, 125),
   );
 
-  assert.deepEqual(decodeCardGetParametersResponse(response), {
+  assert.deepEqual(withoutTypeNames(CARD_GET_PARAMETERS.decode(response)), {
     parameterInfos: [
       {
         cardId: "card-1",

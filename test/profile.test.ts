@@ -2,10 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeProfileGetUserProfileDetailResponse,
-  encodeProfileGetUserProfileDetailRequest,
-} from "../src/codecs/profile.js";
-import {
   decodeProtoFields,
   encodeBytesField,
   encodeMessage,
@@ -22,7 +18,7 @@ void test("encodes Profile/GetUserProfileDetail requests", () => {
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeProfileGetUserProfileDetailRequest({
+        PROFILE_GET_USER_PROFILE_DETAIL.encode({
           publicUserId: "public-1",
         }),
       ),
@@ -30,7 +26,7 @@ void test("encodes Profile/GetUserProfileDetail requests", () => {
     [[1, [Buffer.from("public-1")]]],
   );
   assert.throws(
-    () => encodeProfileGetUserProfileDetailRequest({ publicUserId: "" }),
+    () => PROFILE_GET_USER_PROFILE_DETAIL.encode({ publicUserId: "" }),
     /public user ID/,
   );
 });
@@ -129,7 +125,7 @@ void test("decodes visible public profile details and gameplay summaries", () =>
     signedVarintField(15, -9_000_000_000n),
   );
 
-  const response = decodeProfileGetUserProfileDetailResponse(
+  const response = PROFILE_GET_USER_PROFILE_DETAIL.decode(
     encodeBytesField(1, detail),
   );
   const decoded = response.userProfileDetailInfo;

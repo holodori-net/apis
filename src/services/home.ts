@@ -1,11 +1,12 @@
-import {
-  decodeHomeLoginResponse,
-  encodeHomeLoginRequest,
-  type HomeLoginResponse,
-} from "../codecs/home.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import { EmptySchema } from "../protos/gen/google/protobuf/empty_pb.js";
+import {
+  type HomeLoginResponse,
+  HomeLoginResponseSchema,
+} from "../protos/gen/rpc/api/home.gen_pb.js";
 
 const HOME_LOGIN: ApiMethod<void, HomeLoginResponse> = {
   path: "/rpc.api.Home/Login",
@@ -13,8 +14,8 @@ const HOME_LOGIN: ApiMethod<void, HomeLoginResponse> = {
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeHomeLoginRequest,
-  decode: decodeHomeLoginResponse,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (response) => decodeProtobuf(HomeLoginResponseSchema, response),
 };
 
 /** Completes the authenticated home bootstrap before gameplay API calls. */
@@ -28,7 +29,4 @@ export class HomeApi {
 }
 
 export { HOME_LOGIN };
-export type {
-  HomeLoginResponse,
-  HomeRealtimeNotificationConnectionInfo,
-} from "../codecs/home.js";
+export type { HomeLoginResponse };

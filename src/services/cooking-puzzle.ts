@@ -1,23 +1,25 @@
-import {
-  decodeMiniGameRankingResponse,
-  encodeMiniGameRankingRequest,
-  type MiniGameRankingResponse,
-} from "../codecs/mini-game-ranking.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import { EmptySchema } from "../protos/gen/google/protobuf/empty_pb.js";
+import {
+  type CookingPuzzleGetRankingInfoResponse,
+  CookingPuzzleGetRankingInfoResponseSchema,
+} from "../protos/gen/rpc/api/cooking_puzzle.gen_pb.js";
 
 const COOKING_PUZZLE_GET_RANKING_INFO: ApiMethod<
   void,
-  MiniGameRankingResponse
+  CookingPuzzleGetRankingInfoResponse
 > = {
   path: "/rpc.api.CookingPuzzle/GetRankingInfo",
   requiresGameAuth: true,
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMiniGameRankingRequest,
-  decode: decodeMiniGameRankingResponse,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (data) =>
+    decodeProtobuf(CookingPuzzleGetRankingInfoResponseSchema, data),
 };
 
 /** Reads Cooking Puzzle public information. */
@@ -31,7 +33,7 @@ export class CookingPuzzleApi {
    */
   async getRankingInfo(
     options?: RequestOptions,
-  ): Promise<MiniGameRankingResponse> {
+  ): Promise<CookingPuzzleGetRankingInfoResponse> {
     return this.client.call(
       COOKING_PUZZLE_GET_RANKING_INFO,
       undefined,
@@ -41,3 +43,4 @@ export class CookingPuzzleApi {
 }
 
 export { COOKING_PUZZLE_GET_RANKING_INFO };
+export type { CookingPuzzleGetRankingInfoResponse } from "../protos/gen/rpc/api/cooking_puzzle.gen_pb.js";

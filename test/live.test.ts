@@ -2,12 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeLiveGetDeckResponse,
-  encodeLiveGetDeckCandidateCardParametersRequest,
-  encodeLiveGetDeckRequest,
-  encodeLiveGetDraftDeckInfoRequest,
-} from "../src/codecs/live.js";
-import {
   decodeProtoFields,
   encodeBytesField,
   encodeMessage,
@@ -24,7 +18,7 @@ void test("encodes Live deck requests with contract field numbers", () => {
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeLiveGetDeckCandidateCardParametersRequest({
+        LIVE_GET_DECK_CANDIDATE_CARD_PARAMETERS.encode({
           characterId: "character-1",
           costumeId: "costume-1",
           musicId: "music-1",
@@ -39,7 +33,7 @@ void test("encodes Live deck requests with contract field numbers", () => {
   );
 
   const draft = decodeProtoFields(
-    encodeLiveGetDraftDeckInfoRequest({
+    LIVE_GET_DRAFT_DECK_INFO.encode({
       characterId: "character-1",
       costumeId: "costume-1",
       deckPositions: [{ position: 1, cardId: "card-1" }],
@@ -61,7 +55,7 @@ void test("encodes Live deck requests with contract field numbers", () => {
   assert.deepEqual(
     [
       ...decodeProtoFields(
-        encodeLiveGetDeckRequest({
+        LIVE_GET_DECK.encode({
           characterId: "character-1",
           number: 2,
         }),
@@ -138,7 +132,7 @@ void test("decodes Live/Get nested evaluation and in-game effects", () => {
     encodeBytesField(100, effectPosition),
   );
 
-  const response = decodeLiveGetDeckResponse(
+  const response = LIVE_GET_DECK.decode(
     encodeMessage(
       encodeBytesField(1, deckPosition),
       encodeBytesField(2, evaluation),

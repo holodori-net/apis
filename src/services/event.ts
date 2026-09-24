@@ -1,14 +1,14 @@
-import {
-  decodeEventListEventInfoForPortalResponse,
-  decodeEventListEventInfoResponse,
-  encodeEventListEventInfoForPortalRequest,
-  encodeEventListEventInfoRequest,
-  type EventListEventInfoForPortalResponse,
-  type EventListEventInfoResponse,
-} from "../codecs/event.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import { EmptySchema } from "../protos/gen/google/protobuf/empty_pb.js";
+import {
+  type EventListEventInfoForPortalResponse,
+  EventListEventInfoForPortalResponseSchema,
+  type EventListEventInfoResponse,
+  EventListEventInfoResponseSchema,
+} from "../protos/gen/rpc/api/event.gen_pb.js";
 
 const EVENT_LIST_EVENT_INFO: ApiMethod<void, EventListEventInfoResponse> = {
   path: "/rpc.api.Event/ListEventInfo",
@@ -16,8 +16,8 @@ const EVENT_LIST_EVENT_INFO: ApiMethod<void, EventListEventInfoResponse> = {
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeEventListEventInfoRequest,
-  decode: decodeEventListEventInfoResponse,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (data) => decodeProtobuf(EventListEventInfoResponseSchema, data),
 };
 
 const EVENT_LIST_EVENT_INFO_FOR_PORTAL: ApiMethod<
@@ -29,8 +29,9 @@ const EVENT_LIST_EVENT_INFO_FOR_PORTAL: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeEventListEventInfoForPortalRequest,
-  decode: decodeEventListEventInfoForPortalResponse,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (data) =>
+    decodeProtobuf(EventListEventInfoForPortalResponseSchema, data),
 };
 
 /** Provides current event definitions and portal summaries. */
@@ -69,19 +70,4 @@ export class EventApi {
 }
 
 export { EVENT_LIST_EVENT_INFO, EVENT_LIST_EVENT_INFO_FOR_PORTAL };
-export type {
-  EventInfo,
-  EventListEventInfoForPortalResponse,
-  EventListEventInfoResponse,
-  EventLiveScoreBonus,
-  EventMarathonChapter,
-  EventMarathonInfo,
-  EventMarathonScoreReward,
-  EventMiniGameScoreBonus,
-  EventMiniGameScoreRate,
-  EventMusicRankReward,
-  EventMusicScoreBonus,
-  EventPortalInfo,
-  EventRankReward,
-  EventReward,
-} from "../codecs/event.js";
+export type * from "../protos/gen/rpc/api/event.gen_pb.js";

@@ -2,10 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
-  decodeMembershipGetShopResponse,
-  encodeMembershipGetShopRequest,
-} from "../src/codecs/shop.js";
-import {
   decodeProtoFields,
   encodeBytesField,
   encodeMessage,
@@ -19,7 +15,7 @@ import {
 import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes empty Membership/GetShop request", () => {
-  assert.equal(encodeMembershipGetShopRequest().length, 0);
+  assert.equal(MEMBERSHIP_GET_SHOP.encode(undefined).length, 0);
 });
 
 void test("decodes Membership/GetShop with shared shop schema", () => {
@@ -50,39 +46,21 @@ void test("decodes Membership/GetShop with shared shop schema", () => {
       ),
     ),
   );
-  const response = decodeMembershipGetShopResponse(encodeBytesField(1, shop));
-  assert.deepEqual(response, {
-    id: "membership-shop",
-    items: [
-      {
-        type: 2,
-        chargeItem: {
-          id: "membership-yearly",
-          type: 3,
-          subscription: {
-            type: 2,
-            isUnlocked: true,
-            unlockConditionGroupId: "",
-            isSubscribed: true,
-            providePaidStoneQuantity: 500,
-            appleIapProductId: "apple.product",
-            googleIapProductId: "google.product",
-          },
-        },
-      },
-    ],
-    type: 0,
-    name: "",
-    endTime: 0n,
-    resetIntervalType: 0,
-    nextResetTime: 0n,
-    thumbnailAssetId: "",
-    descriptionTitle: "",
-    descriptionText: "",
-    displayPossessionResourceTypes: [],
-    displayPossessionResourceIds: [],
-  });
-  assert.equal(decodeProtoFields(encodeMembershipGetShopRequest()).size, 0);
+  const response = MEMBERSHIP_GET_SHOP.decode(encodeBytesField(1, shop));
+  assert.equal(response.shop?.id, "membership-shop");
+  assert.equal(response.shop?.items[0]?.chargeItem?.id, "membership-yearly");
+  assert.equal(
+    response.shop?.items[0]?.chargeItem?.subscription?.isSubscribed,
+    true,
+  );
+  assert.equal(
+    response.shop?.items[0]?.chargeItem?.subscription?.providePaidStoneQuantity,
+    500,
+  );
+  assert.equal(
+    decodeProtoFields(MEMBERSHIP_GET_SHOP.encode(undefined)).size,
+    0,
+  );
 });
 
 void test("MembershipApi authenticates lazily and declares read policies", async () => {

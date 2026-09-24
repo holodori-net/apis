@@ -1,14 +1,5 @@
 import type { ApiTransport } from "./transports/types.js";
 
-import {
-  type AccountMigrationMigrateRequest,
-  type AccountMigrationMigrateResponse,
-  type AccountMigrationPreparePasswordResponse,
-  type NoticeGetResponse,
-  type NoticeListInCategoryResponse,
-  type NoticeTopResponse,
-  type NoticeUpdateResponse,
-} from "./codecs.js";
 import { AuthenticatedApiCaller } from "./core/caller.js";
 import { ApiClient, DEFAULT_TIMEOUT_MS } from "./core/client.js";
 import { HolodoriApiError } from "./core/errors.js";
@@ -21,7 +12,12 @@ import {
   officialBaseUrlForRegion,
   type RegionBaseUrlResolver,
 } from "./region.js";
-import { AccountMigrationApi } from "./services/account-migration.js";
+import {
+  AccountMigrationApi,
+  type AccountMigrationMigrateRequest,
+  type AccountMigrationMigrateResponse,
+  type AccountMigrationPrepareMigrationPasswordResponse,
+} from "./services/account-migration.js";
 import { AssetApi } from "./services/asset.js";
 import { AuthApi } from "./services/auth.js";
 import { CardApi } from "./services/card.js";
@@ -43,7 +39,14 @@ import { MembershipApi } from "./services/membership.js";
 import { MultiGameApi } from "./services/multi-game.js";
 import { MusicCreativeChartApi } from "./services/music-creative-chart.js";
 import { MusicApi } from "./services/music.js";
-import { NoticeApi } from "./services/notice.js";
+import {
+  NoticeApi,
+  type NoticeGetResponse,
+  type NoticeListInCategoryResponse,
+  type NoticeTopResponse,
+  type NoticeUpdateCategoryReadTimeResponse,
+  type NoticeUpdateDetailReadTimeResponse,
+} from "./services/notice.js";
 import { NotificationApi } from "./services/notification.js";
 import { ParkPermanenceApi } from "./services/park-permanence.js";
 import { ProfileApi } from "./services/profile.js";
@@ -239,21 +242,21 @@ export class HolodoriApi {
   }
 
   /** @deprecated Use `api.auth.create()`. */
-  authCreate(requestOptions?: RequestOptions): Promise<string> {
-    return this.auth.create(requestOptions);
+  async authCreate(requestOptions?: RequestOptions): Promise<string> {
+    return (await this.auth.create(requestOptions)).credential;
   }
 
   /** @deprecated Use `api.auth.login()`. */
-  authLogin(
+  async authLogin(
     credential?: string,
     requestOptions?: RequestOptions,
   ): Promise<string> {
-    return this.auth.login(credential, requestOptions);
+    return (await this.auth.login(credential, requestOptions)).gameAuthToken;
   }
 
   /** @deprecated Use `api.master.get()`. */
-  masterGet(requestOptions?: RequestOptions): Promise<string> {
-    return this.master.get(requestOptions);
+  async masterGet(requestOptions?: RequestOptions): Promise<string> {
+    return (await this.master.get(requestOptions)).version;
   }
 
   /** @deprecated Use `api.accountMigration.preparePassword()`. */
@@ -261,7 +264,7 @@ export class HolodoriApi {
     accountMigrationId: string,
     password: string,
     requestOptions?: RequestOptions,
-  ): Promise<AccountMigrationPreparePasswordResponse> {
+  ): Promise<AccountMigrationPrepareMigrationPasswordResponse> {
     return this.accountMigration.preparePasswordResponse(
       accountMigrationId,
       password,
@@ -303,7 +306,7 @@ export class HolodoriApi {
   callNoticeUpdateCategoryReadTime(
     categoryIds: readonly string[],
     requestOptions?: RequestOptions,
-  ): Promise<NoticeUpdateResponse> {
+  ): Promise<NoticeUpdateCategoryReadTimeResponse> {
     return this.notice.updateCategoryReadTime(categoryIds, requestOptions);
   }
 
@@ -311,7 +314,7 @@ export class HolodoriApi {
   callNoticeUpdateDetailReadTime(
     noticeIds: readonly string[],
     requestOptions?: RequestOptions,
-  ): Promise<NoticeUpdateResponse> {
+  ): Promise<NoticeUpdateDetailReadTimeResponse> {
     return this.notice.updateDetailReadTime(noticeIds, requestOptions);
   }
 

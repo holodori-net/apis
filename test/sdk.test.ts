@@ -139,7 +139,7 @@ void test("bootstraps authentication and decodes all Notice endpoints", async ()
   const list = await api.notice.listInCategory("category-1", 30);
   assert.equal(list.noticeInfos[0]?.id, "notice-1");
   assert.equal(list.isHasNext, true);
-  assert.equal((await api.notice.get("notice-1")).noticeInfo.title, "Title");
+  assert.equal((await api.notice.get("notice-1")).noticeInfo?.title, "Title");
   await api.notice.updateCategoryReadTime(["category-1"]);
   await api.notice.updateDetailReadTime(["notice-1"]);
 
@@ -301,13 +301,13 @@ void test("exposes public information services from the high-level client", asyn
 
   assert.ok(api.asset instanceof AssetApi);
   assert.ok(api.chase instanceof ChaseApi);
-  assert.equal(ChaseTeamType.Patrol, 2);
+  assert.equal(ChaseTeamType.PATROL, 2);
   assert.ok(api.circuit instanceof CircuitApi);
   assert.ok(api.comboCardGame instanceof ComboCardGameApi);
   assert.ok(api.cookingPuzzle instanceof CookingPuzzleApi);
   assert.ok(api.gift instanceof GiftApi);
   assert.ok(api.health instanceof HealthApi);
-  assert.equal(HealthCheckServingStatus.Serving, 1);
+  assert.equal(HealthCheckServingStatus.SERVING, 1);
   assert.ok(api.marathon instanceof MarathonApi);
   assert.ok(api.jumpRope instanceof JumpRopeApi);
   assert.ok(api.music instanceof MusicApi);

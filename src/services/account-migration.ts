@@ -1,32 +1,47 @@
-import {
-  type AccountMigrationLinkResult,
-  type AccountMigrationMigrateRequest,
-  type AccountMigrationMigrateResponse,
-  type AccountMigrationPreparePasswordResponse,
-  decodeAccountMigrationMigrateResponse,
-  decodeAccountMigrationPreparePasswordResponse,
-  encodeMigrateRequest,
-  encodePrepareMigrationPasswordRequest,
-} from "../codecs/account-migration.js";
 import { type ApiClient } from "../core/client.js";
 import { HolodoriApiError } from "../core/errors.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { requireResponseString } from "../core/response.js";
 import { type ApiSession } from "../core/session.js";
+import {
+  decodeProtobuf,
+  encodeProtobuf,
+  type ProtobufMessageInit,
+} from "../protos/codec.js";
+import {
+  type AccountMigrationLinkResult,
+  AccountMigrationMigrateRequestSchema,
+  type AccountMigrationMigrateResponse,
+  AccountMigrationMigrateResponseSchema,
+  AccountMigrationPrepareMigrationPasswordRequestSchema,
+  type AccountMigrationPrepareMigrationPasswordResponse,
+  AccountMigrationPrepareMigrationPasswordResponseSchema,
+} from "../protos/gen/rpc/api/account_migration.gen_pb.js";
 import { normalizeBaseUrl, type RegionBaseUrlResolver } from "../region.js";
 
 const PREPARE_PASSWORD: ApiMethod<
   { readonly accountMigrationId: string; readonly password: string },
-  AccountMigrationPreparePasswordResponse
+  AccountMigrationPrepareMigrationPasswordResponse
 > = {
   path: "/rpc.api.AccountMigration/PrepareMigrationPassword",
   requiresGameAuth: false,
   requiresMasterVersion: false,
   usesResponseCache: false,
   requiresRequestSignature: false,
-  encode: ({ accountMigrationId, password }) =>
-    encodePrepareMigrationPasswordRequest(accountMigrationId, password),
-  decode: decodeAccountMigrationPreparePasswordResponse,
+  encode: (request) =>
+    encodeProtobuf(AccountMigrationPrepareMigrationPasswordRequestSchema, {
+      accountMigrationId: requireNonEmpty(
+        request.accountMigrationId,
+        "account migration ID",
+      ),
+      password: requireNonEmpty(request.password, "migration password"),
+    }),
+  decode: (response) =>
+    decodeProtobuf(
+      AccountMigrationPrepareMigrationPasswordResponseSchema,
+      response,
+    ),
 };
 
 const MIGRATE: ApiMethod<
@@ -38,8 +53,17 @@ const MIGRATE: ApiMethod<
   requiresMasterVersion: false,
   usesResponseCache: false,
   requiresRequestSignature: false,
-  encode: encodeMigrateRequest,
-  decode: decodeAccountMigrationMigrateResponse,
+  encode: (request) =>
+    encodeProtobuf(AccountMigrationMigrateRequestSchema, {
+      ...request,
+      targetPublicUserId: requireNonEmpty(
+        request.targetPublicUserId,
+        "target public user ID",
+      ),
+      oneTimeToken: requireNonEmpty(request.oneTimeToken, "one-time token"),
+    }),
+  decode: (response) =>
+    decodeProtobuf(AccountMigrationMigrateResponseSchema, response),
 };
 
 export interface AccountMigrationApiOptions {
@@ -60,17 +84,26 @@ export class AccountMigrationApi {
     password: string,
     options?: RequestOptions,
   ): Promise<AccountMigrationLinkResult> {
-    return (
-      await this.preparePasswordResponse(accountMigrationId, password, options)
-    ).linkResult;
+    const response = await this.preparePasswordResponse(
+      accountMigrationId,
+      password,
+      options,
+    );
+    if (!response.linkResult) {
+      throw new HolodoriApiError(
+        "migration response has no link result",
+        PREPARE_PASSWORD.path,
+      );
+    }
+    return response.linkResult;
   }
 
   /** Returns the complete password-prepare response including its link result. @rpc /rpc.api.AccountMigration/PrepareMigrationPassword */
-  async preparePasswordResponse(
+  preparePasswordResponse(
     accountMigrationId: string,
     password: string,
     options?: RequestOptions,
-  ): Promise<AccountMigrationPreparePasswordResponse> {
+  ): Promise<AccountMigrationPrepareMigrationPasswordResponse> {
     return this.client.call(
       PREPARE_PASSWORD,
       { accountMigrationId, password },
@@ -95,17 +128,15 @@ export class AccountMigrationApi {
     previousPublicUserId?: string,
     options?: RequestOptions,
   ): Promise<AccountMigrationMigrateResponse> {
-    const request =
+    const request: AccountMigrationMigrateRequest =
       typeof requestOrTargetPublicUserId === "string"
         ? {
+            previousPublicUserId: previousPublicUserId ?? "",
             targetPublicUserId: requestOrTargetPublicUserId,
             oneTimeToken:
               typeof oneTimeTokenOrOptions === "string"
                 ? oneTimeTokenOrOptions
                 : "",
-            ...(previousPublicUserId === undefined
-              ? {}
-              : { previousPublicUserId }),
           }
         : requestOrTargetPublicUserId;
     const requestOptions =
@@ -137,10 +168,10 @@ export class AccountMigrationApi {
       );
     }
     const request = {
-      ...(previousPublicUserId === undefined ? {} : { previousPublicUserId }),
+      previousPublicUserId: previousPublicUserId ?? "",
       targetPublicUserId: linkedUserInfo.publicUserId,
       oneTimeToken: linkedUserInfo.oneTimeToken,
-    };
+    } satisfies AccountMigrationMigrateRequest;
     const targetBaseUrl = this.resolveRegionBaseUrl(linkedUserInfo.region);
     const result = await this.migrateRequest(request, options, targetBaseUrl);
     if (targetBaseUrl) this.client.setBaseUrl(targetBaseUrl);
@@ -156,7 +187,9 @@ export class AccountMigrationApi {
       ...options,
       ...(baseUrl === undefined ? {} : { baseUrl }),
     });
-    this.session.replaceCredentialAfterMigration(result.credential);
+    this.session.replaceCredentialAfterMigration(
+      requireResponseString(result.credential, "credential", MIGRATE.path),
+    );
     return result;
   }
 
@@ -175,3 +208,18 @@ export class AccountMigrationApi {
 }
 
 export { MIGRATE, PREPARE_PASSWORD };
+export type {
+  AccountMigrationLinkResult,
+  AccountMigrationMigrateRequest,
+  AccountMigrationMigrateResponse,
+  AccountMigrationPrepareMigrationPasswordResponse,
+};
+
+type AccountMigrationMigrateRequest = ProtobufMessageInit<
+  typeof AccountMigrationMigrateRequestSchema
+>;
+
+function requireNonEmpty(value: string | undefined, name: string): string {
+  if (!value) throw new RangeError(`${name} must not be empty`);
+  return value;
+}

@@ -1,24 +1,43 @@
-import {
-  type ChaseRankingRequest,
-  decodeMiniGameRankingResponse,
-  encodeChaseRankingRequest,
-  type MiniGameRankingResponse,
-} from "../codecs/mini-game-ranking.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import {
+  decodeProtobuf,
+  encodeProtobuf,
+  type ProtobufMessageInit,
+} from "../protos/codec.js";
+import { ChaseTeamType } from "../protos/gen/enums/chase_team_type.gen_pb.js";
+import {
+  ChaseGetRankingInfoRequestSchema,
+  type ChaseGetRankingInfoResponse,
+  ChaseGetRankingInfoResponseSchema,
+} from "../protos/gen/rpc/api/chase.gen_pb.js";
+
+export type ChaseRankingRequest = ProtobufMessageInit<
+  typeof ChaseGetRankingInfoRequestSchema
+> & {
+  readonly chaseTeamType: ChaseTeamType;
+};
 
 const CHASE_GET_RANKING_INFO: ApiMethod<
   ChaseRankingRequest,
-  MiniGameRankingResponse
+  ChaseGetRankingInfoResponse
 > = {
   path: "/rpc.api.Chase/GetRankingInfo",
   requiresGameAuth: true,
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeChaseRankingRequest,
-  decode: decodeMiniGameRankingResponse,
+  encode: ({ chaseTeamType }) => {
+    if (
+      chaseTeamType !== ChaseTeamType.MISCHIEF &&
+      chaseTeamType !== ChaseTeamType.PATROL
+    ) {
+      throw new RangeError("chaseTeamType must be Mischief or Patrol");
+    }
+    return encodeProtobuf(ChaseGetRankingInfoRequestSchema, { chaseTeamType });
+  },
+  decode: (data) => decodeProtobuf(ChaseGetRankingInfoResponseSchema, data),
 };
 
 /** Reads Chase public information. */
@@ -33,9 +52,11 @@ export class ChaseApi {
   async getRankingInfo(
     request: ChaseRankingRequest,
     options?: RequestOptions,
-  ): Promise<MiniGameRankingResponse> {
+  ): Promise<ChaseGetRankingInfoResponse> {
     return this.client.call(CHASE_GET_RANKING_INFO, request, options);
   }
 }
 
 export { CHASE_GET_RANKING_INFO };
+export { ChaseTeamType };
+export type { ChaseGetRankingInfoResponse } from "../protos/gen/rpc/api/chase.gen_pb.js";

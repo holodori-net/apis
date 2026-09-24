@@ -1,20 +1,48 @@
-import {
-  decodeLiveGetDeckCandidateCardParametersResponse,
-  decodeLiveGetDeckResponse,
-  decodeLiveGetDraftDeckInfoResponse,
-  encodeLiveGetDeckCandidateCardParametersRequest,
-  encodeLiveGetDeckRequest,
-  encodeLiveGetDraftDeckInfoRequest,
-  type LiveGetDeckCandidateCardParametersRequest,
-  type LiveGetDeckCandidateCardParametersResponse,
-  type LiveGetDeckRequest,
-  type LiveGetDeckResponse,
-  type LiveGetDraftDeckInfoRequest,
-  type LiveGetDraftDeckInfoResponse,
-} from "../codecs/live.js";
+import type { DescMessage } from "@bufbuild/protobuf";
+
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import {
+  decodeProtobuf,
+  encodeProtobuf,
+  type ProtobufMessageInit,
+} from "../protos/codec.js";
+import {
+  type LiveDeckPositionSchema as LiveDeckPositionSchemaType,
+  LiveGetDeckCandidateCardParametersRequestSchema,
+  type LiveGetDeckCandidateCardParametersResponse,
+  LiveGetDeckCandidateCardParametersResponseSchema,
+  LiveGetDeckRequestSchema,
+  type LiveGetDeckResponse,
+  LiveGetDeckResponseSchema,
+  LiveGetDraftDeckInfoRequestSchema,
+  type LiveGetDraftDeckInfoResponse,
+  LiveGetDraftDeckInfoResponseSchema,
+} from "../protos/gen/rpc/api/live.gen_pb.js";
+
+type RequiredInit<
+  Schema extends DescMessage,
+  Keys extends keyof ProtobufMessageInit<Schema>,
+> = Required<Pick<ProtobufMessageInit<Schema>, Keys>> &
+  ProtobufMessageInit<Schema>;
+
+export type LiveDeckPositionInput = RequiredInit<
+  typeof LiveDeckPositionSchemaType,
+  "cardId" | "position"
+>;
+export type LiveGetDeckCandidateCardParametersRequest = RequiredInit<
+  typeof LiveGetDeckCandidateCardParametersRequestSchema,
+  "characterId" | "costumeId"
+>;
+export type LiveGetDraftDeckInfoRequest = RequiredInit<
+  typeof LiveGetDraftDeckInfoRequestSchema,
+  "characterId" | "costumeId" | "deckPositions"
+> & { readonly deckPositions: readonly LiveDeckPositionInput[] };
+export type LiveGetDeckRequest = RequiredInit<
+  typeof LiveGetDeckRequestSchema,
+  "characterId" | "number"
+>;
 
 const LIVE_GET_DECK_CANDIDATE_CARD_PARAMETERS: ApiMethod<
   LiveGetDeckCandidateCardParametersRequest,
@@ -25,8 +53,16 @@ const LIVE_GET_DECK_CANDIDATE_CARD_PARAMETERS: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeLiveGetDeckCandidateCardParametersRequest,
-  decode: decodeLiveGetDeckCandidateCardParametersResponse,
+  encode: (request) => {
+    requireNonEmpty(request.characterId, "character ID");
+    requireNonEmpty(request.costumeId, "costume ID");
+    return encodeProtobuf(
+      LiveGetDeckCandidateCardParametersRequestSchema,
+      request,
+    );
+  },
+  decode: (data) =>
+    decodeProtobuf(LiveGetDeckCandidateCardParametersResponseSchema, data),
 };
 
 const LIVE_GET_DRAFT_DECK_INFO: ApiMethod<
@@ -38,8 +74,27 @@ const LIVE_GET_DRAFT_DECK_INFO: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeLiveGetDraftDeckInfoRequest,
-  decode: decodeLiveGetDraftDeckInfoResponse,
+  encode: (request) => {
+    requireNonEmpty(request.characterId, "character ID");
+    requireNonEmpty(request.costumeId, "costume ID");
+    if (request.deckPositions.length > 5) {
+      throw new RangeError("deck positions must contain at most five entries");
+    }
+    for (const position of request.deckPositions) {
+      if (
+        !Number.isInteger(position.position) ||
+        position.position < 1 ||
+        position.position > 5
+      ) {
+        throw new RangeError(
+          "deck position must be an integer from one to five",
+        );
+      }
+      requireNonEmpty(position.cardId, "card ID");
+    }
+    return encodeProtobuf(LiveGetDraftDeckInfoRequestSchema, request);
+  },
+  decode: (data) => decodeProtobuf(LiveGetDraftDeckInfoResponseSchema, data),
 };
 
 const LIVE_GET_DECK: ApiMethod<LiveGetDeckRequest, LiveGetDeckResponse> = {
@@ -48,8 +103,14 @@ const LIVE_GET_DECK: ApiMethod<LiveGetDeckRequest, LiveGetDeckResponse> = {
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeLiveGetDeckRequest,
-  decode: decodeLiveGetDeckResponse,
+  encode: (request) => {
+    requireNonEmpty(request.characterId, "character ID");
+    if (!Number.isInteger(request.number) || request.number < 1) {
+      throw new RangeError("deck number must be a positive integer");
+    }
+    return encodeProtobuf(LiveGetDeckRequestSchema, request);
+  },
+  decode: (data) => decodeProtobuf(LiveGetDeckResponseSchema, data),
 };
 
 /** Evaluates candidate and saved live decks with the game server's formulas. */
@@ -85,25 +146,27 @@ export class LiveApi {
   }
 }
 
+function requireNonEmpty(value: string, name: string): void {
+  if (value.length === 0) throw new TypeError(`${name} must not be empty`);
+}
+
 export {
   LIVE_GET_DECK,
   LIVE_GET_DECK_CANDIDATE_CARD_PARAMETERS,
   LIVE_GET_DRAFT_DECK_INFO,
 };
 export type {
-  LiveActiveSkillLevel,
-  LiveDeckCandidateCardParameterInfo,
+  LiveDeckInGameEffect_LiveActiveSkillLevel as LiveActiveSkillLevel,
   LiveDeckEvaluation,
-  LiveDeckEvaluationScoreUpPermilUp,
+  LiveDeckEvaluation_LiveDeckEvaluationScoreUpPermilUp as LiveDeckEvaluationScoreUpPermilUp,
   LiveDeckInGameEffect,
-  LiveDeckInGameEffectPosition,
+  LiveDeckInGameEffect_LiveDeckPosition as LiveDeckInGameEffectPosition,
   LiveDeckPosition,
-  LiveDeckPositionInput,
-  LiveDeckPower,
-  LiveGetDeckCandidateCardParametersRequest,
+  LiveDeckEvaluation_LiveDeckPower as LiveDeckPower,
+} from "../protos/gen/rpc/api/common/live.gen_pb.js";
+export type {
   LiveGetDeckCandidateCardParametersResponse,
-  LiveGetDeckRequest,
   LiveGetDeckResponse,
-  LiveGetDraftDeckInfoRequest,
   LiveGetDraftDeckInfoResponse,
-} from "../codecs/live.js";
+} from "../protos/gen/rpc/api/live.gen_pb.js";
+export type { LiveGetDeckCandidateCardParametersResponse_ParameterInfo as LiveDeckCandidateCardParameterInfo } from "../protos/gen/rpc/api/live.gen_pb.js";

@@ -1,29 +1,38 @@
-import {
-  type ComboCardGameListUserInfoRequest,
-  type ComboCardGameListUserInfoResponse,
-  decodeComboCardGameListUserInfoResponse,
-  encodeComboCardGameListUserInfoRequest,
-} from "../codecs/combo-card-game.js";
-import {
-  decodeMiniGameRankingResponse,
-  encodeMiniGameRankingRequest,
-  type MiniGameRankingResponse,
-} from "../codecs/mini-game-ranking.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import {
+  decodeProtobuf,
+  encodeProtobuf,
+  type ProtobufMessageInit,
+} from "../protos/codec.js";
+import { EmptySchema } from "../protos/gen/google/protobuf/empty_pb.js";
+import {
+  type ComboCardGameGetRankingInfoResponse,
+  ComboCardGameGetRankingInfoResponseSchema,
+  ComboCardGameListUserInfoRequestSchema,
+  type ComboCardGameListUserInfoResponse,
+  ComboCardGameListUserInfoResponseSchema,
+} from "../protos/gen/rpc/api/combo_card_game.gen_pb.js";
+
+export type ComboCardGameListUserInfoRequest = ProtobufMessageInit<
+  typeof ComboCardGameListUserInfoRequestSchema
+> & {
+  readonly publicUserIds: readonly string[];
+};
 
 const COMBO_CARD_GAME_GET_RANKING_INFO: ApiMethod<
   void,
-  MiniGameRankingResponse
+  ComboCardGameGetRankingInfoResponse
 > = {
   path: "/rpc.api.ComboCardGame/GetRankingInfo",
   requiresGameAuth: true,
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeMiniGameRankingRequest,
-  decode: decodeMiniGameRankingResponse,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (data) =>
+    decodeProtobuf(ComboCardGameGetRankingInfoResponseSchema, data),
 };
 
 const COMBO_CARD_GAME_LIST_USER_INFO: ApiMethod<
@@ -35,8 +44,21 @@ const COMBO_CARD_GAME_LIST_USER_INFO: ApiMethod<
   requiresMasterVersion: false,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeComboCardGameListUserInfoRequest,
-  decode: decodeComboCardGameListUserInfoResponse,
+  encode: (request) => {
+    if (request.publicUserIds.length === 0) {
+      throw new RangeError(
+        "publicUserIds must contain at least one public user ID",
+      );
+    }
+    if (request.publicUserIds.some((id) => id.length === 0)) {
+      throw new RangeError(
+        "publicUserIds must not contain empty public user IDs",
+      );
+    }
+    return encodeProtobuf(ComboCardGameListUserInfoRequestSchema, request);
+  },
+  decode: (data) =>
+    decodeProtobuf(ComboCardGameListUserInfoResponseSchema, data),
 };
 
 /** Reads Combo Card Game public information. */
@@ -50,7 +72,7 @@ export class ComboCardGameApi {
    */
   async getRankingInfo(
     options?: RequestOptions,
-  ): Promise<MiniGameRankingResponse> {
+  ): Promise<ComboCardGameGetRankingInfoResponse> {
     return this.client.call(
       COMBO_CARD_GAME_GET_RANKING_INFO,
       undefined,
@@ -72,3 +94,7 @@ export class ComboCardGameApi {
 }
 
 export { COMBO_CARD_GAME_GET_RANKING_INFO, COMBO_CARD_GAME_LIST_USER_INFO };
+export type {
+  ComboCardGameGetRankingInfoResponse,
+  ComboCardGameListUserInfoResponse,
+} from "../protos/gen/rpc/api/combo_card_game.gen_pb.js";

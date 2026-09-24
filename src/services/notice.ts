@@ -1,22 +1,24 @@
-import {
-  decodeNoticeGetResponse,
-  decodeNoticeListInCategoryResponse,
-  decodeNoticeTopResponse,
-  decodeUpdateResponse,
-  encodeNoticeGetRequest,
-  encodeNoticeListInCategoryRequest,
-  encodeNoticeTopRequest,
-  encodeStringListRequest,
-  type NoticeCategory,
-  type NoticeGetResponse,
-  type NoticeInfo,
-  type NoticeListInCategoryResponse,
-  type NoticeTopResponse,
-  type NoticeUpdateResponse,
-} from "../codecs/notice.js";
 import { type ApiCaller } from "../core/caller.js";
 import { type ApiMethod } from "../core/method.js";
 import { type RequestOptions } from "../core/request-options.js";
+import { decodeProtobuf, encodeProtobuf } from "../protos/codec.js";
+import { EmptySchema } from "../protos/gen/google/protobuf/empty_pb.js";
+import {
+  NoticeGetRequestSchema,
+  type NoticeGetResponse,
+  NoticeGetResponseSchema,
+  NoticeListInCategoryRequestSchema,
+  type NoticeListInCategoryResponse,
+  NoticeListInCategoryResponseSchema,
+  type NoticeTopResponse,
+  NoticeTopResponseSchema,
+  NoticeUpdateCategoryReadTimeRequestSchema,
+  type NoticeUpdateCategoryReadTimeResponse,
+  NoticeUpdateCategoryReadTimeResponseSchema,
+  NoticeUpdateDetailReadTimeRequestSchema,
+  type NoticeUpdateDetailReadTimeResponse,
+  NoticeUpdateDetailReadTimeResponseSchema,
+} from "../protos/gen/rpc/api/notice.gen_pb.js";
 
 const NOTICE_TOP: ApiMethod<void, NoticeTopResponse> = {
   path: "/rpc.api.Notice/Top",
@@ -24,8 +26,8 @@ const NOTICE_TOP: ApiMethod<void, NoticeTopResponse> = {
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: encodeNoticeTopRequest,
-  decode: decodeNoticeTopResponse,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (data) => decodeProtobuf(NoticeTopResponseSchema, data),
 };
 
 const NOTICE_LIST_IN_CATEGORY: ApiMethod<
@@ -37,9 +39,19 @@ const NOTICE_LIST_IN_CATEGORY: ApiMethod<
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: ({ categoryId, offset }) =>
-    encodeNoticeListInCategoryRequest(categoryId, offset),
-  decode: decodeNoticeListInCategoryResponse,
+  encode: ({ categoryId, offset }) => {
+    requireNonEmpty(categoryId, "notice category ID");
+    if (!Number.isInteger(offset) || offset < 0) {
+      throw new RangeError(
+        "notice category offset must be a non-negative integer",
+      );
+    }
+    return encodeProtobuf(NoticeListInCategoryRequestSchema, {
+      noticeCategoryId: categoryId,
+      offset,
+    });
+  },
+  decode: (data) => decodeProtobuf(NoticeListInCategoryResponseSchema, data),
 };
 
 const NOTICE_GET: ApiMethod<{ readonly noticeId: string }, NoticeGetResponse> =
@@ -49,13 +61,16 @@ const NOTICE_GET: ApiMethod<{ readonly noticeId: string }, NoticeGetResponse> =
     requiresMasterVersion: true,
     usesResponseCache: true,
     requiresRequestSignature: false,
-    encode: ({ noticeId }) => encodeNoticeGetRequest(noticeId),
-    decode: decodeNoticeGetResponse,
+    encode: ({ noticeId }) =>
+      encodeProtobuf(NoticeGetRequestSchema, {
+        noticeId: requireNonEmpty(noticeId, "notice ID"),
+      }),
+    decode: (data) => decodeProtobuf(NoticeGetResponseSchema, data),
   };
 
 const NOTICE_UPDATE_CATEGORY_READ_TIME: ApiMethod<
   readonly string[],
-  NoticeUpdateResponse
+  NoticeUpdateCategoryReadTimeResponse
 > = {
   path: "/rpc.api.Notice/UpdateCategoryReadTime",
   requiresGameAuth: true,
@@ -63,21 +78,28 @@ const NOTICE_UPDATE_CATEGORY_READ_TIME: ApiMethod<
   usesResponseCache: true,
   requiresRequestSignature: false,
   encode: (categoryIds) =>
-    encodeStringListRequest(categoryIds, "notice category IDs"),
-  decode: decodeUpdateResponse,
+    encodeProtobuf(NoticeUpdateCategoryReadTimeRequestSchema, {
+      noticeCategoryIds: validateIds(categoryIds, "notice category IDs"),
+    }),
+  decode: (data) =>
+    decodeProtobuf(NoticeUpdateCategoryReadTimeResponseSchema, data),
 };
 
 const NOTICE_UPDATE_DETAIL_READ_TIME: ApiMethod<
   readonly string[],
-  NoticeUpdateResponse
+  NoticeUpdateDetailReadTimeResponse
 > = {
   path: "/rpc.api.Notice/UpdateDetailReadTime",
   requiresGameAuth: true,
   requiresMasterVersion: true,
   usesResponseCache: true,
   requiresRequestSignature: false,
-  encode: (noticeIds) => encodeStringListRequest(noticeIds, "notice IDs"),
-  decode: decodeUpdateResponse,
+  encode: (noticeIds) =>
+    encodeProtobuf(NoticeUpdateDetailReadTimeRequestSchema, {
+      noticeIds: validateIds(noticeIds, "notice IDs"),
+    }),
+  decode: (data) =>
+    decodeProtobuf(NoticeUpdateDetailReadTimeResponseSchema, data),
 };
 
 /** Reads localized public notices and manages account-specific read timestamps. */
@@ -122,14 +144,14 @@ export class NoticeApi {
   updateCategoryReadTime(
     categoryIds: readonly string[],
     options?: RequestOptions,
-  ): Promise<NoticeUpdateResponse> {
+  ): Promise<NoticeUpdateCategoryReadTimeResponse> {
     return this.updateCategoryReadTimeAuthenticated(categoryIds, options);
   }
 
   private async updateCategoryReadTimeAuthenticated(
     categoryIds: readonly string[],
     options?: RequestOptions,
-  ): Promise<NoticeUpdateResponse> {
+  ): Promise<NoticeUpdateCategoryReadTimeResponse> {
     return this.client.call(
       NOTICE_UPDATE_CATEGORY_READ_TIME,
       categoryIds,
@@ -141,16 +163,35 @@ export class NoticeApi {
   updateDetailReadTime(
     noticeIds: readonly string[],
     options?: RequestOptions,
-  ): Promise<NoticeUpdateResponse> {
+  ): Promise<NoticeUpdateDetailReadTimeResponse> {
     return this.updateDetailReadTimeAuthenticated(noticeIds, options);
   }
 
   private async updateDetailReadTimeAuthenticated(
     noticeIds: readonly string[],
     options?: RequestOptions,
-  ): Promise<NoticeUpdateResponse> {
+  ): Promise<NoticeUpdateDetailReadTimeResponse> {
     return this.client.call(NOTICE_UPDATE_DETAIL_READ_TIME, noticeIds, options);
   }
 }
 
-export type { NoticeCategory, NoticeGetResponse, NoticeInfo };
+export type {
+  NoticeGetResponse,
+  NoticeInfo,
+  NoticeListInCategoryResponse,
+  NoticeTopResponse,
+  NoticeUpdateCategoryReadTimeResponse,
+  NoticeUpdateDetailReadTimeResponse,
+} from "../protos/gen/rpc/api/notice.gen_pb.js";
+
+function requireNonEmpty(value: string, name: string): string {
+  if (value.length === 0) throw new RangeError(`${name} must not be empty`);
+  return value;
+}
+
+function validateIds(values: readonly string[], name: string): string[] {
+  if (values.length === 0) throw new RangeError(`${name} must not be empty`);
+  if (new Set(values).size !== values.length)
+    throw new RangeError(`${name} must be unique`);
+  return values.map((value) => requireNonEmpty(value, name));
+}
