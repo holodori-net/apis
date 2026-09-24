@@ -1,14 +1,14 @@
 {
-  "name": "@holodori/apis",
+  "name": "@holodori-net/apis",
   "version": "0.0.0",
   "description": "Standalone TypeScript SDK for Holodori game APIs",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/holodori/apis.git"
+    "url": "git+https://github.com/holodori-net/apis.git"
   },
-  "homepage": "https://github.com/holodori/apis#readme",
+  "homepage": "https://github.com/holodori-net/apis#readme",
   "bugs": {
-    "url": "https://github.com/holodori/apis/issues"
+    "url": "https://github.com/holodori-net/apis/issues"
   },
   "type": "module",
   "engines": {

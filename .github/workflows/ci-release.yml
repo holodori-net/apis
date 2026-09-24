@@ -65,7 +65,7 @@ jobs:
           node-version: 24
           cache: pnpm
           registry-url: https://npm.pkg.github.com
-          scope: "@holodori"
+          scope: "@holodori-net"
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Verify validated commit
@@ -117,7 +117,7 @@ jobs:
           node-version: 24
           cache: pnpm
           registry-url: https://npm.pkg.github.com
-          scope: "@holodori"
+          scope: "@holodori-net"
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Validate tagged package

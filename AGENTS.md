@@ -8,7 +8,7 @@ by other Node.js projects.
 
 - Runtime target: Node.js >= 24, ESM, zero runtime dependencies.
 - High-level package entrypoint: `src/index.ts`; transports and protocol helpers
-  also have the `@holodori/apis/transports` and `@holodori/apis/low-level`
+  also have the `@holodori-net/apis/transports` and `@holodori-net/apis/low-level`
   subpath exports.
 - Transport contracts and implementations live under `src/transports/`; keep
   `src/transports/index.ts` as the public transport barrel.
