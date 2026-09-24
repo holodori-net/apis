@@ -1,6 +1,22 @@
-# holodori-apis
+# @holodori/apis
 
 Standalone ESM TypeScript SDK for the Holodori game API.
+
+## Installation
+
+The package is published to GitHub Packages. Configure the `@holodori` scope
+and authenticate with a GitHub token that has `read:packages` permission:
+
+```ini
+@holodori:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
+```
+
+Do not commit the token. Install the SDK after configuring the registry:
+
+```sh
+pnpm add @holodori/apis
+```
 
 ## Usage
 
@@ -9,7 +25,7 @@ be supplied by the caller and is never read from or written to repository
 files.
 
 ```ts
-import { HolodoriApi } from "holodori-apis";
+import { HolodoriApi } from "@holodori/apis";
 
 const api = await HolodoriApi.create({
   appVersion: process.env.HOLODORI_APP_VERSION!,
@@ -86,8 +102,8 @@ The high-level client is grouped by service: use `api.auth`, `api.master`,
 `api.gift`, `api.parkPermanence`, `api.health`, `api.system`, and
 `api.accountMigration`. The older top-level authentication and master methods
 remain available as deprecated delegations. Transport implementations are
-also available from `holodori-apis/transports`; protobuf and gRPC helpers are
-available from `holodori-apis/low-level`.
+also available from `@holodori/apis/transports`; protobuf and gRPC helpers are
+available from `@holodori/apis/low-level`.
 
 Every service method accepts optional per-call controls as its final argument.
 They apply to the target RPC; automatic authentication bootstrap retains the
@@ -280,8 +296,8 @@ host-key trust. It always uses non-interactive authentication and strict
 host-key verification.
 
 ```ts
-import { HolodoriApi } from "holodori-apis";
-import { SshHttp2Transport } from "holodori-apis/transports";
+import { HolodoriApi } from "@holodori/apis";
+import { SshHttp2Transport } from "@holodori/apis/transports";
 
 const transport = new SshHttp2Transport({
   target: "tpe",
@@ -310,8 +326,8 @@ sent as Basic proxy authorization; do not include credentials in logs or error
 messages. HTTPS proxies may receive a caller-owned CA through `proxyCa`.
 
 ```ts
-import { HolodoriApi } from "holodori-apis";
-import { HttpConnectHttp2Transport } from "holodori-apis/transports";
+import { HolodoriApi } from "@holodori/apis";
+import { HttpConnectHttp2Transport } from "@holodori/apis/transports";
 
 const transport = new HttpConnectHttp2Transport({
   proxyUrl: "https://proxy.example:8443",

@@ -8,12 +8,14 @@ by other Node.js projects.
 
 - Runtime target: Node.js >= 24, ESM, zero runtime dependencies.
 - High-level package entrypoint: `src/index.ts`; transports and protocol helpers
-  also have the `holodori-apis/transports` and `holodori-apis/low-level`
+  also have the `@holodori/apis/transports` and `@holodori/apis/low-level`
   subpath exports.
 - Transport contracts and implementations live under `src/transports/`; keep
   `src/transports/index.ts` as the public transport barrel.
 - Protocol framing, encryption, and protobuf primitives live under
   `src/protocol/`; keep `src/low-level.ts` as their public compatibility barrel.
+- Releases are generated from Conventional Commits after `main` passes CI.
+  `release-it` owns package versions, `CHANGELOG.md`, release commits, and tags.
 - Transport is injectable for deterministic tests and offline consumers.
 - `Http2Transport` owns target TLS and HTTP/2 behavior; tunnel connectors own
   only the raw route to the target host and port.

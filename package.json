@@ -1,7 +1,15 @@
 {
-  "name": "holodori-apis",
-  "version": "0.1.0",
+  "name": "@holodori/apis",
+  "version": "0.0.0",
   "description": "Standalone TypeScript SDK for Holodori game APIs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holodori/apis.git"
+  },
+  "homepage": "https://github.com/holodori/apis#readme",
+  "bugs": {
+    "url": "https://github.com/holodori/apis/issues"
+  },
   "type": "module",
   "engines": {
     "node": ">=24",
@@ -23,9 +31,13 @@
     }
   },
   "files": [
+    "CHANGELOG.md",
     "dist/src",
     "docs"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "build": "pnpm clean && tsc",
     "clean": "node --eval \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
@@ -33,14 +45,19 @@
     "docs:api:check": "node scripts/generate-api-docs.mjs --check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint \"{src,test}/**/*.ts\"",
-    "lint:fix": "eslint \"{src,test}/**/*.ts\" --fix",
+    "lint": "eslint \"{src,test}/**/*.ts\" \"scripts/**/*.mjs\"",
+    "lint:fix": "eslint \"{src,test}/**/*.ts\" \"scripts/**/*.mjs\" --fix",
+    "package:check": "node scripts/check-package.mjs && npm pack --dry-run",
     "prepack": "pnpm build",
+    "release": "release-it --ci",
+    "release:dry-run": "release-it --ci --dry-run",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "validate": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm docs:api:check && pnpm test && pnpm build && pnpm package:check"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@release-it/conventional-changelog": "^11.0.1",
     "@types/node": "^24.0.0",
     "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
@@ -49,6 +66,7 @@
     "eslint-plugin-perfectionist": "^5.10.1",
     "globals": "^17.11.0",
     "prettier": "^3.9.6",
+    "release-it": "^20.2.1",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.68.0",
     "vitest": "^4.1.11"

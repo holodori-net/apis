@@ -1,0 +1,149 @@
+name: CI and release
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      republish_tag:
+        description: Existing vX.Y.Z tag to republish after a registry failure
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.event_name != 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Set up pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          run_install: false
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Validate
+        run: pnpm validate
+
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          ref: main
+      - name: Set up pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          run_install: false
+      - name: Set up Node.js and package authentication
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: "@holodori"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Verify validated commit
+        shell: bash
+        run: |
+          if [[ "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]]; then
+            echo "main advanced after this workflow started; the newer run will release it" >&2
+            exit 1
+          fi
+      - name: Configure release identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Release
+        run: pnpm release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  republish:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    env:
+      REPUBLISH_TAG: ${{ inputs.republish_tag }}
+    steps:
+      - name: Validate recovery tag
+        shell: bash
+        run: |
+          if [[ ! "$REPUBLISH_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([+-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "republish_tag must be a semantic version tag prefixed with v" >&2
+            exit 1
+          fi
+      - name: Checkout release tag
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ inputs.republish_tag }}
+          fetch-depth: 0
+      - name: Set up pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          run_install: false
+      - name: Set up Node.js and package authentication
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: "@holodori"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Validate tagged package
+        shell: bash
+        run: |
+          package_version=$(node --print "require('./package.json').version")
+          if [[ "v$package_version" != "$REPUBLISH_TAG" ]]; then
+            echo "tag $REPUBLISH_TAG does not match package version $package_version" >&2
+            exit 1
+          fi
+          pnpm validate
+      - name: Republish missing package version
+        shell: bash
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          package_name=$(node --print "require('./package.json').name")
+          package_version=$(node --print "require('./package.json').version")
+          error_file=$(mktemp)
+          if npm view "$package_name@$package_version" version \
+            --registry=https://npm.pkg.github.com 2>"$error_file"; then
+            echo "$package_name@$package_version is already published"
+            exit 0
+          fi
+          if ! grep -Eq "E404|404 Not Found" "$error_file"; then
+            cat "$error_file" >&2
+            exit 1
+          fi
+          npm publish
