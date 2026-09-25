@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.0](https://github.com/holodori-net/apis/compare/v0.1.1...v0.2.0) (2026-09-25)
+
+### Features
+
+* **protos:** automate Android contract synchronization ([cabb59d](https://github.com/holodori-net/apis/commit/cabb59d484e833167df25f237d252a105abf3487))
+
 ## [0.1.1](https://github.com/holodori-net/apis/compare/v0.1.0...v0.1.1) (2026-09-24)
 
 ### Refactoring
