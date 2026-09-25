@@ -11,13 +11,18 @@ pnpm validate
 ## Protobuf contracts
 
 `proto/descriptor-set.pb` is the source of truth for generated protobuf
-messages and schemas. After replacing it, regenerate and verify the checked-in
-output:
+messages and schemas. `proto/descriptor-set.source.json` records the upstream
+repository, descriptor commit, app version, and checksum. To sync from a
+checked-out `android-protos` repository, regenerate and verify the output:
 
 ```sh
+pnpm protos:sync --upstream ../android-protos
 pnpm protos:generate
 pnpm protos:check
 ```
+
+The `Sync protobuf contracts` workflow runs when `android-protos` publishes a
+new descriptor. It also supports manual runs with an optional `source_ref`.
 
 Generated files under `src/protos/gen/` must not be edited directly. Add a new
 API descriptor root to `scripts/generate-protos.mjs` when implementing a domain

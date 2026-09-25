@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
 import {
   existsSync,
@@ -19,6 +20,11 @@ import { protoCamelCase } from "@bufbuild/protobuf/reflect";
 
 const rootDirectory = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const descriptorPath = join(rootDirectory, "proto", "descriptor-set.pb");
+const descriptorMetadataPath = join(
+  rootDirectory,
+  "proto",
+  "descriptor-set.source.json",
+);
 const outputDirectory = join(rootDirectory, "src", "protos", "gen");
 const checkOnly = process.argv.includes("--check");
 
@@ -55,10 +61,9 @@ const apiFiles = [
   "user",
 ].map((name) => `rpc/api/${name}.gen.proto`);
 
-const descriptorSet = fromBinary(
-  FileDescriptorSetSchema,
-  readFileSync(descriptorPath),
-);
+const descriptorData = readFileSync(descriptorPath);
+verifyDescriptorMetadata(descriptorData);
+const descriptorSet = fromBinary(FileDescriptorSetSchema, descriptorData);
 for (const descriptor of descriptorSet.file) normalizeJsonNames(descriptor);
 const descriptorsByName = new Map(
   descriptorSet.file.map((descriptor) => [descriptor.name, descriptor]),
@@ -115,6 +120,38 @@ function selectWithDependencies(name) {
   }
   visitingNames.delete(name);
   selectedNames.add(name);
+}
+
+function verifyDescriptorMetadata(descriptorData) {
+  const metadata = JSON.parse(readFileSync(descriptorMetadataPath, "utf8"));
+  if (metadata.schemaVersion !== 1) {
+    throw new Error("unsupported descriptor source metadata schema");
+  }
+  if (metadata.repository !== "holodori-net/android-protos") {
+    throw new Error("descriptor source metadata has an invalid repository");
+  }
+  if (!/^[0-9a-f]{40}$/.test(metadata.commit)) {
+    throw new Error("descriptor source metadata has an invalid commit");
+  }
+  if (
+    typeof metadata.versionName !== "string" ||
+    !/^[0-9A-Za-z][0-9A-Za-z._+-]*$/.test(metadata.versionName) ||
+    !Number.isSafeInteger(metadata.versionCode) ||
+    metadata.versionCode < 0
+  ) {
+    throw new Error("descriptor source metadata has an invalid app version");
+  }
+  if (!/^[0-9a-f]{64}$/.test(metadata.sha256)) {
+    throw new Error("descriptor source metadata has an invalid SHA-256");
+  }
+  const actualSha256 = createHash("sha256")
+    .update(descriptorData)
+    .digest("hex");
+  if (metadata.sha256 !== actualSha256) {
+    throw new Error(
+      "descriptor-set.pb does not match descriptor-set.source.json",
+    );
+  }
 }
 
 function normalizeJsonNames(file) {

@@ -1,0 +1,155 @@
+name: Sync protobuf contracts
+
+on:
+  repository_dispatch:
+    types: [android-protos-published]
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: android-protos branch, tag, or commit (blank uses main)
+        required: false
+        default: main
+
+concurrency:
+  group: sync-protos
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apis
+    steps:
+      - name: Checkout apis
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+          path: apis
+ 
+      - name: Validate upstream reference
+        id: source
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_COMMIT: ${{ github.event.client_payload.source_commit }}
+          DISPATCH_VERSION_NAME: ${{ github.event.client_payload.version_name }}
+          DISPATCH_VERSION_CODE: ${{ github.event.client_payload.version_code }}
+          MANUAL_SOURCE_REF: ${{ inputs.source_ref }}
+        shell: bash
+        run: |
+          if [[ "$EVENT_NAME" == "repository_dispatch" ]]; then
+            if [[ ! "$DISPATCH_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+              echo "repository_dispatch requires a full source_commit SHA." >&2
+              exit 1
+            fi
+            if [[ ! "$DISPATCH_VERSION_NAME" =~ ^[0-9A-Za-z][0-9A-Za-z._+-]*$ ]]; then
+              echo "repository_dispatch requires a valid version_name." >&2
+              exit 1
+            fi
+            if [[ ! "$DISPATCH_VERSION_CODE" =~ ^[0-9]+$ ]]; then
+              echo "repository_dispatch requires a numeric version_code." >&2
+              exit 1
+            fi
+            source_ref="$DISPATCH_COMMIT"
+            echo "version_name=$DISPATCH_VERSION_NAME" >> "$GITHUB_OUTPUT"
+            echo "version_code=$DISPATCH_VERSION_CODE" >> "$GITHUB_OUTPUT"
+          else
+            source_ref="${MANUAL_SOURCE_REF:-main}"
+            if [[ ! "$source_ref" =~ ^[0-9a-f]{40}$ ]] && ! git check-ref-format --branch "$source_ref" >/dev/null; then
+              echo "source_ref must be a full commit SHA or a valid branch/tag name." >&2
+              exit 1
+            fi
+          fi
+          echo "ref=$source_ref" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout android-protos
+        uses: actions/checkout@v6
+        with:
+          repository: holodori-net/android-protos
+          ref: ${{ steps.source.outputs.ref }}
+          path: android-protos
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: apis/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Sync descriptor snapshot
+        id: sync
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EXPECTED_VERSION_NAME: ${{ steps.source.outputs.version_name }}
+          EXPECTED_VERSION_CODE: ${{ steps.source.outputs.version_code }}
+        run: |
+          descriptor_commit=$(git -C ../android-protos log -1 --format=%H -- descriptor-set.pb)
+          pnpm protos:sync --upstream ../android-protos --commit "$descriptor_commit"
+          node --input-type=module -e "import { appendFileSync, readFileSync } from 'node:fs'; const { commit, versionName, versionCode } = JSON.parse(readFileSync('proto/descriptor-set.source.json', 'utf8')); if (process.env.EVENT_NAME === 'repository_dispatch' && (process.env.EXPECTED_VERSION_NAME !== versionName || process.env.EXPECTED_VERSION_CODE !== String(versionCode))) { console.error('The dispatched app version does not match the checked-out contract.'); process.exit(1); } appendFileSync(process.env.GITHUB_OUTPUT, 'descriptor_commit=' + commit + '\nversion_name=' + versionName + '\nversion_code=' + versionCode + '\n')"
+          if git diff --quiet -- proto/descriptor-set.pb proto/descriptor-set.source.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "The upstream descriptor is already current."
+            exit 0
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Generate and validate
+        if: steps.sync.outputs.changed == 'true'
+        run: |
+          pnpm protos:generate
+          pnpm validate
+
+      - name: Create or update pull request
+        if: steps.sync.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TRIGGER_SHA: ${{ github.sha }}
+          DESCRIPTOR_COMMIT: ${{ steps.sync.outputs.descriptor_commit }}
+          VERSION_NAME: ${{ steps.sync.outputs.version_name }}
+          VERSION_CODE: ${{ steps.sync.outputs.version_code }}
+        shell: bash
+        run: |
+          branch="automation/sync-protos"
+          title="feat(protos): sync Android contract ${VERSION_NAME} (${VERSION_CODE})"
+          body_file=$(mktemp)
+          trap 'rm -f "$body_file"' EXIT
+          cat > "$body_file" <<EOF
+          ## Summary
+
+          - Sync the protobuf descriptor from [android-protos](https://github.com/holodori-net/android-protos/commit/${DESCRIPTOR_COMMIT}).
+          - Regenerate TypeScript protobuf contracts and run pnpm validate.
+
+          Source commit: ${DESCRIPTOR_COMMIT}
+          Trigger commit: ${TRIGGER_SHA}
+          EOF
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch --force-create "$branch"
+          git add proto/descriptor-set.pb proto/descriptor-set.source.json src/protos/gen
+          git commit -m "$title"
+          git push --force origin "$branch"
+
+          existing_pr=$(gh pr list --head "$branch" --json number --jq '.[0].number // empty')
+          if [[ -n "$existing_pr" ]]; then
+            gh pr edit "$existing_pr" --title "$title" --body-file "$body_file"
+          else
+            gh pr create --base main --head "$branch" --title "$title" --body-file "$body_file"
+          fi

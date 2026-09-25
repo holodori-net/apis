@@ -59,6 +59,7 @@
     "prepack": "pnpm build",
     "protos:check": "node scripts/generate-protos.mjs --check",
     "protos:generate": "node scripts/generate-protos.mjs",
+    "protos:sync": "node scripts/sync-protos.mjs",
     "release": "release-it --ci",
     "release:dry-run": "release-it --ci --dry-run",
     "typecheck": "tsc --noEmit",

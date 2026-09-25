@@ -14,7 +14,8 @@ by other Node.js projects.
 - Transport contracts and implementations live under `src/transports/`; keep
   `src/transports/index.ts` as the public transport barrel.
 - Generated protobuf messages and schemas live under `src/protos/gen/`; never
-  edit them manually. `proto/descriptor-set.pb` is their source of truth.
+  edit them manually. `proto/descriptor-set.pb` is their source of truth, and
+  `proto/descriptor-set.source.json` records the upstream revision and checksum.
 - Protocol framing and encryption live under `src/protocol/`; keep
   `src/low-level.ts` as their public compatibility barrel.
 - Releases are generated from Conventional Commits after `main` passes CI.
@@ -47,6 +48,7 @@ public API documentation changes.
 
 Run `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, and
 `pnpm test` after changes. Run `pnpm protos:check` after descriptor or generated
-protobuf changes. Run `pnpm docs:api:check` when public services or their JSDoc
-change. Use `pnpm format` and `pnpm lint:fix` for automated fixes. Do not stage
-or commit automatically.
+protobuf changes. Use `pnpm protos:sync --upstream <android-protos-checkout>` to
+refresh the descriptor and its source metadata. Run `pnpm docs:api:check` when
+public services or their JSDoc change. Use `pnpm format` and `pnpm lint:fix` for
+automated fixes. Do not stage or commit automatically.
