@@ -32,7 +32,7 @@ jobs:
           ref: main
           fetch-depth: 0
           path: apis
- 
+
       - name: Validate upstream reference
         id: source
         env:
