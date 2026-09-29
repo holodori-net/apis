@@ -80,6 +80,7 @@ jobs:
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with:
+          package_json_file: apis/package.json
           run_install: false
 
       - name: Set up Node.js
