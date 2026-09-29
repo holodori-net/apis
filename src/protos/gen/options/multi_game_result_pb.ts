@@ -2,8 +2,8 @@
 // @generated from file options/multi_game_result.proto (package options.multi_game_result, syntax proto3)
 /* eslint-disable */
 
-import type { GenExtension, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
-import { extDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenEnum, GenExtension, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
+import { enumDesc, extDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { MultiGameType } from "../enums/multi_game_type.gen_pb.js";
 import { file_enums_multi_game_type_gen } from "../enums/multi_game_type.gen_pb.js";
 import type { MessageOptions } from "../google/protobuf/descriptor_pb.js";
@@ -14,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file options/multi_game_result.proto.
  */
 export const file_options_multi_game_result: GenFile = /*@__PURE__*/
-  fileDesc("Ch9vcHRpb25zL211bHRpX2dhbWVfcmVzdWx0LnByb3RvEhlvcHRpb25zLm11bHRpX2dhbWVfcmVzdWx0Ij4KDU1lc3NhZ2VPcHRpb24SLQoPbXVsdGlfZ2FtZV90eXBlGAEgASgOMhQuZW51bXMuTXVsdGlHYW1lVHlwZTplCgdtZXNzYWdlEh8uZ29vZ2xlLnByb3RvYnVmLk1lc3NhZ2VPcHRpb25zGMSKAyABKAsyKC5vcHRpb25zLm11bHRpX2dhbWVfcmVzdWx0Lk1lc3NhZ2VPcHRpb25SB21lc3NhZ2VCRlpEZ2l0aHViLmNvbS9xdWEtdmlzaW9uL3Zpc2lvbi1zZXJ2ZXIvcGtnL3BiL29wdGlvbnMvbXVsdGlfZ2FtZV9yZXN1bHRiBnByb3RvMw", [file_enums_multi_game_type_gen, file_google_protobuf_descriptor]);
+  fileDesc("Ch9vcHRpb25zL211bHRpX2dhbWVfcmVzdWx0LnByb3RvEhlvcHRpb25zLm11bHRpX2dhbWVfcmVzdWx0Is0BCg1NZXNzYWdlT3B0aW9uEi0KD211bHRpX2dhbWVfdHlwZRgBIAEoDjIULmVudW1zLk11bHRpR2FtZVR5cGUSWAoUanNvbl9maWVsZF9uYW1lX3R5cGUYAiABKA4yOi5vcHRpb25zLm11bHRpX2dhbWVfcmVzdWx0Lk1lc3NhZ2VPcHRpb24uSnNvbkZpZWxkTmFtZVR5cGUiMwoRSnNvbkZpZWxkTmFtZVR5cGUSCwoHVU5LTk9XThAAEhEKDUdPX0ZJRUxEX05BTUUQATplCgdtZXNzYWdlEh8uZ29vZ2xlLnByb3RvYnVmLk1lc3NhZ2VPcHRpb25zGMSKAyABKAsyKC5vcHRpb25zLm11bHRpX2dhbWVfcmVzdWx0Lk1lc3NhZ2VPcHRpb25SB21lc3NhZ2VCRlpEZ2l0aHViLmNvbS9xdWEtdmlzaW9uL3Zpc2lvbi1zZXJ2ZXIvcGtnL3BiL29wdGlvbnMvbXVsdGlfZ2FtZV9yZXN1bHRiBnByb3RvMw", [file_enums_multi_game_type_gen, file_google_protobuf_descriptor]);
 
 /**
  * @generated from message options.multi_game_result.MessageOption
@@ -24,6 +24,11 @@ export type MessageOption = Message<"options.multi_game_result.MessageOption"> &
    * @generated from field: enums.MultiGameType multi_game_type = 1;
    */
   multiGameType: MultiGameType;
+
+  /**
+   * @generated from field: options.multi_game_result.MessageOption.JsonFieldNameType json_field_name_type = 2;
+   */
+  jsonFieldNameType: MessageOption_JsonFieldNameType;
 };
 
 /**
@@ -32,6 +37,27 @@ export type MessageOption = Message<"options.multi_game_result.MessageOption"> &
  */
 export const MessageOptionSchema: GenMessage<MessageOption> = /*@__PURE__*/
   messageDesc(file_options_multi_game_result, 0);
+
+/**
+ * @generated from enum options.multi_game_result.MessageOption.JsonFieldNameType
+ */
+export enum MessageOption_JsonFieldNameType {
+  /**
+   * @generated from enum value: UNKNOWN = 0;
+   */
+  UNKNOWN = 0,
+
+  /**
+   * @generated from enum value: GO_FIELD_NAME = 1;
+   */
+  GO_FIELD_NAME = 1,
+}
+
+/**
+ * Describes the enum options.multi_game_result.MessageOption.JsonFieldNameType.
+ */
+export const MessageOption_JsonFieldNameTypeSchema: GenEnum<MessageOption_JsonFieldNameType> = /*@__PURE__*/
+  enumDesc(file_options_multi_game_result, 0, 0);
 
 /**
  * @generated from extension: options.multi_game_result.MessageOption message = 50500;

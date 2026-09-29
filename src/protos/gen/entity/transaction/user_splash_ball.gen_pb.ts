@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file entity/transaction/user_splash_ball.gen.proto.
  */
 export const file_entity_transaction_user_splash_ball_gen: GenFile = /*@__PURE__*/
-  fileDesc("Ci1lbnRpdHkvdHJhbnNhY3Rpb24vdXNlcl9zcGxhc2hfYmFsbC5nZW4ucHJvdG8SEmVudGl0eS50cmFuc2FjdGlvbiJkCg5Vc2VyU3BsYXNoQmFsbBIVCg1oaWdoZXN0X3Njb3JlGAIgASgDEicKH2hpZ2hlc3Rfc2NvcmVfbGFzdF91cGRhdGVkX3RpbWUYAyABKAMSEgoKcGxheV9jb3VudBgEIAEoA0JaWjZnaXRodWIuY29tL3F1YS12aXNpb24vdmlzaW9uLXNlcnZlci9wa2cvcGIvdHJhbnNhY3Rpb26qAh9WaXNpb24uQ29tbW9uLlByb3RvLlRyYW5zYWN0aW9uYgZwcm90bzM");
+  fileDesc("Ci1lbnRpdHkvdHJhbnNhY3Rpb24vdXNlcl9zcGxhc2hfYmFsbC5nZW4ucHJvdG8SEmVudGl0eS50cmFuc2FjdGlvbiKfAQoOVXNlclNwbGFzaEJhbGwSFQoNaGlnaGVzdF9zY29yZRgCIAEoAxInCh9oaWdoZXN0X3Njb3JlX2xhc3RfdXBkYXRlZF90aW1lGAMgASgDEhoKEmhpZ2hlc3Rfc2NvcmVfZ29hbBgEIAEoAxIdChVoaWdoZXN0X3Njb3JlX2RlZmVuc2UYBSABKAMSEgoKcGxheV9jb3VudBgGIAEoA0JaWjZnaXRodWIuY29tL3F1YS12aXNpb24vdmlzaW9uLXNlcnZlci9wa2cvcGIvdHJhbnNhY3Rpb26qAh9WaXNpb24uQ29tbW9uLlByb3RvLlRyYW5zYWN0aW9uYgZwcm90bzM");
 
 /**
  * @generated from message entity.transaction.UserSplashBall
@@ -27,7 +27,17 @@ export type UserSplashBall = Message<"entity.transaction.UserSplashBall"> & {
   highestScoreLastUpdatedTime: bigint;
 
   /**
-   * @generated from field: int64 play_count = 4;
+   * @generated from field: int64 highest_score_goal = 4;
+   */
+  highestScoreGoal: bigint;
+
+  /**
+   * @generated from field: int64 highest_score_defense = 5;
+   */
+  highestScoreDefense: bigint;
+
+  /**
+   * @generated from field: int64 play_count = 6;
    */
   playCount: bigint;
 };
