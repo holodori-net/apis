@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file entity/transaction/user_park_emotion.gen.proto.
  */
 export const file_entity_transaction_user_park_emotion_gen: GenFile = /*@__PURE__*/
-  fileDesc("Ci5lbnRpdHkvdHJhbnNhY3Rpb24vdXNlcl9wYXJrX2Vtb3Rpb24uZ2VuLnByb3RvEhJlbnRpdHkudHJhbnNhY3Rpb24iWQoPVXNlclBhcmtFbW90aW9uEi8KD3BhcmtfZW1vdGlvbl9pZBgCIAEoCUIWmvQYDlBhcmtFbW90aW9uOmlksPUYARIVCg1hY3F1aXJlZF90aW1lGAMgASgDQlpaNmdpdGh1Yi5jb20vcXVhLXZpc2lvbi92aXNpb24tc2VydmVyL3BrZy9wYi90cmFuc2FjdGlvbqoCH1Zpc2lvbi5Db21tb24uUHJvdG8uVHJhbnNhY3Rpb25iBnByb3RvMw", [file_entity_master_options_master, file_entity_transaction_options_transaction]);
+  fileDesc("Ci5lbnRpdHkvdHJhbnNhY3Rpb24vdXNlcl9wYXJrX2Vtb3Rpb24uZ2VuLnByb3RvEhJlbnRpdHkudHJhbnNhY3Rpb24ibAoPVXNlclBhcmtFbW90aW9uEi8KD3BhcmtfZW1vdGlvbl9pZBgCIAEoCUIWmvQYDlBhcmtFbW90aW9uOmlksPUYARIVCg1hY3F1aXJlZF90aW1lGAMgASgDEhEKCXJlYWRfdGltZRgEIAEoA0JaWjZnaXRodWIuY29tL3F1YS12aXNpb24vdmlzaW9uLXNlcnZlci9wa2cvcGIvdHJhbnNhY3Rpb26qAh9WaXNpb24uQ29tbW9uLlByb3RvLlRyYW5zYWN0aW9uYgZwcm90bzM", [file_entity_master_options_master, file_entity_transaction_options_transaction]);
 
 /**
  * @generated from message entity.transaction.UserParkEmotion
@@ -27,6 +27,11 @@ export type UserParkEmotion = Message<"entity.transaction.UserParkEmotion"> & {
    * @generated from field: int64 acquired_time = 3;
    */
   acquiredTime: bigint;
+
+  /**
+   * @generated from field: int64 read_time = 4;
+   */
+  readTime: bigint;
 };
 
 /**

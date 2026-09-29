@@ -11,7 +11,7 @@ import { file_google_protobuf_descriptor } from "../../../google/protobuf/descri
  * Describes the file entity/master/options/master.proto.
  */
 export const file_entity_master_options_master: GenFile = /*@__PURE__*/
-  fileDesc("CiJlbnRpdHkvbWFzdGVyL29wdGlvbnMvbWFzdGVyLnByb3RvEg5vcHRpb25zLm1hc3Rlcjo3CgV0YWJsZRIfLmdvb2dsZS5wcm90b2J1Zi5NZXNzYWdlT3B0aW9ucxjCjgMgASgIUgV0YWJsZTovCgJwaxIdLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE9wdGlvbnMYwo4DIAEoCFICcGs6LwoCZmsSHS5nb29nbGUucHJvdG9idWYuRmllbGRPcHRpb25zGMOOAyABKAlSAmZrOjsKCG9wdGlvbmFsEh0uZ29vZ2xlLnByb3RvYnVmLkZpZWxkT3B0aW9ucxjEjgMgASgIUghvcHRpb25hbEJgWjlnaXRodWIuY29tL3F1YS12aXNpb24vdmlzaW9uLXNlcnZlci9wa2cvcGIvbWFzdGVyL29wdGlvbnOqAiJWaXNpb24uQ29tbW9uLlByb3RvLk1hc3Rlci5PcHRpb25zYgZwcm90bzM", [file_google_protobuf_descriptor]);
+  fileDesc("CiJlbnRpdHkvbWFzdGVyL29wdGlvbnMvbWFzdGVyLnByb3RvEg5vcHRpb25zLm1hc3Rlcjo3CgV0YWJsZRIfLmdvb2dsZS5wcm90b2J1Zi5NZXNzYWdlT3B0aW9ucxjCjgMgASgIUgV0YWJsZTovCgJwaxIdLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE9wdGlvbnMYwo4DIAEoCFICcGs6LwoCZmsSHS5nb29nbGUucHJvdG9idWYuRmllbGRPcHRpb25zGMOOAyABKAlSAmZrOjsKCG9wdGlvbmFsEh0uZ29vZ2xlLnByb3RvYnVmLkZpZWxkT3B0aW9ucxjEjgMgASgIUghvcHRpb25hbDo3CgZjb2x1bW4SHS5nb29nbGUucHJvdG9idWYuRmllbGRPcHRpb25zGMWOAyABKAhSBmNvbHVtbjo1CgVpbmRleBIdLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE9wdGlvbnMYxo4DIAEoCFIFaW5kZXhCYFo5Z2l0aHViLmNvbS9xdWEtdmlzaW9uL3Zpc2lvbi1zZXJ2ZXIvcGtnL3BiL21hc3Rlci9vcHRpb25zqgIiVmlzaW9uLkNvbW1vbi5Qcm90by5NYXN0ZXIuT3B0aW9uc2IGcHJvdG8z", [file_google_protobuf_descriptor]);
 
 /**
  * @generated from extension: bool table = 51010;
@@ -36,3 +36,15 @@ export const fk: GenExtension<FieldOptions, string> = /*@__PURE__*/
  */
 export const optional: GenExtension<FieldOptions, boolean> = /*@__PURE__*/
   extDesc(file_entity_master_options_master, 3);
+
+/**
+ * @generated from extension: bool column = 51013;
+ */
+export const column: GenExtension<FieldOptions, boolean> = /*@__PURE__*/
+  extDesc(file_entity_master_options_master, 4);
+
+/**
+ * @generated from extension: bool index = 51014;
+ */
+export const index: GenExtension<FieldOptions, boolean> = /*@__PURE__*/
+  extDesc(file_entity_master_options_master, 5);

@@ -10,6 +10,8 @@ import { file_common_live_gen } from "../../common/live.gen_pb.js";
 import type { MultiGameCommonUserResult } from "./common.gen_pb.js";
 import { file_dto_multi_game_result_common_gen } from "./common.gen_pb.js";
 import { file_entity_master_options_master } from "../../entity/master/options/master_pb.js";
+import type { LiveMultiMusicSelectionType } from "../../enums/live_multi_music_selection_type.gen_pb.js";
+import { file_enums_live_multi_music_selection_type_gen } from "../../enums/live_multi_music_selection_type.gen_pb.js";
 import type { MusicDifficultyType } from "../../enums/music_difficulty_type.gen_pb.js";
 import { file_enums_music_difficulty_type_gen } from "../../enums/music_difficulty_type.gen_pb.js";
 import { file_options_multi_game_result } from "../../options/multi_game_result_pb.js";
@@ -19,7 +21,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file dto/multi_game_result/live_cooperation_result.gen.proto.
  */
 export const file_dto_multi_game_result_live_cooperation_result_gen: GenFile = /*@__PURE__*/
-  fileDesc("CjdkdG8vbXVsdGlfZ2FtZV9yZXN1bHQvbGl2ZV9jb29wZXJhdGlvbl9yZXN1bHQuZ2VuLnByb3RvEhVkdG8ubXVsdGlfZ2FtZV9yZXN1bHQihgQKFUxpdmVDb29wZXJhdGlvblJlc3VsdBIlCghtdXNpY19pZBgBIAEoCUITukgEcgIgAZr0GAhNdXNpYzppZBJXCgx1c2VyX3Jlc3VsdHMYAiADKAsyNy5kdG8ubXVsdGlfZ2FtZV9yZXN1bHQuTGl2ZUNvb3BlcmF0aW9uUmVzdWx0LlVzZXJSZXN1bHRCCLpIBZIBAggBEhoKEmlzX2ZldmVyX3N1Y2NlZWRlZBgDIAEoCBIcChRpc19hdXRvX3BsYXlfYWxsb3dlZBgEIAEoCBqpAgoKVXNlclJlc3VsdBJFChVtdXNpY19kaWZmaWN1bHR5X3R5cGUYASABKA4yGi5lbnVtcy5NdXNpY0RpZmZpY3VsdHlUeXBlQgq6SAeCAQQQASAAEiYKBnJlc3VsdBgCIAEoCzIWLmNvbW1vbi5MaXZlQmFzZVJlc3VsdBIcCgtib251c19zY29yZRgDIAEoA0IHukgEIgIoABIcCgtmZXZlcl9wb2ludBgEIAEoBUIHukgEGgIoABIaChJpc19mZXZlcl9zdWNjZWVkZWQYBSABKAgSVAoSY29tbW9uX3VzZXJfcmVzdWx0GGQgASgLMjAuZHRvLm11bHRpX2dhbWVfcmVzdWx0Lk11bHRpR2FtZUNvbW1vblVzZXJSZXN1bHRCBrpIA8gBAToHotQYAwjpB0JsWkBnaXRodWIuY29tL3F1YS12aXNpb24vdmlzaW9uLXNlcnZlci9wa2cvcGIvZHRvL211bHRpX2dhbWVfcmVzdWx0qgInVmlzaW9uLkNvbW1vbi5Qcm90by5EdG8uTXVsdGlHYW1lUmVzdWx0YgZwcm90bzM", [file_buf_validate_validate, file_common_live_gen, file_dto_multi_game_result_common_gen, file_entity_master_options_master, file_enums_music_difficulty_type_gen, file_options_multi_game_result]);
+  fileDesc("CjdkdG8vbXVsdGlfZ2FtZV9yZXN1bHQvbGl2ZV9jb29wZXJhdGlvbl9yZXN1bHQuZ2VuLnByb3RvEhVkdG8ubXVsdGlfZ2FtZV9yZXN1bHQi2QQKFUxpdmVDb29wZXJhdGlvblJlc3VsdBIlCghtdXNpY19pZBgBIAEoCUITukgEcgIgAZr0GAhNdXNpYzppZBJXCgx1c2VyX3Jlc3VsdHMYAiADKAsyNy5kdG8ubXVsdGlfZ2FtZV9yZXN1bHQuTGl2ZUNvb3BlcmF0aW9uUmVzdWx0LlVzZXJSZXN1bHRCCLpIBZIBAggBEhoKEmlzX2ZldmVyX3N1Y2NlZWRlZBgDIAEoCBIcChRpc19hdXRvX3BsYXlfYWxsb3dlZBgEIAEoCBJRChtwaWNrZWRfbXVzaWNfc2VsZWN0aW9uX3R5cGUYBSABKA4yIi5lbnVtcy5MaXZlTXVsdGlNdXNpY1NlbGVjdGlvblR5cGVCCLpIBYIBAhABGqkCCgpVc2VyUmVzdWx0EkUKFW11c2ljX2RpZmZpY3VsdHlfdHlwZRgBIAEoDjIaLmVudW1zLk11c2ljRGlmZmljdWx0eVR5cGVCCrpIB4IBBBABIAASJgoGcmVzdWx0GAIgASgLMhYuY29tbW9uLkxpdmVCYXNlUmVzdWx0EhwKC2JvbnVzX3Njb3JlGAMgASgDQge6SAQiAigAEhwKC2ZldmVyX3BvaW50GAQgASgFQge6SAQaAigAEhoKEmlzX2ZldmVyX3N1Y2NlZWRlZBgFIAEoCBJUChJjb21tb25fdXNlcl9yZXN1bHQYZCABKAsyMC5kdG8ubXVsdGlfZ2FtZV9yZXN1bHQuTXVsdGlHYW1lQ29tbW9uVXNlclJlc3VsdEIGukgDyAEBOgei1BgDCOkHQmxaQGdpdGh1Yi5jb20vcXVhLXZpc2lvbi92aXNpb24tc2VydmVyL3BrZy9wYi9kdG8vbXVsdGlfZ2FtZV9yZXN1bHSqAidWaXNpb24uQ29tbW9uLlByb3RvLkR0by5NdWx0aUdhbWVSZXN1bHRiBnByb3RvMw", [file_buf_validate_validate, file_common_live_gen, file_dto_multi_game_result_common_gen, file_entity_master_options_master, file_enums_live_multi_music_selection_type_gen, file_enums_music_difficulty_type_gen, file_options_multi_game_result]);
 
 /**
  * @generated from message dto.multi_game_result.LiveCooperationResult
@@ -44,6 +46,11 @@ export type LiveCooperationResult = Message<"dto.multi_game_result.LiveCooperati
    * @generated from field: bool is_auto_play_allowed = 4;
    */
   isAutoPlayAllowed: boolean;
+
+  /**
+   * @generated from field: enums.LiveMultiMusicSelectionType picked_music_selection_type = 5;
+   */
+  pickedMusicSelectionType: LiveMultiMusicSelectionType;
 };
 
 /**

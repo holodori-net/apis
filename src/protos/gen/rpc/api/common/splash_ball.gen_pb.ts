@@ -14,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file rpc/api/common/splash_ball.gen.proto.
  */
 export const file_rpc_api_common_splash_ball_gen: GenFile = /*@__PURE__*/
-  fileDesc("CiRycGMvYXBpL2NvbW1vbi9zcGxhc2hfYmFsbC5nZW4ucHJvdG8SDnJwYy5hcGkuY29tbW9uIpcBChRTcGxhc2hCYWxsUmVzdWx0SW5mbxI2Cgp0ZWFtX2luZm9zGAEgAygLMiIucnBjLmFwaS5jb21tb24uU3BsYXNoQmFsbFRlYW1JbmZvEjMKD3NlbGZfdGVhbV9jb2xvchgCIAEoDjIaLmVudW1zLlNwbGFzaEJhbGxUZWFtQ29sb3ISEgoKc2VsZl9zY29yZRgDIAEoAyKZAQoSU3BsYXNoQmFsbFRlYW1JbmZvEi4KCnRlYW1fY29sb3IYASABKA4yGi5lbnVtcy5TcGxhc2hCYWxsVGVhbUNvbG9yEg0KBXNjb3JlGAIgASgDEgwKBHJhbmsYAyABKAUSNgoKdXNlcl9pbmZvcxgEIAMoCzIiLnJwYy5hcGkuY29tbW9uLlNwbGFzaEJhbGxVc2VySW5mbyKOAQoSU3BsYXNoQmFsbFVzZXJJbmZvEjAKCXVzZXJfaW5mbxgBIAEoCzIdLnJwYy5hcGkuY29tbW9uLkJhc2ljVXNlckluZm8SDgoGaXNfbnBjGAIgASgIEg0KBXNjb3JlGAMgASgDEg4KBmlzX212cBgEIAEoCBIXCg9pc19kaXNjb25uZWN0ZWQYBSABKAhCXFo5Z2l0aHViLmNvbS9xdWEtdmlzaW9uL3Zpc2lvbi1zZXJ2ZXIvcGtnL3BiL3JwYy9jb21tb25fYXBpqgIeVmlzaW9uLkNvbW1vbi5Qcm90by5BcGkuQ29tbW9uYgZwcm90bzM", [file_enums_splash_ball_team_color_gen, file_rpc_api_common_profile_gen]);
+  fileDesc("CiRycGMvYXBpL2NvbW1vbi9zcGxhc2hfYmFsbC5nZW4ucHJvdG8SDnJwYy5hcGkuY29tbW9uIoMBChRTcGxhc2hCYWxsUmVzdWx0SW5mbxI2Cgp0ZWFtX2luZm9zGAEgAygLMiIucnBjLmFwaS5jb21tb24uU3BsYXNoQmFsbFRlYW1JbmZvEjMKD3NlbGZfdGVhbV9jb2xvchgCIAEoDjIaLmVudW1zLlNwbGFzaEJhbGxUZWFtQ29sb3IimQEKElNwbGFzaEJhbGxUZWFtSW5mbxIuCgp0ZWFtX2NvbG9yGAEgASgOMhouZW51bXMuU3BsYXNoQmFsbFRlYW1Db2xvchINCgVzY29yZRgCIAEoAxIMCgRyYW5rGAMgASgFEjYKCnVzZXJfaW5mb3MYBCADKAsyIi5ycGMuYXBpLmNvbW1vbi5TcGxhc2hCYWxsVXNlckluZm8ivwEKElNwbGFzaEJhbGxVc2VySW5mbxIwCgl1c2VyX2luZm8YASABKAsyHS5ycGMuYXBpLmNvbW1vbi5CYXNpY1VzZXJJbmZvEg4KBmlzX25wYxgCIAEoCBISCgpnb2FsX3Njb3JlGAMgASgDEhUKDWRlZmVuc2Vfc2NvcmUYBCABKAMSEwoLdG90YWxfc2NvcmUYBSABKAMSDgoGaXNfbXZwGAYgASgIEhcKD2lzX2Rpc2Nvbm5lY3RlZBgHIAEoCEJcWjlnaXRodWIuY29tL3F1YS12aXNpb24vdmlzaW9uLXNlcnZlci9wa2cvcGIvcnBjL2NvbW1vbl9hcGmqAh5WaXNpb24uQ29tbW9uLlByb3RvLkFwaS5Db21tb25iBnByb3RvMw", [file_enums_splash_ball_team_color_gen, file_rpc_api_common_profile_gen]);
 
 /**
  * @generated from message rpc.api.common.SplashBallResultInfo
@@ -29,11 +29,6 @@ export type SplashBallResultInfo = Message<"rpc.api.common.SplashBallResultInfo"
    * @generated from field: enums.SplashBallTeamColor self_team_color = 2;
    */
   selfTeamColor: SplashBallTeamColor;
-
-  /**
-   * @generated from field: int64 self_score = 3;
-   */
-  selfScore: bigint;
 };
 
 /**
@@ -90,17 +85,27 @@ export type SplashBallUserInfo = Message<"rpc.api.common.SplashBallUserInfo"> & 
   isNpc: boolean;
 
   /**
-   * @generated from field: int64 score = 3;
+   * @generated from field: int64 goal_score = 3;
    */
-  score: bigint;
+  goalScore: bigint;
 
   /**
-   * @generated from field: bool is_mvp = 4;
+   * @generated from field: int64 defense_score = 4;
+   */
+  defenseScore: bigint;
+
+  /**
+   * @generated from field: int64 total_score = 5;
+   */
+  totalScore: bigint;
+
+  /**
+   * @generated from field: bool is_mvp = 6;
    */
   isMvp: boolean;
 
   /**
-   * @generated from field: bool is_disconnected = 5;
+   * @generated from field: bool is_disconnected = 7;
    */
   isDisconnected: boolean;
 };
