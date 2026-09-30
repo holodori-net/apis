@@ -15,7 +15,7 @@ import type {
 } from "./types.js";
 
 import { ApiTransportError, errorMessage } from "./error.js";
-import { connectDirect, connectTargetTls } from "./socket.js";
+import { connectDirect, connectTargetTls, destroySocket } from "./socket.js";
 
 export interface Http2TransportOptions {
   readonly connector?: ApiTunnelConnector;
@@ -98,8 +98,8 @@ export class Http2Transport implements ApiTransport {
       request.signal?.removeEventListener("abort", onExternalAbort);
       this.active.delete(active);
       session?.destroy();
-      tlsSocket?.destroy();
-      rawSocket?.destroy();
+      if (tlsSocket) destroySocket(tlsSocket);
+      if (rawSocket) destroySocket(rawSocket);
     }
   }
 

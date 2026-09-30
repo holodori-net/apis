@@ -22,6 +22,16 @@ export function targetAuthority(url: URL): string {
   return `${host}:${targetPort(url)}`;
 }
 
+/** Destroy a socket while consuming errors caused by that intentional close. */
+export function destroySocket(socket: Duplex): void {
+  const onError = () => {};
+  const cleanup = () => socket.removeListener("error", onError);
+
+  socket.on("error", onError);
+  socket.once("close", cleanup);
+  socket.destroy();
+}
+
 export function waitForSocket(
   socket: Duplex,
   event: "connect" | "secureConnect",
@@ -47,7 +57,7 @@ export function waitForSocket(
     const onClose = () =>
       finish(new ApiTransportError(`${label}: connection closed`, phase));
     const onAbort = () => {
-      socket.destroy();
+      destroySocket(socket);
       finish(new ApiTransportError(`${label}: aborted`, "aborted"));
     };
     socket.once(event, onReady);
@@ -91,7 +101,7 @@ export async function connectTargetTls(
     "target TLS failed",
   );
   if (tlsSocket.alpnProtocol !== "h2") {
-    tlsSocket.destroy();
+    destroySocket(tlsSocket);
     throw new ApiTransportError(
       `target did not negotiate HTTP/2 (ALPN=${tlsSocket.alpnProtocol || "none"})`,
       "tls",
