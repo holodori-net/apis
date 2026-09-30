@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.1](https://github.com/holodori-net/apis/compare/v0.3.0...v0.3.1) (2026-09-30)
+
+### Bug Fixes
+
+* **transports:** handle errors during socket teardown ([731795b](https://github.com/holodori-net/apis/commit/731795b5f3cb4464f304a6926ea41a1e66e0f882))
+
 ## [0.3.0](https://github.com/holodori-net/apis/compare/v0.2.0...v0.3.0) (2026-09-29)
 
 ### Features
