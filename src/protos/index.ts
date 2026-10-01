@@ -30,3 +30,4 @@ export * from "./gen/rpc/api/shop.gen_pb.js";
 export * from "./gen/rpc/api/splash_ball.gen_pb.js";
 export * from "./gen/rpc/api/system.gen_pb.js";
 export * from "./gen/rpc/api/user.gen_pb.js";
+export * from "./gen/rpc/api/user_content_cdn.gen_pb.js";

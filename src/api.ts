@@ -53,6 +53,7 @@ import { ProfileApi } from "./services/profile.js";
 import { ShopApi } from "./services/shop.js";
 import { SplashBallApi } from "./services/splash-ball.js";
 import { SystemApi } from "./services/system.js";
+import { UserContentCdnApi } from "./services/user-content-cdn.js";
 import { UserApi } from "./services/user.js";
 import { Http2Transport } from "./transports/http2.js";
 
@@ -113,6 +114,7 @@ export class HolodoriApi {
   readonly splashBall: SplashBallApi;
   readonly system: SystemApi;
   readonly user: UserApi;
+  readonly userContentCdn: UserContentCdnApi;
   readonly accountMigration: AccountMigrationApi;
 
   private readonly client: ApiClient;
@@ -185,6 +187,7 @@ export class HolodoriApi {
     this.splashBall = new SplashBallApi(authenticatedCaller);
     this.system = new SystemApi(this.client, this.session);
     this.user = new UserApi(authenticatedCaller);
+    this.userContentCdn = new UserContentCdnApi(authenticatedCaller);
     const regionBaseUrlResolver = options.regionBaseUrlResolver;
     this.accountMigration = new AccountMigrationApi(
       this.client,

@@ -924,3 +924,17 @@ RPC: `/rpc.api.User/Get`
 ```ts
 getSnapshot(options?: RequestOptions): Promise<UserGetResponse>
 ```
+
+## UserContentCdnApi
+
+Provides signed cookies for accessing user content on the CDN.
+
+### `getSignedCookie()`
+
+Returns the signed cookie used to access user content on the CDN.
+
+RPC: `/rpc.api.UserContentCdn/GetSignedCookie`
+
+```ts
+getSignedCookie(options?: RequestOptions): Promise<UserContentCdnGetSignedCookieResponse>
+```

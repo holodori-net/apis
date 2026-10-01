@@ -114,12 +114,16 @@ The high-level client is grouped by service: use `api.auth`, `api.master`,
 `api.gacha`, `api.music`, `api.marathon`, `api.profile`, `api.asset`,
 `api.musicCreativeChart`, `api.jumpRope`, `api.circuit`, `api.chase`,
 `api.splashBall`, `api.comboCardGame`, `api.cookingPuzzle`, `api.multiGame`,
-`api.gift`, `api.parkPermanence`, `api.health`, `api.system`, and
-`api.accountMigration`. The older top-level authentication and master methods
+`api.gift`, `api.parkPermanence`, `api.health`, `api.system`,
+`api.accountMigration`, and `api.userContentCdn`. The older top-level authentication and master methods
 remain available as deprecated delegations. Transport implementations are
 also available from `@holodori-net/apis/transports`; generated contracts are
 available from `@holodori-net/apis/protos`; protobuf and gRPC helpers are
 available from `@holodori-net/apis/low-level`.
+
+`api.userContentCdn.getSignedCookie()` returns signed cookies for accessing
+user content on the CDN. Treat the returned cookies as credentials and do not
+log them. The caller applies them to its CDN requests.
 
 Every service method accepts optional per-call controls as its final argument.
 They apply to the target RPC; automatic authentication bootstrap retains the
@@ -149,7 +153,7 @@ The Android contract 1.2.0 (version code 1789620987) contains 53 services and
 313 RPC methods. Its source revision and checksum are recorded in
 [`proto/descriptor-set.source.json`](proto/descriptor-set.source.json).
 Every method has a `POST /<Service>/<Method>` HTTP annotation and uses the gRPC
-path `/rpc.api.<Service>/<Method>`. The SDK implements 67 of those methods:
+path `/rpc.api.<Service>/<Method>`. The SDK implements 68 of those methods:
 
 | Service               | Implemented | Contract | SDK methods                                                                      |
 | --------------------- | ----------: | -------: | -------------------------------------------------------------------------------- |
@@ -183,8 +187,9 @@ path `/rpc.api.<Service>/<Method>`. The SDK implements 67 of those methods:
 | SplashBall            |           1 |        5 | `GetRankingInfo`                                                                 |
 | System                |           1 |        1 | `GetSystemInfo`                                                                  |
 | User                  |           1 |        2 | `Get` through `listCards()` and `getSnapshot()`                                  |
-| Remaining 23 services |           0 |      114 | —                                                                                |
-| **Total**             |      **67** |  **313** | **21.4%**                                                                        |
+| UserContentCdn        |           1 |        1 | `GetSignedCookie`                                                                |
+| Remaining 22 services |           0 |      113 | —                                                                                |
+| **Total**             |      **68** |  **313** | **21.7%**                                                                        |
 
 ### Recommended next APIs
 
@@ -260,7 +265,7 @@ methods. A struck-through method is already implemented by the SDK.
 | System (1)              | ~~`GetSystemInfo`~~                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Tutorial (7)            | `Progress`, `RegisterInitialUserInfo`, `ChooseCharacter`, `DrawGacha`, `ConfirmGacha`, `ListGachaCard`, `ReadInstantTips`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | User (2)                | ~~`Get`~~, `Delete`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| UserContentCdn (1)      | `GetSignedCookie`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| UserContentCdn (1)      | ~~`GetSignedCookie`~~                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Work (6)                | `ListWorkSlotPower`, `Refresh`, `Start`, `Finish`, `FinishAll`, `Cancel`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 Persist the returned credential and pass it to later client instances to avoid

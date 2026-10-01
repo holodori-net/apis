@@ -59,6 +59,7 @@ const apiFiles = [
   "splash_ball",
   "system",
   "user",
+  "user_content_cdn",
 ].map((name) => `rpc/api/${name}.gen.proto`);
 
 const descriptorData = readFileSync(descriptorPath);
