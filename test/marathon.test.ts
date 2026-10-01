@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { Buffer } from "node:buffer";
 import { test } from "vitest";
 
 import {
@@ -8,14 +9,19 @@ import {
   encodeVarintField,
 } from "../src/low-level.js";
 import {
+  MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF,
   MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_GRADE,
   MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_TOP,
+  MARATHON_LIST_SCORE_RANKING_AROUND_SELF,
   MARATHON_LIST_SCORE_RANKING_GRADE,
   MARATHON_LIST_SCORE_RANKING_TOP,
+  MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF,
   MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_GRADE,
   MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_TOP,
   MARATHON_TOP,
+  MarathonApi,
 } from "../src/services/marathon.js";
+import { authenticatedCaller } from "./support/authenticated-caller.js";
 
 void test("encodes Marathon requests with their contract field numbers", () => {
   assert.deepEqual(
@@ -39,6 +45,156 @@ void test("encodes Marathon requests with their contract field numbers", () => {
     encodeMessage(encodeStringField(1, "chapter-1")),
   );
   assert.throws(() => MARATHON_TOP.encode({ marathonId: "" }), /Marathon ID/);
+});
+
+void test("encodes AroundSelf requests and validates required IDs", () => {
+  assert.deepEqual(
+    MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF.encode({
+      marathonChapterId: "chapter-1",
+      musicId: "music-1",
+    }),
+    encodeMessage(
+      encodeStringField(1, "chapter-1"),
+      encodeStringField(2, "music-1"),
+    ),
+  );
+  for (const method of [
+    MARATHON_LIST_SCORE_RANKING_AROUND_SELF,
+    MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF,
+  ]) {
+    assert.deepEqual(
+      method.encode({ marathonChapterId: "chapter-1" }),
+      encodeMessage(encodeStringField(1, "chapter-1")),
+    );
+    assert.throws(
+      () => method.encode({ marathonChapterId: "" }),
+      /Marathon chapter ID/,
+    );
+  }
+  assert.throws(
+    () =>
+      MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF.encode({
+        marathonChapterId: "",
+        musicId: "music-1",
+      }),
+    /Marathon chapter ID/,
+  );
+  assert.throws(
+    () =>
+      MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF.encode({
+        marathonChapterId: "chapter-1",
+        musicId: "",
+      }),
+    /music ID/,
+  );
+});
+
+void test("decodes AroundSelf ranking wire fixtures without losing bigint or optional state", () => {
+  const rankInfo = encodeMessage(
+    encodeVarintField(1, 12),
+    encodeVarintField(2, 9_007_199_254_740_999n),
+  );
+  const populated = encodeMessage(
+    encodeVarintField(1, 12),
+    encodeVarintField(2, 9_007_199_254_741_001n),
+    encodeVarintField(3, 1),
+    encodeBytesField(4, rankInfo),
+  );
+  const fixtures = [
+    [
+      MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF,
+      1,
+      "rankingResult",
+      populated,
+    ],
+    [MARATHON_LIST_SCORE_RANKING_AROUND_SELF, 1, "result", populated],
+    [
+      MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF,
+      1,
+      "result",
+      populated,
+    ],
+  ] as const;
+
+  for (const [method, fieldNumber, resultName, resultBytes] of fixtures) {
+    const response = method.decode(
+      Buffer.from(encodeMessage(encodeBytesField(fieldNumber, resultBytes))),
+    ) as Record<string, unknown>;
+    const result = response[resultName] as {
+      selfRank: number;
+      selfScore: bigint;
+      isSelfRankOutOfRange: boolean;
+      rankInfos: { rank: number; score: bigint; userInfo?: unknown }[];
+    };
+    assert.equal(result.selfRank, 12);
+    assert.equal(result.selfScore, 9_007_199_254_741_001n);
+    assert.equal(result.isSelfRankOutOfRange, true);
+    assert.equal(result.rankInfos[0]?.score, 9_007_199_254_740_999n);
+    assert.equal(result.rankInfos[0]?.userInfo, undefined);
+
+    const empty = method.decode(
+      Buffer.from(
+        encodeMessage(encodeBytesField(fieldNumber, Buffer.alloc(0))),
+      ),
+    ) as Record<string, unknown>;
+    assert.deepEqual(
+      (empty[resultName] as { rankInfos: unknown[] }).rankInfos,
+      [],
+    );
+    const absent = method.decode(Buffer.alloc(0)) as Record<string, unknown>;
+    assert.equal(absent[resultName], undefined);
+  }
+});
+
+void test("AroundSelf methods forward request options and declare RPC policies", async () => {
+  const calls: { path: string; request: unknown; options: unknown }[] = [];
+  const client = {
+    call: (method: { path: string }, request: unknown, options: unknown) => {
+      calls.push({ path: method.path, request, options });
+      return Promise.resolve({});
+    },
+  };
+  let authCalls = 0;
+  const api = new MarathonApi(
+    authenticatedCaller(client as never, () => {
+      authCalls += 1;
+      return Promise.resolve();
+    }),
+  );
+  const options = { timeoutMs: 1_000 };
+  await api.listMusicHighestScoreRankingAroundSelf(
+    { marathonChapterId: "chapter-1", musicId: "music-1" },
+    options,
+  );
+  await api.listMarathonScoreRankingAroundSelf(
+    { marathonChapterId: "chapter-2" },
+    options,
+  );
+  await api.listTotalMusicHighestScoreRankingAroundSelf(
+    { marathonChapterId: "chapter-3" },
+    options,
+  );
+
+  assert.deepEqual(
+    calls.map(({ path }) => path),
+    [
+      "/rpc.api.Marathon/ListMusicHighestScoreRankingAroundSelf",
+      "/rpc.api.Marathon/ListMarathonScoreRankingAroundSelf",
+      "/rpc.api.Marathon/ListTotalMusicHighestScoreRankingAroundSelf",
+    ],
+  );
+  assert.ok(calls.every(({ options: forwarded }) => forwarded === options));
+  assert.equal(authCalls, 3);
+  for (const method of [
+    MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF,
+    MARATHON_LIST_SCORE_RANKING_AROUND_SELF,
+    MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF,
+  ]) {
+    assert.equal(method.requiresGameAuth, true);
+    assert.equal(method.requiresMasterVersion, true);
+    assert.equal(method.usesResponseCache, true);
+    assert.equal(method.requiresRequestSignature, false);
+  }
 });
 
 void test("decodes full Marathon top metadata and personal ranking state", () => {

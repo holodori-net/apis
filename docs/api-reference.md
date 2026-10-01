@@ -446,6 +446,18 @@ Each result includes the authenticated account's self rank and score.
 listMusicHighestScoreRankingTop(request: MarathonListMusicHighestScoreRankingTopRequest, options?: RequestOptions): Promise<MarathonListMusicHighestScoreRankingTopResponse>
 ```
 
+### `listMusicHighestScoreRankingAroundSelf()`
+
+Returns music-score ranks surrounding the authenticated account.
+
+RPC: `/rpc.api.Marathon/ListMusicHighestScoreRankingAroundSelf`
+
+Results include nearby ranks and the authenticated account's rank and score.
+
+```ts
+listMusicHighestScoreRankingAroundSelf(request: MarathonListMusicHighestScoreRankingAroundSelfRequest, options?: RequestOptions): Promise<MarathonListMusicHighestScoreRankingAroundSelfResponse>
+```
+
 ### `listMarathonScoreRankingGrade()`
 
 Lists Marathon score ranking grades for a chapter.
@@ -470,6 +482,18 @@ Each result includes the authenticated account's self rank and score.
 listMarathonScoreRankingTop(request: MarathonListMarathonScoreRankingTopRequest, options?: RequestOptions): Promise<MarathonListMarathonScoreRankingTopResponse>
 ```
 
+### `listMarathonScoreRankingAroundSelf()`
+
+Returns Marathon score ranks surrounding the authenticated account.
+
+RPC: `/rpc.api.Marathon/ListMarathonScoreRankingAroundSelf`
+
+Results include nearby ranks and the authenticated account's rank and score.
+
+```ts
+listMarathonScoreRankingAroundSelf(request: MarathonListMarathonScoreRankingAroundSelfRequest, options?: RequestOptions): Promise<MarathonListMarathonScoreRankingAroundSelfResponse>
+```
+
 ### `listTotalMusicHighestScoreRankingGrade()`
 
 Lists total music-score ranking grades for a chapter.
@@ -492,6 +516,18 @@ Each result includes the authenticated account's self rank and score.
 
 ```ts
 listTotalMusicHighestScoreRankingTop(request: MarathonListTotalMusicHighestScoreRankingTopRequest, options?: RequestOptions): Promise<MarathonListTotalMusicHighestScoreRankingTopResponse>
+```
+
+### `listTotalMusicHighestScoreRankingAroundSelf()`
+
+Returns total music-score ranks surrounding the authenticated account.
+
+RPC: `/rpc.api.Marathon/ListTotalMusicHighestScoreRankingAroundSelf`
+
+Results include nearby ranks and the authenticated account's rank and score.
+
+```ts
+listTotalMusicHighestScoreRankingAroundSelf(request: MarathonListTotalMusicHighestScoreRankingAroundSelfRequest, options?: RequestOptions): Promise<MarathonListTotalMusicHighestScoreRankingAroundSelfResponse>
 ```
 
 ## MasterApi

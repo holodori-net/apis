@@ -7,18 +7,27 @@ import {
   type ProtobufMessageInit,
 } from "../protos/codec.js";
 import {
+  MarathonListMarathonScoreRankingAroundSelfRequestSchema,
+  type MarathonListMarathonScoreRankingAroundSelfResponse,
+  MarathonListMarathonScoreRankingAroundSelfResponseSchema,
   MarathonListMarathonScoreRankingGradeRequestSchema,
   type MarathonListMarathonScoreRankingGradeResponse,
   MarathonListMarathonScoreRankingGradeResponseSchema,
   MarathonListMarathonScoreRankingTopRequestSchema,
   type MarathonListMarathonScoreRankingTopResponse,
   MarathonListMarathonScoreRankingTopResponseSchema,
+  MarathonListMusicHighestScoreRankingAroundSelfRequestSchema,
+  type MarathonListMusicHighestScoreRankingAroundSelfResponse,
+  MarathonListMusicHighestScoreRankingAroundSelfResponseSchema,
   MarathonListMusicHighestScoreRankingGradeRequestSchema,
   type MarathonListMusicHighestScoreRankingGradeResponse,
   MarathonListMusicHighestScoreRankingGradeResponseSchema,
   MarathonListMusicHighestScoreRankingTopRequestSchema,
   type MarathonListMusicHighestScoreRankingTopResponse,
   MarathonListMusicHighestScoreRankingTopResponseSchema,
+  MarathonListTotalMusicHighestScoreRankingAroundSelfRequestSchema,
+  type MarathonListTotalMusicHighestScoreRankingAroundSelfResponse,
+  MarathonListTotalMusicHighestScoreRankingAroundSelfResponseSchema,
   MarathonListTotalMusicHighestScoreRankingGradeRequestSchema,
   type MarathonListTotalMusicHighestScoreRankingGradeResponse,
   MarathonListTotalMusicHighestScoreRankingGradeResponseSchema,
@@ -41,12 +50,20 @@ export type MarathonListMusicHighestScoreRankingTopRequest =
   ProtobufMessageInit<
     typeof MarathonListMusicHighestScoreRankingTopRequestSchema
   > & { marathonChapterId: string; musicId: string };
+export type MarathonListMusicHighestScoreRankingAroundSelfRequest =
+  ProtobufMessageInit<
+    typeof MarathonListMusicHighestScoreRankingAroundSelfRequestSchema
+  > & { marathonChapterId: string; musicId: string };
 export type MarathonListMarathonScoreRankingGradeRequest = ProtobufMessageInit<
   typeof MarathonListMarathonScoreRankingGradeRequestSchema
 > & { marathonChapterId: string };
 export type MarathonListMarathonScoreRankingTopRequest = ProtobufMessageInit<
   typeof MarathonListMarathonScoreRankingTopRequestSchema
 > & { marathonChapterId: string };
+export type MarathonListMarathonScoreRankingAroundSelfRequest =
+  ProtobufMessageInit<
+    typeof MarathonListMarathonScoreRankingAroundSelfRequestSchema
+  > & { marathonChapterId: string };
 export type MarathonListTotalMusicHighestScoreRankingGradeRequest =
   ProtobufMessageInit<
     typeof MarathonListTotalMusicHighestScoreRankingGradeRequestSchema
@@ -55,6 +72,80 @@ export type MarathonListTotalMusicHighestScoreRankingTopRequest =
   ProtobufMessageInit<
     typeof MarathonListTotalMusicHighestScoreRankingTopRequestSchema
   > & { marathonChapterId: string };
+export type MarathonListTotalMusicHighestScoreRankingAroundSelfRequest =
+  ProtobufMessageInit<
+    typeof MarathonListTotalMusicHighestScoreRankingAroundSelfRequestSchema
+  > & { marathonChapterId: string };
+
+const MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF: ApiMethod<
+  MarathonListMusicHighestScoreRankingAroundSelfRequest,
+  MarathonListMusicHighestScoreRankingAroundSelfResponse
+> = {
+  path: "/rpc.api.Marathon/ListMusicHighestScoreRankingAroundSelf",
+  requiresGameAuth: true,
+  requiresMasterVersion: true,
+  usesResponseCache: true,
+  requiresRequestSignature: false,
+  encode: (request) =>
+    encodeProtobuf(
+      MarathonListMusicHighestScoreRankingAroundSelfRequestSchema,
+      validateMusicRankingRequest(request),
+    ),
+  decode: (data) =>
+    decodeProtobuf(
+      MarathonListMusicHighestScoreRankingAroundSelfResponseSchema,
+      data,
+    ),
+};
+
+const MARATHON_LIST_SCORE_RANKING_AROUND_SELF: ApiMethod<
+  MarathonListMarathonScoreRankingAroundSelfRequest,
+  MarathonListMarathonScoreRankingAroundSelfResponse
+> = {
+  path: "/rpc.api.Marathon/ListMarathonScoreRankingAroundSelf",
+  requiresGameAuth: true,
+  requiresMasterVersion: true,
+  usesResponseCache: true,
+  requiresRequestSignature: false,
+  encode: (request) =>
+    encodeProtobuf(MarathonListMarathonScoreRankingAroundSelfRequestSchema, {
+      marathonChapterId: requireNonEmpty(
+        request.marathonChapterId,
+        "Marathon chapter ID",
+      ),
+    }),
+  decode: (data) =>
+    decodeProtobuf(
+      MarathonListMarathonScoreRankingAroundSelfResponseSchema,
+      data,
+    ),
+};
+
+const MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF: ApiMethod<
+  MarathonListTotalMusicHighestScoreRankingAroundSelfRequest,
+  MarathonListTotalMusicHighestScoreRankingAroundSelfResponse
+> = {
+  path: "/rpc.api.Marathon/ListTotalMusicHighestScoreRankingAroundSelf",
+  requiresGameAuth: true,
+  requiresMasterVersion: true,
+  usesResponseCache: true,
+  requiresRequestSignature: false,
+  encode: (request) =>
+    encodeProtobuf(
+      MarathonListTotalMusicHighestScoreRankingAroundSelfRequestSchema,
+      {
+        marathonChapterId: requireNonEmpty(
+          request.marathonChapterId,
+          "Marathon chapter ID",
+        ),
+      },
+    ),
+  decode: (data) =>
+    decodeProtobuf(
+      MarathonListTotalMusicHighestScoreRankingAroundSelfResponseSchema,
+      data,
+    ),
+};
 
 const MARATHON_TOP: ApiMethod<MarathonTopRequest, MarathonTopResponse> = {
   path: "/rpc.api.Marathon/Top",
@@ -249,6 +340,23 @@ export class MarathonApi {
   }
 
   /**
+   * Returns music-score ranks surrounding the authenticated account.
+   *
+   * @rpc /rpc.api.Marathon/ListMusicHighestScoreRankingAroundSelf
+   * @remarks Results include nearby ranks and the authenticated account's rank and score.
+   */
+  async listMusicHighestScoreRankingAroundSelf(
+    request: MarathonListMusicHighestScoreRankingAroundSelfRequest,
+    options?: RequestOptions,
+  ): Promise<MarathonListMusicHighestScoreRankingAroundSelfResponse> {
+    return this.client.call(
+      MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF,
+      request,
+      options,
+    );
+  }
+
+  /**
    * Lists Marathon score ranking grades for a chapter.
    *
    * @rpc /rpc.api.Marathon/ListMarathonScoreRankingGrade
@@ -276,6 +384,23 @@ export class MarathonApi {
     options?: RequestOptions,
   ): Promise<MarathonListMarathonScoreRankingTopResponse> {
     return this.client.call(MARATHON_LIST_SCORE_RANKING_TOP, request, options);
+  }
+
+  /**
+   * Returns Marathon score ranks surrounding the authenticated account.
+   *
+   * @rpc /rpc.api.Marathon/ListMarathonScoreRankingAroundSelf
+   * @remarks Results include nearby ranks and the authenticated account's rank and score.
+   */
+  async listMarathonScoreRankingAroundSelf(
+    request: MarathonListMarathonScoreRankingAroundSelfRequest,
+    options?: RequestOptions,
+  ): Promise<MarathonListMarathonScoreRankingAroundSelfResponse> {
+    return this.client.call(
+      MARATHON_LIST_SCORE_RANKING_AROUND_SELF,
+      request,
+      options,
+    );
   }
 
   /**
@@ -311,23 +436,46 @@ export class MarathonApi {
       options,
     );
   }
+
+  /**
+   * Returns total music-score ranks surrounding the authenticated account.
+   *
+   * @rpc /rpc.api.Marathon/ListTotalMusicHighestScoreRankingAroundSelf
+   * @remarks Results include nearby ranks and the authenticated account's rank and score.
+   */
+  async listTotalMusicHighestScoreRankingAroundSelf(
+    request: MarathonListTotalMusicHighestScoreRankingAroundSelfRequest,
+    options?: RequestOptions,
+  ): Promise<MarathonListTotalMusicHighestScoreRankingAroundSelfResponse> {
+    return this.client.call(
+      MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF,
+      request,
+      options,
+    );
+  }
 }
 
 export {
+  MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF,
   MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_GRADE,
   MARATHON_LIST_MUSIC_HIGHEST_SCORE_RANKING_TOP,
+  MARATHON_LIST_SCORE_RANKING_AROUND_SELF,
   MARATHON_LIST_SCORE_RANKING_GRADE,
   MARATHON_LIST_SCORE_RANKING_TOP,
+  MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_AROUND_SELF,
   MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_GRADE,
   MARATHON_LIST_TOTAL_MUSIC_HIGHEST_SCORE_RANKING_TOP,
   MARATHON_TOP,
 };
 
 export type {
+  MarathonListMarathonScoreRankingAroundSelfResponse,
   MarathonListMarathonScoreRankingGradeResponse,
   MarathonListMarathonScoreRankingTopResponse,
+  MarathonListMusicHighestScoreRankingAroundSelfResponse,
   MarathonListMusicHighestScoreRankingGradeResponse,
   MarathonListMusicHighestScoreRankingTopResponse,
+  MarathonListTotalMusicHighestScoreRankingAroundSelfResponse,
   MarathonListTotalMusicHighestScoreRankingGradeResponse,
   MarathonListTotalMusicHighestScoreRankingTopResponse,
   MarathonTopResponse,

@@ -93,6 +93,11 @@ rankings are available through `musicCreativeChart`. The `asset` client reports
 expired content asset IDs, while `health` checks the serving state without
 requiring authentication.
 
+Rankings around the authenticated account are available through
+`marathon.listMusicHighestScoreRankingAroundSelf({ marathonChapterId, musicId })`,
+`marathon.listMarathonScoreRankingAroundSelf({ marathonChapterId })`, and
+`marathon.listTotalMusicHighestScoreRankingAroundSelf({ marathonChapterId })`.
+
 Additional read APIs include `cookingPuzzle.getRankingInfo()`,
 `comboCardGame.listUserInfo()`, `multiGame.listPingServer()`,
 `gift.list()`, and `parkPermanence.listCharacterShopItem()`. Gift and Park
@@ -144,7 +149,7 @@ The Android contract 1.2.0 (version code 1789620987) contains 53 services and
 313 RPC methods. Its source revision and checksum are recorded in
 [`proto/descriptor-set.source.json`](proto/descriptor-set.source.json).
 Every method has a `POST /<Service>/<Method>` HTTP annotation and uses the gRPC
-path `/rpc.api.<Service>/<Method>`. The SDK implements 64 of those methods:
+path `/rpc.api.<Service>/<Method>`. The SDK implements 67 of those methods:
 
 | Service               | Implemented | Contract | SDK methods                                                                      |
 | --------------------- | ----------: | -------: | -------------------------------------------------------------------------------- |
@@ -164,7 +169,7 @@ path `/rpc.api.<Service>/<Method>`. The SDK implements 64 of those methods:
 | Home                  |           1 |        2 | `Login`                                                                          |
 | JumpRope              |           1 |        8 | `GetRankingInfo`                                                                 |
 | Live                  |           3 |       18 | `GetDeckCandidateCardParameters`, `GetDraftDeckInfo`, `GetDeck`                  |
-| Marathon              |           7 |       11 | `Top` and six public grade/top ranking queries                                   |
+| Marathon              |          10 |       11 | `Top` and nine grade/top/around-self ranking queries                             |
 | Master                |           1 |        1 | `Get`                                                                            |
 | Membership            |           1 |        1 | `GetShop`                                                                        |
 | Music                 |           5 |        7 | Public score/rating rankings and highest-score deck                              |
@@ -179,7 +184,7 @@ path `/rpc.api.<Service>/<Method>`. The SDK implements 64 of those methods:
 | System                |           1 |        1 | `GetSystemInfo`                                                                  |
 | User                  |           1 |        2 | `Get` through `listCards()` and `getSnapshot()`                                  |
 | Remaining 23 services |           0 |      114 | —                                                                                |
-| **Total**             |      **64** |  **313** | **20.4%**                                                                        |
+| **Total**             |      **67** |  **313** | **21.4%**                                                                        |
 
 ### Recommended next APIs
 
@@ -232,7 +237,7 @@ methods. A struck-through method is already implemented by the SDK.
 | JumpRope (8)            | `MatchRandom`, `CreatePrivateRoom`, `StartSingle`, `StartMulti`, `FinishSingle`, `FinishMulti`, ~~`GetRankingInfo`~~, `ReadNotification`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Live (18)               | ~~`GetDeckCandidateCardParameters`~~, ~~`GetDraftDeckInfo`~~, ~~`GetDeck`~~, `SaveDeck`, `SetSkinLog`, `SetRewardUpStaminaConsumptionSetting`, `RecoverRewardUpStamina`, `MatchRandom`, `CreatePrivateRoom`, `StartSingle`, `StartMulti`, `FinishSingle`, `FinishMultiLiveCooperation`, `FinishDisconnectedMultiLiveCooperation`, `Continue`, `Retry`, `Retire`, `ListRecommendCharacterDeck`                                                                                                                                                                                                                                                                                                                                                     |
 | LoginBonus (1)          | `Check`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| Marathon (11)           | ~~`Top`~~, `ReadTop`, ~~`ListMusicHighestScoreRankingGrade`~~, ~~`ListMusicHighestScoreRankingTop`~~, `ListMusicHighestScoreRankingAroundSelf`, ~~`ListMarathonScoreRankingGrade`~~, ~~`ListMarathonScoreRankingTop`~~, `ListMarathonScoreRankingAroundSelf`, ~~`ListTotalMusicHighestScoreRankingGrade`~~, ~~`ListTotalMusicHighestScoreRankingTop`~~, `ListTotalMusicHighestScoreRankingAroundSelf`                                                                                                                                                                                                                                                                                                                                             |
+| Marathon (11)           | ~~`Top`~~, `ReadTop`, ~~`ListMusicHighestScoreRankingGrade`~~, ~~`ListMusicHighestScoreRankingTop`~~, ~~`ListMusicHighestScoreRankingAroundSelf`~~, ~~`ListMarathonScoreRankingGrade`~~, ~~`ListMarathonScoreRankingTop`~~, ~~`ListMarathonScoreRankingAroundSelf`~~, ~~`ListTotalMusicHighestScoreRankingGrade`~~, ~~`ListTotalMusicHighestScoreRankingTop`~~, ~~`ListTotalMusicHighestScoreRankingAroundSelf`~~                                                                                                                                                                                                                                                                                                                                 |
 | Master (1)              | ~~`Get`~~                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | Membership (1)          | ~~`GetShop`~~                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | MiniGame (4)            | `RecoverRewardUpStamina`, `ConvertRewardUpStaminaToReward`, `ReadNotification`, `SetConsumptionSetting`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
