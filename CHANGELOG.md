@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/holodori-net/apis/compare/v0.3.1...v0.4.0) (2026-10-01)
+
+### Features
+
+* add gift overview and account history queries ([fade965](https://github.com/holodori-net/apis/commit/fade9655222230237ff496443e54f3cc33dd1c27))
+* **marathon:** add rankings around the current account ([cb8485f](https://github.com/holodori-net/apis/commit/cb8485fce0d5b17f78ac100fa90e7bd97e967a36))
+* **user-content-cdn:** add signed cookie access ([0238ae2](https://github.com/holodori-net/apis/commit/0238ae22da42951e575bf0e731980787cee06023))
+
 ## [0.3.1](https://github.com/holodori-net/apis/compare/v0.3.0...v0.3.1) (2026-09-30)
 
 ### Bug Fixes
