@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { Buffer } from "node:buffer";
 import { test } from "vitest";
 
 import {
@@ -8,7 +9,13 @@ import {
   encodeStringField,
   encodeVarintField,
 } from "../src/low-level.js";
-import { GIFT_LIST, GiftApi, GiftSortType } from "../src/services/gift.js";
+import {
+  GIFT_LIST,
+  GIFT_LIST_HISTORY,
+  GIFT_TOP,
+  GiftApi,
+  GiftSortType,
+} from "../src/services/gift.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
 import { withoutTypeNames } from "./support/without-type-names.js";
 
@@ -126,4 +133,125 @@ void test("Gift/List authenticates, forwards options, and declares descriptor po
   assert.equal(GIFT_LIST.requiresMasterVersion, true);
   assert.equal(GIFT_LIST.usesResponseCache, true);
   assert.equal(GIFT_LIST.requiresRequestSignature, false);
+});
+
+void test("Gift Top and ListHistory use empty requests and decode nested account data", () => {
+  assert.deepEqual([...GIFT_TOP.encode(undefined)], []);
+  assert.deepEqual([...GIFT_LIST_HISTORY.encode(undefined)], []);
+  const bigQuantity = 9_007_199_254_740_993n;
+  const openedTime = 1_900_000_000_000n;
+  assert.deepEqual(
+    withoutTypeNames(
+      GIFT_TOP.decode(
+        encodeMessage(
+          encodeBytesField(
+            1,
+            encodeMessage(
+              encodeStringField(1, "gift-top"),
+              encodeVarintField(2, 4),
+              encodeStringField(3, "gem"),
+              encodeVarintField(4, bigQuantity),
+            ),
+          ),
+          encodeVarintField(2, 1),
+          encodeVarintField(3, 1),
+          encodeVarintField(4, 2),
+        ),
+      ),
+    ),
+    {
+      items: [
+        {
+          giftId: "gift-top",
+          resourceType: 4,
+          resourceId: "gem",
+          quantity: bigQuantity,
+          description: "",
+          postedTime: 0n,
+          limitTime: 0n,
+        },
+      ],
+      count: 1,
+      isNext: true,
+      unreadAnnouncementCount: 2,
+    },
+  );
+  assert.deepEqual(
+    withoutTypeNames(
+      GIFT_LIST_HISTORY.decode(
+        encodeMessage(
+          encodeBytesField(
+            1,
+            encodeMessage(
+              encodeVarintField(1, 4),
+              encodeStringField(2, "gem"),
+              encodeVarintField(3, bigQuantity),
+              encodeStringField(4, "Opened gift"),
+              encodeVarintField(5, openedTime),
+            ),
+          ),
+        ),
+      ),
+    ),
+    {
+      items: [
+        {
+          resourceType: 4,
+          resourceId: "gem",
+          quantity: bigQuantity,
+          description: "Opened gift",
+          openedTime,
+        },
+      ],
+    },
+  );
+  assert.deepEqual(withoutTypeNames(GIFT_TOP.decode(Buffer.alloc(0))), {
+    items: [],
+    count: 0,
+    isNext: false,
+    unreadAnnouncementCount: 0,
+  });
+  assert.deepEqual(
+    withoutTypeNames(GIFT_LIST_HISTORY.decode(Buffer.alloc(0))),
+    {
+      items: [],
+    },
+  );
+});
+
+void test("Gift Top and ListHistory authenticate, forward options, and declare policies", async () => {
+  const calls: { path: string; request: unknown; options: unknown }[] = [];
+  const client = {
+    call: (method: { path: string }, request: unknown, options: unknown) => {
+      calls.push({ path: method.path, request, options });
+      return Promise.resolve({
+        items: [],
+        count: 0,
+        isNext: false,
+        unreadAnnouncementCount: 0,
+      });
+    },
+  };
+  let authCalls = 0;
+  const api = new GiftApi(
+    authenticatedCaller(client as never, () => {
+      authCalls += 1;
+      return Promise.resolve();
+    }),
+  );
+  const options = { timeoutMs: 1_000 };
+  await api.top(options);
+  await api.listHistory(options);
+
+  assert.equal(authCalls, 2);
+  assert.deepEqual(calls, [
+    { path: "/rpc.api.Gift/Top", request: undefined, options },
+    { path: "/rpc.api.Gift/ListHistory", request: undefined, options },
+  ]);
+  for (const method of [GIFT_TOP, GIFT_LIST_HISTORY]) {
+    assert.equal(method.requiresGameAuth, true);
+    assert.equal(method.requiresMasterVersion, true);
+    assert.equal(method.usesResponseCache, true);
+    assert.equal(method.requiresRequestSignature, false);
+  }
 });

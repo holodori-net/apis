@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { Buffer } from "node:buffer";
 import { test } from "vitest";
 
 import {
@@ -11,6 +12,7 @@ import {
 import {
   GACHA_LIST,
   GACHA_LIST_CARD_SELECT_PROBABILITY,
+  GACHA_LIST_HISTORY,
   GACHA_LIST_NORMAL_PROBABILITY,
   GachaApi,
 } from "../src/services/gacha.js";
@@ -248,6 +250,66 @@ void test("decodes probability values as exact integer parts per ten million", (
   );
 });
 
+void test("Gacha ListHistory uses an empty request and decodes nested int64 history", () => {
+  assert.deepEqual([...GACHA_LIST_HISTORY.encode(undefined)], []);
+  const drawTime = 9_007_199_254_740_993n;
+  assert.deepEqual(
+    withoutTypeNames(
+      GACHA_LIST_HISTORY.decode(
+        encodeMessage(
+          encodeBytesField(
+            1,
+            encodeMessage(
+              encodeStringField(1, "Featured Gacha"),
+              encodeStringField(2, "card-1"),
+              encodeVarintField(3, drawTime),
+            ),
+          ),
+        ),
+      ),
+    ),
+    {
+      histories: [{ gachaName: "Featured Gacha", cardId: "card-1", drawTime }],
+    },
+  );
+  assert.deepEqual(
+    withoutTypeNames(GACHA_LIST_HISTORY.decode(Buffer.alloc(0))),
+    { histories: [] },
+  );
+});
+
+void test("Gacha ListHistory authenticates, forwards options, and declares policies", async () => {
+  const calls: { path: string; request: unknown; options: unknown }[] = [];
+  const client = {
+    call: (method: { path: string }, request: unknown, options: unknown) => {
+      calls.push({ path: method.path, request, options });
+      return Promise.resolve({ histories: [] });
+    },
+  };
+  let authCalls = 0;
+  const api = new GachaApi(
+    authenticatedCaller(client as never, () => {
+      authCalls += 1;
+      return Promise.resolve();
+    }),
+  );
+  const options = { timeoutMs: 1_000 };
+  await api.listHistory(options);
+
+  assert.equal(authCalls, 1);
+  assert.deepEqual(calls, [
+    {
+      path: "/rpc.api.Gacha/ListHistory",
+      request: undefined,
+      options,
+    },
+  ]);
+  assert.equal(GACHA_LIST_HISTORY.requiresGameAuth, true);
+  assert.equal(GACHA_LIST_HISTORY.requiresMasterVersion, true);
+  assert.equal(GACHA_LIST_HISTORY.usesResponseCache, true);
+  assert.equal(GACHA_LIST_HISTORY.requiresRequestSignature, false);
+});
+
 void test("Gacha API authenticates read methods and declares transport policies", async () => {
   const calls: string[] = [];
   const client = {
@@ -280,6 +342,7 @@ void test("Gacha API authenticates read methods and declares transport policies"
   ]);
   for (const method of [
     GACHA_LIST,
+    GACHA_LIST_HISTORY,
     GACHA_LIST_NORMAL_PROBABILITY,
     GACHA_LIST_CARD_SELECT_PROBABILITY,
   ]) {

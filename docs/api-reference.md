@@ -253,6 +253,18 @@ RPC: `/rpc.api.Gacha/List`
 list(options?: RequestOptions): Promise<GachaListResponse>
 ```
 
+### `listHistory()`
+
+Lists draw history for the authenticated account.
+
+RPC: `/rpc.api.Gacha/ListHistory`
+
+History records include account-specific draw times and obtained cards.
+
+```ts
+listHistory(options?: RequestOptions): Promise<GachaListHistoryResponse>
+```
+
 ### `listNormalProbability()`
 
 Lists ordinary-draw rarity and card probabilities for one Gacha.
@@ -282,6 +294,18 @@ listCardSelectProbability(gachaId: string, options?: RequestOptions): Promise<Ga
 
 Provides access to the authenticated account's gift box.
 
+### `top()`
+
+Lists the authenticated account's current gift box overview.
+
+RPC: `/rpc.api.Gift/Top`
+
+Includes account-specific unread announcement count.
+
+```ts
+top(options?: RequestOptions): Promise<GiftTopResponse>
+```
+
 ### `list()`
 
 Lists gifts using the requested sort order and offset.
@@ -290,6 +314,18 @@ RPC: `/rpc.api.Gift/List`
 
 ```ts
 list(request: GiftListRequest, options?: RequestOptions): Promise<GiftListResponse>
+```
+
+### `listHistory()`
+
+Lists the authenticated account's gift opening history.
+
+RPC: `/rpc.api.Gift/ListHistory`
+
+History records reflect gifts opened by the authenticated account.
+
+```ts
+listHistory(options?: RequestOptions): Promise<GiftListHistoryResponse>
 ```
 
 ## HealthApi

@@ -7,6 +7,8 @@ import {
   GachaListCardSelectProbabilityRequestSchema,
   type GachaListCardSelectProbabilityResponse,
   GachaListCardSelectProbabilityResponseSchema,
+  type GachaListHistoryResponse,
+  GachaListHistoryResponseSchema,
   GachaListNormalProbabilityRequestSchema,
   type GachaListNormalProbabilityResponse,
   GachaListNormalProbabilityResponseSchema,
@@ -22,6 +24,16 @@ const GACHA_LIST: ApiMethod<void, GachaListResponse> = {
   requiresRequestSignature: false,
   encode: () => encodeProtobuf(EmptySchema),
   decode: (data) => decodeProtobuf(GachaListResponseSchema, data),
+};
+
+const GACHA_LIST_HISTORY: ApiMethod<void, GachaListHistoryResponse> = {
+  path: "/rpc.api.Gacha/ListHistory",
+  requiresGameAuth: true,
+  requiresMasterVersion: true,
+  usesResponseCache: true,
+  requiresRequestSignature: false,
+  encode: () => encodeProtobuf(EmptySchema),
+  decode: (data) => decodeProtobuf(GachaListHistoryResponseSchema, data),
 };
 
 const GACHA_LIST_NORMAL_PROBABILITY: ApiMethod<
@@ -75,6 +87,17 @@ export class GachaApi {
     return this.client.call(GACHA_LIST, undefined, options);
   }
 
+  /** Lists draw history for the authenticated account.
+   *
+   * @rpc /rpc.api.Gacha/ListHistory
+   * @remarks History records include account-specific draw times and obtained cards.
+   */
+  async listHistory(
+    options?: RequestOptions,
+  ): Promise<GachaListHistoryResponse> {
+    return this.client.call(GACHA_LIST_HISTORY, undefined, options);
+  }
+
   /**
    * Lists ordinary-draw rarity and card probabilities for one Gacha.
    * Probabilities are returned as integer parts per ten million.
@@ -115,6 +138,7 @@ export class GachaApi {
 export {
   GACHA_LIST,
   GACHA_LIST_CARD_SELECT_PROBABILITY,
+  GACHA_LIST_HISTORY,
   GACHA_LIST_NORMAL_PROBABILITY,
 };
 export type * from "../protos/gen/rpc/api/gacha.gen_pb.js";
