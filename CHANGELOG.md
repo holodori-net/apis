@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.0](https://github.com/holodori-net/apis/compare/v0.4.0...v0.5.0) (2026-10-06)
+
+### Features
+
+* **protos:** sync Android contract 1.2.1 (1790677050) ([44d84f7](https://github.com/holodori-net/apis/commit/44d84f75d7f81b70e21cf4486c34ef43f5df1d48))
+
 ## [0.4.0](https://github.com/holodori-net/apis/compare/v0.3.1...v0.4.0) (2026-10-01)
 
 ### Features
