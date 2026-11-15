@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import assert from "node:assert/strict";
 import { test } from "vitest";
 
@@ -9,12 +10,15 @@ import {
   encodeVarintField,
 } from "../src/low-level.js";
 import {
+  CardGetParameterResponseSchema,
+  CardGetParametersResponseSchema,
+} from "../src/protos/gen/rpc/api/card.gen_pb.js";
+import {
   CARD_GET_PARAMETER,
   CARD_GET_PARAMETERS,
   CardApi,
 } from "../src/services/card.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
-import { withoutTypeNames } from "./support/without-type-names.js";
 
 function encodeFloat32Field(field: number, value: number): Buffer {
   const bytes = Buffer.alloc(4);
@@ -49,20 +53,23 @@ void test("decodes Card/GetParameter int64 and fixed32 skill tree fields", () =>
     ),
   );
 
-  assert.deepEqual(withoutTypeNames(CARD_GET_PARAMETER.decode(response)), {
-    parameter: 123_456_789_012_345n,
-    performance: 10_000n,
-    technique: 20_000n,
-    sense: 30_000n,
-    skillTreeEffect: {
-      performanceUp: 100,
-      performanceUpPermilUp: 1.25,
-      techniqueUp: 200,
-      techniqueUpPermilUp: 2.5,
-      senseUp: 300,
-      senseUpPermilUp: 3.75,
-    },
-  });
+  assert.deepEqual(
+    CARD_GET_PARAMETER.decode(response),
+    create(CardGetParameterResponseSchema, {
+      parameter: 123_456_789_012_345n,
+      performance: 10_000n,
+      technique: 20_000n,
+      sense: 30_000n,
+      skillTreeEffect: {
+        performanceUp: 100,
+        performanceUpPermilUp: 1.25,
+        techniqueUp: 200,
+        techniqueUpPermilUp: 2.5,
+        senseUp: 300,
+        senseUpPermilUp: 3.75,
+      },
+    }),
+  );
 });
 
 void test("decodes Card/GetParameters parameter infos", () => {
@@ -80,18 +87,21 @@ void test("decodes Card/GetParameters parameter infos", () => {
     encodeVarintField(2, 125),
   );
 
-  assert.deepEqual(withoutTypeNames(CARD_GET_PARAMETERS.decode(response)), {
-    parameterInfos: [
-      {
-        cardId: "card-1",
-        parameter: 111n,
-        performance: 11n,
-        technique: 22n,
-        sense: 33n,
-      },
-    ],
-    liveDeckPowerPermyriadUpByCardLevelUp: 125,
-  });
+  assert.deepEqual(
+    CARD_GET_PARAMETERS.decode(response),
+    create(CardGetParametersResponseSchema, {
+      parameterInfos: [
+        {
+          cardId: "card-1",
+          parameter: 111n,
+          performance: 11n,
+          technique: 22n,
+          sense: 33n,
+        },
+      ],
+      liveDeckPowerPermyriadUpByCardLevelUp: 125,
+    }),
+  );
 });
 
 void test("CardApi lazily authenticates both read methods", async () => {

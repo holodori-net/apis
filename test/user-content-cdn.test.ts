@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import assert from "node:assert/strict";
 import { test } from "vitest";
 
@@ -15,9 +16,9 @@ import {
   HolodoriApi,
   UserContentCdnApi,
 } from "../src/index.js";
+import { UserContentCdnGetSignedCookieResponseSchema } from "../src/protos/gen/rpc/api/user_content_cdn.gen_pb.js";
 import { USER_CONTENT_CDN_GET_SIGNED_COOKIE } from "../src/services/user-content-cdn.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
-import { withoutTypeNames } from "./support/without-type-names.js";
 
 const SECRET = "test-api-secret";
 
@@ -36,19 +37,20 @@ void test("decodes signed cookie fields and proto defaults", () => {
     ),
   );
 
-  assert.deepEqual(withoutTypeNames(response), {
-    signedCookie: {
-      policy: "cookie-policy",
-      signature: "cookie-signature",
-      keyName: "cdn-key",
-      expiredTimeMilliseconds: 1_800_000_000_000n,
-    },
-  });
   assert.deepEqual(
-    withoutTypeNames(
-      USER_CONTENT_CDN_GET_SIGNED_COOKIE.decode(Buffer.alloc(0)),
-    ),
-    {},
+    response,
+    create(UserContentCdnGetSignedCookieResponseSchema, {
+      signedCookie: {
+        policy: "cookie-policy",
+        signature: "cookie-signature",
+        keyName: "cdn-key",
+        expiredTimeMilliseconds: 1_800_000_000_000n,
+      },
+    }),
+  );
+  assert.deepEqual(
+    USER_CONTENT_CDN_GET_SIGNED_COOKIE.decode(Buffer.alloc(0)),
+    create(UserContentCdnGetSignedCookieResponseSchema, {}),
   );
 });
 

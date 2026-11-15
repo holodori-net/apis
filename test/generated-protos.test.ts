@@ -13,7 +13,7 @@ import { AuthLoginResponseSchema } from "../src/protos/gen/rpc/api/auth.gen_pb.j
 import { MasterGetResponseSchema } from "../src/protos/gen/rpc/api/master.gen_pb.js";
 import { NoticeUpdateCategoryReadTimeResponseSchema } from "../src/protos/gen/rpc/api/notice.gen_pb.js";
 
-void test("generated responses retain every descriptor field", () => {
+void test("round-trips representative generated response fields", () => {
   const login = roundTrip(AuthLoginResponseSchema, {
     gameAuthToken: "token-1",
     isPlayIntegrityCheckRequired: true,
