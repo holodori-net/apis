@@ -9,7 +9,7 @@ import { enumDesc, fileDesc } from "@bufbuild/protobuf/codegenv2";
  * Describes the file enums/provider_type.gen.proto.
  */
 export const file_enums_provider_type_gen: GenFile = /*@__PURE__*/
-  fileDesc("Ch1lbnVtcy9wcm92aWRlcl90eXBlLmdlbi5wcm90bxIFZW51bXMqeAoMUHJvdmlkZXJUeXBlEhkKFVBST1ZJREVSX1RZUEVfVU5LTk9XThAAEhcKE1BST1ZJREVSX1RZUEVfQVBQTEUQARIYChRQUk9WSURFUl9UWVBFX0dPT0dMRRACEhoKFlBST1ZJREVSX1RZUEVfUEFTU1dPUkQQY0JRWjNnaXRodWIuY29tL3F1YS12aXNpb24vdmlzaW9uLXNlcnZlci9wa2cvZG9tYWluL2VudW2qAhlWaXNpb24uQ29tbW9uLlByb3RvLkVudW1zYgZwcm90bzM");
+  fileDesc("Ch1lbnVtcy9wcm92aWRlcl90eXBlLmdlbi5wcm90bxIFZW51bXMqnQEKDFByb3ZpZGVyVHlwZRIZChVQUk9WSURFUl9UWVBFX1VOS05PV04QABIXChNQUk9WSURFUl9UWVBFX0FQUExFEAESGAoUUFJPVklERVJfVFlQRV9HT09HTEUQAhIjCh9QUk9WSURFUl9UWVBFX0dPT0dMRV9QTEFZX0dBTUVTEAMSGgoWUFJPVklERVJfVFlQRV9QQVNTV09SRBBjQlFaM2dpdGh1Yi5jb20vcXVhLXZpc2lvbi92aXNpb24tc2VydmVyL3BrZy9kb21haW4vZW51baoCGVZpc2lvbi5Db21tb24uUHJvdG8uRW51bXNiBnByb3RvMw");
 
 /**
  * @generated from enum enums.ProviderType
@@ -29,6 +29,11 @@ export enum ProviderType {
    * @generated from enum value: PROVIDER_TYPE_GOOGLE = 2;
    */
   GOOGLE = 2,
+
+  /**
+   * @generated from enum value: PROVIDER_TYPE_GOOGLE_PLAY_GAMES = 3;
+   */
+  GOOGLE_PLAY_GAMES = 3,
 
   /**
    * @generated from enum value: PROVIDER_TYPE_PASSWORD = 99;

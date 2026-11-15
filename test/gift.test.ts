@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import assert from "node:assert/strict";
 import { Buffer } from "node:buffer";
 import { test } from "vitest";
@@ -10,6 +11,11 @@ import {
   encodeVarintField,
 } from "../src/low-level.js";
 import {
+  GiftListHistoryResponseSchema,
+  GiftListResponseSchema,
+  GiftTopResponseSchema,
+} from "../src/protos/gen/rpc/api/gift.gen_pb.js";
+import {
   GIFT_LIST,
   GIFT_LIST_HISTORY,
   GIFT_TOP,
@@ -17,7 +23,6 @@ import {
   GiftSortType,
 } from "../src/services/gift.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
-import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("encodes Gift/List request fields and validates them", () => {
   const encoded = GIFT_LIST.encode({
@@ -73,16 +78,14 @@ void test("decodes every Gift/List business field", () => {
     encodeVarintField(7, 1_800_000_000_000n),
   );
   assert.deepEqual(
-    withoutTypeNames(
-      GIFT_LIST.decode(
-        encodeMessage(
-          encodeBytesField(1, gift),
-          encodeVarintField(2, 35),
-          encodeVarintField(3, 1),
-        ),
+    GIFT_LIST.decode(
+      encodeMessage(
+        encodeBytesField(1, gift),
+        encodeVarintField(2, 35),
+        encodeVarintField(3, 1),
       ),
     ),
-    {
+    create(GiftListResponseSchema, {
       items: [
         {
           giftId: "gift-1",
@@ -96,7 +99,7 @@ void test("decodes every Gift/List business field", () => {
       ],
       count: 35,
       isNext: true,
-    },
+    }),
   );
 });
 
@@ -141,25 +144,23 @@ void test("Gift Top and ListHistory use empty requests and decode nested account
   const bigQuantity = 9_007_199_254_740_993n;
   const openedTime = 1_900_000_000_000n;
   assert.deepEqual(
-    withoutTypeNames(
-      GIFT_TOP.decode(
-        encodeMessage(
-          encodeBytesField(
-            1,
-            encodeMessage(
-              encodeStringField(1, "gift-top"),
-              encodeVarintField(2, 4),
-              encodeStringField(3, "gem"),
-              encodeVarintField(4, bigQuantity),
-            ),
+    GIFT_TOP.decode(
+      encodeMessage(
+        encodeBytesField(
+          1,
+          encodeMessage(
+            encodeStringField(1, "gift-top"),
+            encodeVarintField(2, 4),
+            encodeStringField(3, "gem"),
+            encodeVarintField(4, bigQuantity),
           ),
-          encodeVarintField(2, 1),
-          encodeVarintField(3, 1),
-          encodeVarintField(4, 2),
         ),
+        encodeVarintField(2, 1),
+        encodeVarintField(3, 1),
+        encodeVarintField(4, 2),
       ),
     ),
-    {
+    create(GiftTopResponseSchema, {
       items: [
         {
           giftId: "gift-top",
@@ -174,26 +175,24 @@ void test("Gift Top and ListHistory use empty requests and decode nested account
       count: 1,
       isNext: true,
       unreadAnnouncementCount: 2,
-    },
+    }),
   );
   assert.deepEqual(
-    withoutTypeNames(
-      GIFT_LIST_HISTORY.decode(
-        encodeMessage(
-          encodeBytesField(
-            1,
-            encodeMessage(
-              encodeVarintField(1, 4),
-              encodeStringField(2, "gem"),
-              encodeVarintField(3, bigQuantity),
-              encodeStringField(4, "Opened gift"),
-              encodeVarintField(5, openedTime),
-            ),
+    GIFT_LIST_HISTORY.decode(
+      encodeMessage(
+        encodeBytesField(
+          1,
+          encodeMessage(
+            encodeVarintField(1, 4),
+            encodeStringField(2, "gem"),
+            encodeVarintField(3, bigQuantity),
+            encodeStringField(4, "Opened gift"),
+            encodeVarintField(5, openedTime),
           ),
         ),
       ),
     ),
-    {
+    create(GiftListHistoryResponseSchema, {
       items: [
         {
           resourceType: 4,
@@ -203,19 +202,22 @@ void test("Gift Top and ListHistory use empty requests and decode nested account
           openedTime,
         },
       ],
-    },
+    }),
   );
-  assert.deepEqual(withoutTypeNames(GIFT_TOP.decode(Buffer.alloc(0))), {
-    items: [],
-    count: 0,
-    isNext: false,
-    unreadAnnouncementCount: 0,
-  });
   assert.deepEqual(
-    withoutTypeNames(GIFT_LIST_HISTORY.decode(Buffer.alloc(0))),
-    {
+    GIFT_TOP.decode(Buffer.alloc(0)),
+    create(GiftTopResponseSchema, {
       items: [],
-    },
+      count: 0,
+      isNext: false,
+      unreadAnnouncementCount: 0,
+    }),
+  );
+  assert.deepEqual(
+    GIFT_LIST_HISTORY.decode(Buffer.alloc(0)),
+    create(GiftListHistoryResponseSchema, {
+      items: [],
+    }),
   );
 });
 

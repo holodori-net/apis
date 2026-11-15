@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import assert from "node:assert/strict";
 import { test } from "vitest";
 
@@ -6,12 +7,12 @@ import {
   encodeMessage,
   encodeStringField,
 } from "../src/low-level.js";
+import { MultiGameListPingServerResponseSchema } from "../src/protos/gen/rpc/api/multi_game.gen_pb.js";
 import {
   MULTI_GAME_LIST_PING_SERVER,
   MultiGameApi,
 } from "../src/services/multi-game.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
-import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("encodes an empty MultiGame/ListPingServer request", () => {
   assert.equal(MULTI_GAME_LIST_PING_SERVER.encode(undefined).length, 0);
@@ -23,12 +24,10 @@ void test("decodes all advertised ping server fields", () => {
     encodeStringField(2, "ping.example.invalid:443"),
   );
   assert.deepEqual(
-    withoutTypeNames(
-      MULTI_GAME_LIST_PING_SERVER.decode(encodeBytesField(1, server)),
-    ),
-    {
+    MULTI_GAME_LIST_PING_SERVER.decode(encodeBytesField(1, server)),
+    create(MultiGameListPingServerResponseSchema, {
       servers: [{ region: "jp", endpoint: "ping.example.invalid:443" }],
-    },
+    }),
   );
 });
 

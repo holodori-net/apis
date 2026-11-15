@@ -1,7 +1,9 @@
+import { create } from "@bufbuild/protobuf";
 import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import { encodeStringField, encodeVarintField } from "../src/low-level.js";
+import { HealthCheckResponseSchema } from "../src/protos/gen/rpc/api/health.gen_pb.js";
 import { HEALTH_CHECK, HealthApi } from "../src/services/health.js";
 
 void test("encodes health check service and decodes serving status", () => {
@@ -10,10 +12,10 @@ void test("encodes health check service and decodes serving status", () => {
     HEALTH_CHECK.encode("rpc.api.Home"),
     encodeStringField(1, "rpc.api.Home"),
   );
-  assert.deepEqual(HEALTH_CHECK.decode(encodeVarintField(1, 1)), {
-    $typeName: "rpc.api.HealthCheckResponse",
-    status: 1,
-  });
+  assert.deepEqual(
+    HEALTH_CHECK.decode(encodeVarintField(1, 1)),
+    create(HealthCheckResponseSchema, { status: 1 }),
+  );
 });
 
 void test("HealthApi checks service without auth, master version, cache, or signature", async () => {

@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import assert from "node:assert/strict";
 import { Buffer } from "node:buffer";
 import { test } from "vitest";
@@ -9,6 +10,12 @@ import {
   encodeStringField,
   encodeVarintField,
 } from "../src/low-level.js";
+import { GachaType } from "../src/protos/gen/enums/gacha_type.gen_pb.js";
+import {
+  GachaListHistoryResponseSchema,
+  GachaListNormalProbabilityResponseSchema,
+  GachaListResponseGachaGroupSchema,
+} from "../src/protos/gen/rpc/api/gacha.gen_pb.js";
 import {
   GACHA_LIST,
   GACHA_LIST_CARD_SELECT_PROBABILITY,
@@ -17,7 +24,6 @@ import {
   GachaApi,
 } from "../src/services/gacha.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
-import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("encodes probability requests with a required Gacha ID", () => {
   assert.equal(
@@ -65,7 +71,7 @@ void test("decodes Gacha list content and account-specific draw state", () => {
   );
   const gacha = encodeMessage(
     encodeStringField(1, "gacha-1"),
-    encodeVarintField(2, 3),
+    encodeVarintField(2, 1),
     encodeStringField(3, "Featured Gacha"),
     encodeVarintField(4, 1),
     encodeStringField(5, "condition-group"),
@@ -131,72 +137,83 @@ void test("decodes Gacha list content and account-specific draw state", () => {
     ),
   );
 
-  assert.deepEqual(withoutTypeNames(decoded.gachaGroups[0]), {
-    gachaGroupId: "group-1",
-    iconAssetId: "group-icon",
-    gachas: [
-      {
-        gachaId: "gacha-1",
-        type: 3,
-        name: "Featured Gacha",
-        isLocked: true,
-        unlockConditionGroupId: "condition-group",
-        startTime: 1_750_000_000_000n,
-        endTime: 1_750_100_000_000n,
-        detailNoticeId: "notice-1",
-        precaution: "Terms",
-        iconAssetId: "gacha-icon",
-        pickupCardIds: ["card-a"],
-        promotionPickupCardIds: ["card-b"],
-        promotionMovieAssetId: "movie",
-        promotionImageAssetId: "banner",
-        isDisplayPromotionPickupCardRandom: true,
-        gachaButtons: [
-          {
-            gachaButtonId: "button-1",
-            name: "Ten draw",
-            description: "Once per day",
-            isDisabled: true,
-            consumptions: [
-              { resourceType: 2, resourceId: "paid-gem", quantity: 300n },
-            ],
-            bonusRewards: [
-              { resourceType: 3, resourceId: "ticket", quantity: 1n },
-            ],
-            limitCount: 1,
-            resetIntervalType: 2,
-            totalRewardPickCount: 10,
-            fixedRewardPickCount: 1,
-            drawnCount: 1,
-            priority: 4,
+  assert.deepEqual(
+    decoded.gachaGroups[0],
+    create(GachaListResponseGachaGroupSchema, {
+      gachaGroupId: "group-1",
+      iconAssetId: "group-icon",
+      gachas: [
+        {
+          gachaId: "gacha-1",
+          type: GachaType.NORMAL,
+          name: "Featured Gacha",
+          isLocked: true,
+          unlockConditionGroupId: "condition-group",
+          startTime: 1_750_000_000_000n,
+          endTime: 1_750_100_000_000n,
+          detailNoticeId: "notice-1",
+          precaution: "Terms",
+          iconAssetId: "gacha-icon",
+          pickupCardIds: ["card-a"],
+          promotionPickupCardIds: ["card-b"],
+          promotionMovieAssetId: "movie",
+          promotionImageAssetId: "banner",
+          isDisplayPromotionPickupCardRandom: true,
+          gachaButtons: [
+            {
+              gachaButtonId: "button-1",
+              name: "Ten draw",
+              description: "Once per day",
+              isDisabled: true,
+              consumptions: [
+                { resourceType: 2, resourceId: "paid-gem", quantity: 300n },
+              ],
+              bonusRewards: [
+                { resourceType: 3, resourceId: "ticket", quantity: 1n },
+              ],
+              limitCount: 1,
+              resetIntervalType: 2,
+              totalRewardPickCount: 10,
+              fixedRewardPickCount: 1,
+              drawnCount: 1,
+              priority: 4,
+            },
+          ],
+          gachaPoint: { gachaPointId: "point-1", quantity: 30 },
+          cardBonuses: [
+            {
+              cardId: "card-a",
+              rewards: [{ resourceType: 1, resourceId: "coin", quantity: 5n }],
+            },
+          ],
+          cardSelect: {
+            selectableCardIds: ["card-c"],
+            selectableCardQuantity: 1,
+            selectedCardIds: ["card-c"],
           },
-        ],
-        gachaPoint: { gachaPointId: "point-1", quantity: 30 },
-        cardBonuses: [
-          {
-            cardId: "card-a",
-            rewards: [{ resourceType: 1, resourceId: "coin", quantity: 5n }],
-          },
-        ],
-        cardSelect: {
-          selectableCardIds: ["card-c"],
-          selectableCardQuantity: 1,
-          selectedCardIds: ["card-c"],
+          isEndTimeHidden: true,
+          gachaAnimationGroupingId: "animation-group",
+          gachaAnimationMovieGroupId: "movie-group",
+          gachaAnimationAssetId: "animation",
+          readTime: 1_750_000_100_000n,
+          bgmAssetId: "bgm",
+          isPromotionPickupCardMovie: true,
+          fixedSlotName: "slot",
+          promotionText: "Promotion",
+          promotionSubText: "Subtext",
+          termLimitedHours: 24,
         },
-        isEndTimeHidden: true,
-        gachaAnimationGroupingId: "animation-group",
-        gachaAnimationMovieGroupId: "movie-group",
-        gachaAnimationAssetId: "animation",
-        readTime: 1_750_000_100_000n,
-        bgmAssetId: "bgm",
-        isPromotionPickupCardMovie: true,
-        fixedSlotName: "slot",
-        promotionText: "Promotion",
-        promotionSubText: "Subtext",
-        termLimitedHours: 24,
-      },
-    ],
-  });
+      ],
+    }),
+  );
+});
+
+void test("preserves unknown enum values in Gacha list responses", () => {
+  const gacha = encodeVarintField(2, 12345);
+  const group = encodeBytesField(3, gacha);
+  const response = GACHA_LIST.decode(encodeBytesField(1, group));
+
+  assert.equal(response.gachaGroups[0]?.gachas[0]?.type, 12345);
 });
 
 void test("decodes probability values as exact integer parts per ten million", () => {
@@ -211,15 +228,13 @@ void test("decodes probability values as exact integer parts per ten million", (
     encodeBytesField(3, cardProbability),
   );
   assert.deepEqual(
-    withoutTypeNames(
-      GACHA_LIST_NORMAL_PROBABILITY.decode(
-        encodeMessage(
-          encodeBytesField(1, rarityProbability),
-          encodeBytesField(2, rarityProbability),
-        ),
+    GACHA_LIST_NORMAL_PROBABILITY.decode(
+      encodeMessage(
+        encodeBytesField(1, rarityProbability),
+        encodeBytesField(2, rarityProbability),
       ),
     ),
-    {
+    create(GachaListNormalProbabilityResponseSchema, {
       normalRarityProbabilities: [
         {
           rarity: 5,
@@ -246,7 +261,7 @@ void test("decodes probability values as exact integer parts per ten million", (
           ],
         },
       ],
-    },
+    }),
   );
 });
 
@@ -254,27 +269,25 @@ void test("Gacha ListHistory uses an empty request and decodes nested int64 hist
   assert.deepEqual([...GACHA_LIST_HISTORY.encode(undefined)], []);
   const drawTime = 9_007_199_254_740_993n;
   assert.deepEqual(
-    withoutTypeNames(
-      GACHA_LIST_HISTORY.decode(
-        encodeMessage(
-          encodeBytesField(
-            1,
-            encodeMessage(
-              encodeStringField(1, "Featured Gacha"),
-              encodeStringField(2, "card-1"),
-              encodeVarintField(3, drawTime),
-            ),
+    GACHA_LIST_HISTORY.decode(
+      encodeMessage(
+        encodeBytesField(
+          1,
+          encodeMessage(
+            encodeStringField(1, "Featured Gacha"),
+            encodeStringField(2, "card-1"),
+            encodeVarintField(3, drawTime),
           ),
         ),
       ),
     ),
-    {
+    create(GachaListHistoryResponseSchema, {
       histories: [{ gachaName: "Featured Gacha", cardId: "card-1", drawTime }],
-    },
+    }),
   );
   assert.deepEqual(
-    withoutTypeNames(GACHA_LIST_HISTORY.decode(Buffer.alloc(0))),
-    { histories: [] },
+    GACHA_LIST_HISTORY.decode(Buffer.alloc(0)),
+    create(GachaListHistoryResponseSchema, { histories: [] }),
   );
 });
 

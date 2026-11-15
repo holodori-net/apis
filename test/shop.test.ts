@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import assert from "node:assert/strict";
 import { test } from "vitest";
 
@@ -8,9 +9,10 @@ import {
   encodeVarint,
   encodeVarintField,
 } from "../src/low-level.js";
+import { Shop_ChargeItemSchema } from "../src/protos/gen/rpc/api/common/shop.gen_pb.js";
+import { ShopListResponseSchema } from "../src/protos/gen/rpc/api/shop.gen_pb.js";
 import { SHOP_LIST, ShopApi } from "../src/services/shop.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
-import { withoutTypeNames } from "./support/without-type-names.js";
 
 const shop = encodeMessage(
   encodeStringField(1, "shop-main"),
@@ -73,8 +75,8 @@ void test("encodes an empty Shop/List request", () => {
 
 void test("decodes shop catalogue fields and int64 values", () => {
   assert.deepEqual(
-    withoutTypeNames(SHOP_LIST.decode(encodeBytesField(1, shop))),
-    {
+    SHOP_LIST.decode(encodeBytesField(1, shop)),
+    create(ShopListResponseSchema, {
       shops: [
         {
           id: "shop-main",
@@ -124,7 +126,7 @@ void test("decodes shop catalogue fields and int64 values", () => {
           displayPossessionResourceIds: ["stone-paid"],
         },
       ],
-    },
+    }),
   );
 });
 
@@ -174,31 +176,34 @@ void test("decodes charge item products, rewards, and account purchase state", (
   );
 
   const item = SHOP_LIST.decode(response).shops[0]?.items[0]?.chargeItem;
-  assert.deepEqual(withoutTypeNames(item), {
-    id: "stone-pack",
-    type: 1,
-    consumable: {
-      name: "Stone pack",
-      providePaidStoneQuantity: 500,
-      rewards: [{ resourceType: 1001, resourceId: "stone", quantity: 2500n }],
-      isUnlocked: true,
-      unlockConditionGroupId: "",
-      endTime: 0n,
-      resetIntervalType: 0,
-      nextResetTime: 0n,
-      limitCount: 5,
-      purchasedCount: 2,
-      assetId: "",
-      lastResetTime: 0n,
-      isBackgroundSpecial: false,
-      color: "",
-      isNew: false,
-      appleIapProductId: "apple.product",
-      googleIapProductId: "google.product",
-      steamMtxProductId: "steam.product",
-      steamPrice: "12.34",
-    },
-  });
+  assert.deepEqual(
+    item,
+    create(Shop_ChargeItemSchema, {
+      id: "stone-pack",
+      type: 1,
+      consumable: {
+        name: "Stone pack",
+        providePaidStoneQuantity: 500,
+        rewards: [{ resourceType: 1001, resourceId: "stone", quantity: 2500n }],
+        isUnlocked: true,
+        unlockConditionGroupId: "",
+        endTime: 0n,
+        resetIntervalType: 0,
+        nextResetTime: 0n,
+        limitCount: 5,
+        purchasedCount: 2,
+        assetId: "",
+        lastResetTime: 0n,
+        isBackgroundSpecial: false,
+        color: "",
+        isNew: false,
+        appleIapProductId: "apple.product",
+        googleIapProductId: "google.product",
+        steamMtxProductId: "steam.product",
+        steamPrice: "12.34",
+      },
+    }),
+  );
 });
 
 void test("Shop/List authenticates lazily and declares read policies", async () => {

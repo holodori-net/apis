@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import assert from "node:assert/strict";
 import { test } from "vitest";
 
@@ -7,12 +8,12 @@ import {
   encodeStringField,
   encodeVarintField,
 } from "../src/low-level.js";
+import { ComboCardGameListUserInfoResponseSchema } from "../src/protos/gen/rpc/api/combo_card_game.gen_pb.js";
 import {
   COMBO_CARD_GAME_LIST_USER_INFO,
   ComboCardGameApi,
 } from "../src/services/combo-card-game.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
-import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("encodes public user IDs and optional private room ID", () => {
   assert.deepEqual(
@@ -59,12 +60,10 @@ void test("decodes basic user info, average rank percent, and bigint chip differ
   );
 
   assert.deepEqual(
-    withoutTypeNames(
-      COMBO_CARD_GAME_LIST_USER_INFO.decode(
-        encodeMessage(encodeBytesField(1, userInfo)),
-      ),
+    COMBO_CARD_GAME_LIST_USER_INFO.decode(
+      encodeMessage(encodeBytesField(1, userInfo)),
     ),
-    {
+    create(ComboCardGameListUserInfoResponseSchema, {
       comboCardGameUserInfos: [
         {
           basicUserInfo: {
@@ -95,7 +94,7 @@ void test("decodes basic user info, average rank percent, and bigint chip differ
           comboCardGameChipDiffTotalQuantity: 9_007_199_254_740_993n,
         },
       ],
-    },
+    }),
   );
 });
 

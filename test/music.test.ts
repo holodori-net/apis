@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import assert from "node:assert/strict";
 import { test } from "vitest";
 
@@ -8,6 +9,7 @@ import {
   encodeStringField,
   encodeVarintField,
 } from "../src/low-level.js";
+import { MusicListHighestScoreRatingRankingRankResponse_RankInfoSchema } from "../src/protos/gen/rpc/api/music.gen_pb.js";
 import {
   MUSIC_GET_HIGHEST_SCORE_LIVE_DECK,
   MUSIC_GET_HIGHEST_SCORE_RANKING_INFO,
@@ -209,12 +211,10 @@ void test("decodes Music ranking responses and shared ranking structures", () =>
     ),
   );
   assert.deepEqual(characterRanks.rankInfos, [
-    {
-      $typeName:
-        "rpc.api.MusicListHighestScoreRatingRankingRankResponse.RankInfo",
+    create(MusicListHighestScoreRatingRankingRankResponse_RankInfoSchema, {
       rank: 20,
       characterId: "character-1",
-    },
+    }),
   ]);
 
   const thresholds =

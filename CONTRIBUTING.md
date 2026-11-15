@@ -23,10 +23,31 @@ pnpm protos:check
 
 The `Sync protobuf contracts` workflow runs when `android-protos` publishes a
 new descriptor. It also supports manual runs with an optional `source_ref`.
+The workflow syncs the descriptor and source metadata, regenerates TypeScript
+contracts, and runs `pnpm validate` before creating or updating the sync PR.
+The PR must be merged separately; a successful upstream notification does not
+mean the contract has reached `main`. New high-level service methods and their
+request policies are implemented separately from generated messages.
 
 Generated files under `src/protos/gen/` must not be edited directly. Add a new
 API descriptor root to `scripts/generate-protos.mjs` when implementing a domain
 that is not already generated.
+
+### Contract tests
+
+Compare decoded wire fixtures with `create(ResponseSchema, expectedValues)`
+from `@bufbuild/protobuf`. The generated schema supplies message type names
+and default fields, including nested defaults, so compatible field additions
+do not require editing unrelated test expectations. Keep full deep equality
+to check values, array length and order, optional message presence, and
+unexpected unknown fields.
+
+Keep populated wire fixtures independent of the generated encoder: write the
+field numbers and expected values explicitly. A field-number or value change
+must still fail rather than having the encoder and decoder agree on the same
+mistake. Test omitted fields and unknown-field preservation separately where
+those behaviors matter. Do not update fixtures automatically to hide a failed
+assertion.
 
 ## API documentation
 

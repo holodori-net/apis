@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import assert from "node:assert/strict";
 import { test } from "vitest";
 
@@ -7,12 +8,12 @@ import {
   encodeStringField,
   encodeVarintField,
 } from "../src/low-level.js";
+import { ParkPermanenceListCharacterShopItemResponseSchema } from "../src/protos/gen/rpc/api/park_permanence.gen_pb.js";
 import {
   PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM,
   ParkPermanenceApi,
 } from "../src/services/park-permanence.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
-import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("encodes the complete Park permanence common request parameter", () => {
   const request = encodeMessage(
@@ -76,8 +77,8 @@ void test("decodes the full character shop response including collection state",
   );
 
   assert.deepEqual(
-    withoutTypeNames(PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM.decode(response)),
-    {
+    PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM.decode(response),
+    create(ParkPermanenceListCharacterShopItemResponseSchema, {
       shopName: "Character Shop",
       consumption: {
         resourceType: 4,
@@ -115,22 +116,20 @@ void test("decodes the full character shop response including collection state",
           assetId: "asset-001",
         },
       ],
-    },
+    }),
   );
 });
 
 void test("preserves absent optional nested fields and empty repeated fields", () => {
   assert.deepEqual(
-    withoutTypeNames(
-      PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM.decode(
-        encodeBytesField(3, encodeMessage(encodeVarintField(2, 0))),
-      ),
+    PARK_PERMANENCE_LIST_CHARACTER_SHOP_ITEM.decode(
+      encodeBytesField(3, encodeMessage(encodeVarintField(2, 0))),
     ),
-    {
+    create(ParkPermanenceListCharacterShopItemResponseSchema, {
       shopName: "",
       itemInfos: [{ isCollected: false }],
       pickedItems: [],
-    },
+    }),
   );
 });
 

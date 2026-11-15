@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import assert from "node:assert/strict";
 import { test } from "vitest";
 
@@ -8,9 +9,9 @@ import {
   encodeStringField,
   encodeVarintField,
 } from "../src/low-level.js";
+import { ExchangeListResponseSchema } from "../src/protos/gen/rpc/api/exchange.gen_pb.js";
 import { EXCHANGE_LIST, ExchangeApi } from "../src/services/exchange.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
-import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("encodes Exchange/List booth group ID", () => {
   assert.equal(
@@ -91,58 +92,63 @@ void test("decodes booth items, costs, rewards, schedules, and int64 values", ()
     encodeStringField(103, "#4"),
   );
 
-  assert.deepEqual(withoutTypeNames(EXCHANGE_LIST.decode(response)), {
-    id: "membership-group",
-    name: "Membership Exchange",
-    booths: [
-      {
-        id: "booth-1",
-        name: "Main",
-        boothType: 2,
-        items: [
-          {
-            boothItemType: 2,
-            boothItemId: "item-1",
-            name: "Card",
-            thumbnailAssetId: "thumb-1",
-            limitQuantity: 10,
-            purchasedQuantity: 2,
-            consumptions: [
-              {
-                resourceType: 3,
-                resourceId: "coin-1",
-                quantity: 3_000_000_000n,
-                originalQuantity: 4_000_000_000n,
-                discountRatioPermil: 250,
-              },
-            ],
-            rewards: [{ resourceType: 2, resourceId: "card-1", quantity: 1n }],
-            nextResetTime: 9_000_000_000n,
-            endTime: 8_000_000_000n,
-            isLocked: true,
-            unlockConditionGroupId: "condition-group",
-            description: "Exchange description",
-            resetIntervalType: 2,
-            releaseTime: 7_000_000_000n,
-          },
-        ],
-        nextResetTime: 6_000_000_000n,
-        endTime: 5_000_000_000n,
-        isLocked: true,
-        unlockConditionGroupId: "booth-condition",
-      },
-    ],
-    backgroundAssetId: "background",
-    headerAssetId: "header",
-    logoAssetId: "logo",
-    pegboardColor: "#123456",
-    hookColor: "#654321",
-    iconAssetId: "icon",
-    color1: "#1",
-    color2: "#2",
-    color3: "#3",
-    color4: "#4",
-  });
+  assert.deepEqual(
+    EXCHANGE_LIST.decode(response),
+    create(ExchangeListResponseSchema, {
+      id: "membership-group",
+      name: "Membership Exchange",
+      booths: [
+        {
+          id: "booth-1",
+          name: "Main",
+          boothType: 2,
+          items: [
+            {
+              boothItemType: 2,
+              boothItemId: "item-1",
+              name: "Card",
+              thumbnailAssetId: "thumb-1",
+              limitQuantity: 10,
+              purchasedQuantity: 2,
+              consumptions: [
+                {
+                  resourceType: 3,
+                  resourceId: "coin-1",
+                  quantity: 3_000_000_000n,
+                  originalQuantity: 4_000_000_000n,
+                  discountRatioPermil: 250,
+                },
+              ],
+              rewards: [
+                { resourceType: 2, resourceId: "card-1", quantity: 1n },
+              ],
+              nextResetTime: 9_000_000_000n,
+              endTime: 8_000_000_000n,
+              isLocked: true,
+              unlockConditionGroupId: "condition-group",
+              description: "Exchange description",
+              resetIntervalType: 2,
+              releaseTime: 7_000_000_000n,
+            },
+          ],
+          nextResetTime: 6_000_000_000n,
+          endTime: 5_000_000_000n,
+          isLocked: true,
+          unlockConditionGroupId: "booth-condition",
+        },
+      ],
+      backgroundAssetId: "background",
+      headerAssetId: "header",
+      logoAssetId: "logo",
+      pegboardColor: "#123456",
+      hookColor: "#654321",
+      iconAssetId: "icon",
+      color1: "#1",
+      color2: "#2",
+      color3: "#3",
+      color4: "#4",
+    }),
+  );
 });
 
 void test("ExchangeApi authenticates lazily and declares read policies", async () => {

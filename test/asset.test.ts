@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import assert from "node:assert/strict";
 import { test } from "vitest";
 
@@ -6,12 +7,12 @@ import {
   encodeMessage,
   encodeStringField,
 } from "../src/low-level.js";
+import { AssetListExpiredAssetIdResponseSchema } from "../src/protos/gen/rpc/api/asset.gen_pb.js";
 import {
   ASSET_LIST_EXPIRED_ASSET_ID,
   AssetApi,
 } from "../src/services/asset.js";
 import { authenticatedCaller } from "./support/authenticated-caller.js";
-import { withoutTypeNames } from "./support/without-type-names.js";
 
 void test("decodes feature-specific expired asset IDs", () => {
   const response = encodeMessage(
@@ -63,8 +64,8 @@ void test("decodes feature-specific expired asset IDs", () => {
   );
 
   assert.deepEqual(
-    withoutTypeNames(ASSET_LIST_EXPIRED_ASSET_ID.decode(response)),
-    {
+    ASSET_LIST_EXPIRED_ASSET_ID.decode(response),
+    create(AssetListExpiredAssetIdResponseSchema, {
       homeBanner: { assetIds: ["home-old", "home-unused"] },
       parkBanner: { assetIds: ["park-old"] },
       event: {
@@ -89,7 +90,7 @@ void test("decodes feature-specific expired asset IDs", () => {
         bgmAssetIds: ["gacha-bgm-old"],
         gachaAnimationAssetIds: ["gacha-animation-old"],
       },
-    },
+    }),
   );
 });
 
