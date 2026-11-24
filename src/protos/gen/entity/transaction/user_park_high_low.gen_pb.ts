@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file entity/transaction/user_park_high_low.gen.proto.
  */
 export const file_entity_transaction_user_park_high_low_gen: GenFile = /*@__PURE__*/
-  fileDesc("Ci9lbnRpdHkvdHJhbnNhY3Rpb24vdXNlcl9wYXJrX2hpZ2hfbG93Lmdlbi5wcm90bxISZW50aXR5LnRyYW5zYWN0aW9uIjAKD1VzZXJQYXJrSGlnaExvdxIdChVkYWlseV9yZXdhcmRfcXVhbnRpdHkYAyABKANCWlo2Z2l0aHViLmNvbS9xdWEtdmlzaW9uL3Zpc2lvbi1zZXJ2ZXIvcGtnL3BiL3RyYW5zYWN0aW9uqgIfVmlzaW9uLkNvbW1vbi5Qcm90by5UcmFuc2FjdGlvbmIGcHJvdG8z");
+  fileDesc("Ci9lbnRpdHkvdHJhbnNhY3Rpb24vdXNlcl9wYXJrX2hpZ2hfbG93Lmdlbi5wcm90bxISZW50aXR5LnRyYW5zYWN0aW9uIkkKD1VzZXJQYXJrSGlnaExvdxIdChVkYWlseV9yZXdhcmRfcXVhbnRpdHkYAyABKAMSFwoPbGFzdF9jbGVhcl90aW1lGAQgASgDQlpaNmdpdGh1Yi5jb20vcXVhLXZpc2lvbi92aXNpb24tc2VydmVyL3BrZy9wYi90cmFuc2FjdGlvbqoCH1Zpc2lvbi5Db21tb24uUHJvdG8uVHJhbnNhY3Rpb25iBnByb3RvMw");
 
 /**
  * @generated from message entity.transaction.UserParkHighLow
@@ -20,6 +20,11 @@ export type UserParkHighLow = Message<"entity.transaction.UserParkHighLow"> & {
    * @generated from field: int64 daily_reward_quantity = 3;
    */
   dailyRewardQuantity: bigint;
+
+  /**
+   * @generated from field: int64 last_clear_time = 4;
+   */
+  lastClearTime: bigint;
 };
 
 /**

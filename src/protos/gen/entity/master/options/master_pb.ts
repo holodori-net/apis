@@ -11,7 +11,7 @@ import { file_google_protobuf_descriptor } from "../../../google/protobuf/descri
  * Describes the file entity/master/options/master.proto.
  */
 export const file_entity_master_options_master: GenFile = /*@__PURE__*/
-  fileDesc("CiJlbnRpdHkvbWFzdGVyL29wdGlvbnMvbWFzdGVyLnByb3RvEg5vcHRpb25zLm1hc3Rlcjo3CgV0YWJsZRIfLmdvb2dsZS5wcm90b2J1Zi5NZXNzYWdlT3B0aW9ucxjCjgMgASgIUgV0YWJsZTovCgJwaxIdLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE9wdGlvbnMYwo4DIAEoCFICcGs6LwoCZmsSHS5nb29nbGUucHJvdG9idWYuRmllbGRPcHRpb25zGMOOAyABKAlSAmZrOjsKCG9wdGlvbmFsEh0uZ29vZ2xlLnByb3RvYnVmLkZpZWxkT3B0aW9ucxjEjgMgASgIUghvcHRpb25hbDo3CgZjb2x1bW4SHS5nb29nbGUucHJvdG9idWYuRmllbGRPcHRpb25zGMWOAyABKAhSBmNvbHVtbjo1CgVpbmRleBIdLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE9wdGlvbnMYxo4DIAEoCFIFaW5kZXhCYFo5Z2l0aHViLmNvbS9xdWEtdmlzaW9uL3Zpc2lvbi1zZXJ2ZXIvcGtnL3BiL21hc3Rlci9vcHRpb25zqgIiVmlzaW9uLkNvbW1vbi5Qcm90by5NYXN0ZXIuT3B0aW9uc2IGcHJvdG8z", [file_google_protobuf_descriptor]);
+  fileDesc("CiJlbnRpdHkvbWFzdGVyL29wdGlvbnMvbWFzdGVyLnByb3RvEg5vcHRpb25zLm1hc3Rlcjo3CgV0YWJsZRIfLmdvb2dsZS5wcm90b2J1Zi5NZXNzYWdlT3B0aW9ucxjCjgMgASgIUgV0YWJsZTo7CgdpbmRleGVzEh8uZ29vZ2xlLnByb3RvYnVmLk1lc3NhZ2VPcHRpb25zGMOOAyADKAlSB2luZGV4ZXM6LwoCcGsSHS5nb29nbGUucHJvdG9idWYuRmllbGRPcHRpb25zGMKOAyABKAhSAnBrOi8KAmZrEh0uZ29vZ2xlLnByb3RvYnVmLkZpZWxkT3B0aW9ucxjDjgMgASgJUgJmazo7CghvcHRpb25hbBIdLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE9wdGlvbnMYxI4DIAEoCFIIb3B0aW9uYWw6NwoGY29sdW1uEh0uZ29vZ2xlLnByb3RvYnVmLkZpZWxkT3B0aW9ucxjFjgMgASgIUgZjb2x1bW46NQoFaW5kZXgSHS5nb29nbGUucHJvdG9idWYuRmllbGRPcHRpb25zGMaOAyABKAhSBWluZGV4QmBaOWdpdGh1Yi5jb20vcXVhLXZpc2lvbi92aXNpb24tc2VydmVyL3BrZy9wYi9tYXN0ZXIvb3B0aW9uc6oCIlZpc2lvbi5Db21tb24uUHJvdG8uTWFzdGVyLk9wdGlvbnNiBnByb3RvMw", [file_google_protobuf_descriptor]);
 
 /**
  * @generated from extension: bool table = 51010;
@@ -20,31 +20,37 @@ export const table: GenExtension<MessageOptions, boolean> = /*@__PURE__*/
   extDesc(file_entity_master_options_master, 0);
 
 /**
+ * @generated from extension: repeated string indexes = 51011;
+ */
+export const indexes: GenExtension<MessageOptions, string[]> = /*@__PURE__*/
+  extDesc(file_entity_master_options_master, 1);
+
+/**
  * @generated from extension: bool pk = 51010;
  */
 export const pk: GenExtension<FieldOptions, boolean> = /*@__PURE__*/
-  extDesc(file_entity_master_options_master, 1);
+  extDesc(file_entity_master_options_master, 2);
 
 /**
  * @generated from extension: string fk = 51011;
  */
 export const fk: GenExtension<FieldOptions, string> = /*@__PURE__*/
-  extDesc(file_entity_master_options_master, 2);
+  extDesc(file_entity_master_options_master, 3);
 
 /**
  * @generated from extension: bool optional = 51012;
  */
 export const optional: GenExtension<FieldOptions, boolean> = /*@__PURE__*/
-  extDesc(file_entity_master_options_master, 3);
+  extDesc(file_entity_master_options_master, 4);
 
 /**
  * @generated from extension: bool column = 51013;
  */
 export const column: GenExtension<FieldOptions, boolean> = /*@__PURE__*/
-  extDesc(file_entity_master_options_master, 4);
+  extDesc(file_entity_master_options_master, 5);
 
 /**
  * @generated from extension: bool index = 51014;
  */
 export const index: GenExtension<FieldOptions, boolean> = /*@__PURE__*/
-  extDesc(file_entity_master_options_master, 5);
+  extDesc(file_entity_master_options_master, 6);

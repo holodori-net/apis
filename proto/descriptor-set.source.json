@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "repository": "holodori-net/android-protos",
-  "commit": "9fc9d4bb22ae201f503568d40d864df480b4b8e3",
-  "versionName": "1.2.101",
-  "versionCode": 1793072585,
-  "sha256": "deb048bedf79ad78b65e923b5ed2536c200f777afb1768844f63459a0be92c8d"
+  "commit": "f806c25702c4b45b6f297cd621d159cfdaa6f6de",
+  "versionName": "1.3.0",
+  "versionCode": 1794558081,
+  "sha256": "239dd4f1684e3b2802bdb028dd1d65f729fe8d963f359615cb31b9918289281a"
 }

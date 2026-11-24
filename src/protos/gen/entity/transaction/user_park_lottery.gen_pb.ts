@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file entity/transaction/user_park_lottery.gen.proto.
  */
 export const file_entity_transaction_user_park_lottery_gen: GenFile = /*@__PURE__*/
-  fileDesc("Ci5lbnRpdHkvdHJhbnNhY3Rpb24vdXNlcl9wYXJrX2xvdHRlcnkuZ2VuLnByb3RvEhJlbnRpdHkudHJhbnNhY3Rpb24iXAoPVXNlclBhcmtMb3R0ZXJ5Ei8KD3BhcmtfbG90dGVyeV9pZBgCIAEoCUIWmvQYDlBhcmtMb3R0ZXJ5OmlksPUYARIYChBkYWlseV9kcmF3X2NvdW50GAMgASgFQlpaNmdpdGh1Yi5jb20vcXVhLXZpc2lvbi92aXNpb24tc2VydmVyL3BrZy9wYi90cmFuc2FjdGlvbqoCH1Zpc2lvbi5Db21tb24uUHJvdG8uVHJhbnNhY3Rpb25iBnByb3RvMw", [file_entity_master_options_master, file_entity_transaction_options_transaction]);
+  fileDesc("Ci5lbnRpdHkvdHJhbnNhY3Rpb24vdXNlcl9wYXJrX2xvdHRlcnkuZ2VuLnByb3RvEhJlbnRpdHkudHJhbnNhY3Rpb24idAoPVXNlclBhcmtMb3R0ZXJ5Ei8KD3BhcmtfbG90dGVyeV9pZBgCIAEoCUIWmvQYDlBhcmtMb3R0ZXJ5OmlksPUYARIYChBkYWlseV9kcmF3X2NvdW50GAMgASgFEhYKDmxhc3RfZHJhd190aW1lGAQgASgDQlpaNmdpdGh1Yi5jb20vcXVhLXZpc2lvbi92aXNpb24tc2VydmVyL3BrZy9wYi90cmFuc2FjdGlvbqoCH1Zpc2lvbi5Db21tb24uUHJvdG8uVHJhbnNhY3Rpb25iBnByb3RvMw", [file_entity_master_options_master, file_entity_transaction_options_transaction]);
 
 /**
  * @generated from message entity.transaction.UserParkLottery
@@ -27,6 +27,11 @@ export type UserParkLottery = Message<"entity.transaction.UserParkLottery"> & {
    * @generated from field: int32 daily_draw_count = 3;
    */
   dailyDrawCount: number;
+
+  /**
+   * @generated from field: int64 last_draw_time = 4;
+   */
+  lastDrawTime: bigint;
 };
 
 /**
