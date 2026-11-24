@@ -18,7 +18,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file rpc/api/card.gen.proto.
  */
 export const file_rpc_api_card_gen: GenFile = /*@__PURE__*/
-  fileDesc("ChZycGMvYXBpL2NhcmQuZ2VuLnByb3RvEgdycGMuYXBpIjMKF0NhcmRHZXRQYXJhbWV0ZXJSZXF1ZXN0EhgKB2NhcmRfaWQYASABKAlCB7pIBHICIAEimAMKGENhcmRHZXRQYXJhbWV0ZXJSZXNwb25zZRIRCglwYXJhbWV0ZXIYASABKAMSEwoLcGVyZm9ybWFuY2UYAiABKAMSEQoJdGVjaG5pcXVlGAMgASgDEg0KBXNlbnNlGAQgASgDEkwKEXNraWxsX3RyZWVfZWZmZWN0GAUgASgLMjEucnBjLmFwaS5DYXJkR2V0UGFyYW1ldGVyUmVzcG9uc2UuU2tpbGxUcmVlRWZmZWN0EjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZRqvAQoPU2tpbGxUcmVlRWZmZWN0EhYKDnBlcmZvcm1hbmNlX3VwGAEgASgFEiAKGHBlcmZvcm1hbmNlX3VwX3Blcm1pbF91cBgCIAEoAhIUCgx0ZWNobmlxdWVfdXAYAyABKAUSHgoWdGVjaG5pcXVlX3VwX3Blcm1pbF91cBgEIAEoAhIQCghzZW5zZV91cBgFIAEoBRIaChJzZW5zZV91cF9wZXJtaWxfdXAYBiABKAIiygIKGUNhcmRHZXRQYXJhbWV0ZXJzUmVzcG9uc2USSQoPcGFyYW1ldGVyX2luZm9zGAEgAygLMjAucnBjLmFwaS5DYXJkR2V0UGFyYW1ldGVyc1Jlc3BvbnNlLlBhcmFtZXRlckluZm8SNQotbGl2ZV9kZWNrX3Bvd2VyX3Blcm15cmlhZF91cF9ieV9jYXJkX2xldmVsX3VwGAIgASgFEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZRp3Cg1QYXJhbWV0ZXJJbmZvEhwKB2NhcmRfaWQYASABKAlCC5r0GAdDYXJkOmlkEhEKCXBhcmFtZXRlchgCIAEoAxITCgtwZXJmb3JtYW5jZRgDIAEoAxIRCgl0ZWNobmlxdWUYBCABKAMSDQoFc2Vuc2UYBSABKAMiTAoSQ2FyZExldmVsVXBSZXF1ZXN0EhgKB2NhcmRfaWQYASABKAlCB7pIBHICIAESHAoLYWZ0ZXJfbGV2ZWwYAiABKAVCB7pIBBoCKAEiZgoaQ2FyZExldmVsTGltaXRCcmVha1JlcXVlc3QSGAoHY2FyZF9pZBgBIAEoCUIHukgEcgIgARIuCh1hZnRlcl9sZXZlbF9saW1pdF9icmVha19jb3VudBgCIAEoBUIHukgEGgIoASJnChtDYXJkVXBncmFkZVBvdGVudGlhbFJlcXVlc3QSGAoHY2FyZF9pZBgBIAEoCUIHukgEcgIgARIuCh1hZnRlcl9wb3RlbnRpYWxfdXBncmFkZV9jb3VudBgCIAEoBUIHukgEGgIoASJJChNDYXJkTGV2ZWxVcFJlc3BvbnNlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSJRChtDYXJkTGV2ZWxMaW1pdEJyZWFrUmVzcG9uc2USMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlIlIKHENhcmRVcGdyYWRlUG90ZW50aWFsUmVzcG9uc2USMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlMusECgRDYXJkEngKDEdldFBhcmFtZXRlchIgLnJwYy5hcGkuQ2FyZEdldFBhcmFtZXRlclJlcXVlc3QaIS5ycGMuYXBpLkNhcmRHZXRQYXJhbWV0ZXJSZXNwb25zZSIjwvMYAhgBgtPkkwIXIhIvQ2FyZC9HZXRQYXJhbWV0ZXI6ASoScQoNR2V0UGFyYW1ldGVycxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoiLnJwYy5hcGkuQ2FyZEdldFBhcmFtZXRlcnNSZXNwb25zZSIkwvMYAhgBgtPkkwIYIhMvQ2FyZC9HZXRQYXJhbWV0ZXJzOgEqEmQKB0xldmVsVXASGy5ycGMuYXBpLkNhcmRMZXZlbFVwUmVxdWVzdBocLnJwYy5hcGkuQ2FyZExldmVsVXBSZXNwb25zZSIewvMYAhgBgtPkkwISIg0vQ2FyZC9MZXZlbFVwOgEqEoQBCg9MZXZlbExpbWl0QnJlYWsSIy5ycGMuYXBpLkNhcmRMZXZlbExpbWl0QnJlYWtSZXF1ZXN0GiQucnBjLmFwaS5DYXJkTGV2ZWxMaW1pdEJyZWFrUmVzcG9uc2UiJsLzGAIYAYLT5JMCGiIVL0NhcmQvTGV2ZWxMaW1pdEJyZWFrOgEqEogBChBVcGdyYWRlUG90ZW50aWFsEiQucnBjLmFwaS5DYXJkVXBncmFkZVBvdGVudGlhbFJlcXVlc3QaJS5ycGMuYXBpLkNhcmRVcGdyYWRlUG90ZW50aWFsUmVzcG9uc2UiJ8LzGAIYAYLT5JMCGyIWL0NhcmQvVXBncmFkZVBvdGVudGlhbDoBKkJOWjJnaXRodWIuY29tL3F1YS12aXNpb24vdmlzaW9uLXNlcnZlci9wa2cvcGIvcnBjL2FwaaoCF1Zpc2lvbi5Db21tb24uUHJvdG8uQXBpYgZwcm90bzM", [file_buf_validate_validate, file_entity_master_options_master, file_google_api_annotations, file_google_protobuf_empty, file_options_check_option, file_rpc_api_common_response_gen]);
+  fileDesc("ChZycGMvYXBpL2NhcmQuZ2VuLnByb3RvEgdycGMuYXBpIjMKF0NhcmRHZXRQYXJhbWV0ZXJSZXF1ZXN0EhgKB2NhcmRfaWQYASABKAlCB7pIBHICIAEimAMKGENhcmRHZXRQYXJhbWV0ZXJSZXNwb25zZRIRCglwYXJhbWV0ZXIYASABKAMSEwoLcGVyZm9ybWFuY2UYAiABKAMSEQoJdGVjaG5pcXVlGAMgASgDEg0KBXNlbnNlGAQgASgDEkwKEXNraWxsX3RyZWVfZWZmZWN0GAUgASgLMjEucnBjLmFwaS5DYXJkR2V0UGFyYW1ldGVyUmVzcG9uc2UuU2tpbGxUcmVlRWZmZWN0EjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZRqvAQoPU2tpbGxUcmVlRWZmZWN0EhYKDnBlcmZvcm1hbmNlX3VwGAEgASgFEiAKGHBlcmZvcm1hbmNlX3VwX3Blcm1pbF91cBgCIAEoAhIUCgx0ZWNobmlxdWVfdXAYAyABKAUSHgoWdGVjaG5pcXVlX3VwX3Blcm1pbF91cBgEIAEoAhIQCghzZW5zZV91cBgFIAEoBRIaChJzZW5zZV91cF9wZXJtaWxfdXAYBiABKAIiygIKGUNhcmRHZXRQYXJhbWV0ZXJzUmVzcG9uc2USSQoPcGFyYW1ldGVyX2luZm9zGAEgAygLMjAucnBjLmFwaS5DYXJkR2V0UGFyYW1ldGVyc1Jlc3BvbnNlLlBhcmFtZXRlckluZm8SNQotbGl2ZV9kZWNrX3Bvd2VyX3Blcm15cmlhZF91cF9ieV9jYXJkX2xldmVsX3VwGAIgASgFEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZRp3Cg1QYXJhbWV0ZXJJbmZvEhwKB2NhcmRfaWQYASABKAlCC5r0GAdDYXJkOmlkEhEKCXBhcmFtZXRlchgCIAEoAxITCgtwZXJmb3JtYW5jZRgDIAEoAxIRCgl0ZWNobmlxdWUYBCABKAMSDQoFc2Vuc2UYBSABKAMiTAoSQ2FyZExldmVsVXBSZXF1ZXN0EhgKB2NhcmRfaWQYASABKAlCB7pIBHICIAESHAoLYWZ0ZXJfbGV2ZWwYAiABKAVCB7pIBBoCKAEiZgoaQ2FyZExldmVsTGltaXRCcmVha1JlcXVlc3QSGAoHY2FyZF9pZBgBIAEoCUIHukgEcgIgARIuCh1hZnRlcl9sZXZlbF9saW1pdF9icmVha19jb3VudBgCIAEoBUIHukgEGgIoASJnChtDYXJkVXBncmFkZVBvdGVudGlhbFJlcXVlc3QSGAoHY2FyZF9pZBgBIAEoCUIHukgEcgIgARIuCh1hZnRlcl9wb3RlbnRpYWxfdXBncmFkZV9jb3VudBgCIAEoBUIHukgEGgIoASLpAQoeQ2FyZFVwZ3JhZGVQb3RlbnRpYWxBbGxSZXF1ZXN0EmUKEnBvdGVudGlhbF91cGdyYWRlcxgBIAMoCzI8LnJwYy5hcGkuQ2FyZFVwZ3JhZGVQb3RlbnRpYWxBbGxSZXF1ZXN0LkNhcmRQb3RlbnRpYWxVcGdyYWRlQgu6SAiSAQUIARDIARpgChRDYXJkUG90ZW50aWFsVXBncmFkZRIYCgdjYXJkX2lkGAEgASgJQge6SARyAiABEi4KHWFmdGVyX3BvdGVudGlhbF91cGdyYWRlX2NvdW50GAIgASgFQge6SAQaAigBIkkKE0NhcmRMZXZlbFVwUmVzcG9uc2USMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlIlEKG0NhcmRMZXZlbExpbWl0QnJlYWtSZXNwb25zZRIyCg9jb21tb25fcmVzcG9uc2UYj04gASgLMhgucnBjLmFwaS5jb21tb24uUmVzcG9uc2UiUgocQ2FyZFVwZ3JhZGVQb3RlbnRpYWxSZXNwb25zZRIyCg9jb21tb25fcmVzcG9uc2UYj04gASgLMhgucnBjLmFwaS5jb21tb24uUmVzcG9uc2UiVQofQ2FyZFVwZ3JhZGVQb3RlbnRpYWxBbGxSZXNwb25zZRIyCg9jb21tb25fcmVzcG9uc2UYj04gASgLMhgucnBjLmFwaS5jb21tb24uUmVzcG9uc2UyggYKBENhcmQSeAoMR2V0UGFyYW1ldGVyEiAucnBjLmFwaS5DYXJkR2V0UGFyYW1ldGVyUmVxdWVzdBohLnJwYy5hcGkuQ2FyZEdldFBhcmFtZXRlclJlc3BvbnNlIiPC8xgCGAGC0+STAhciEi9DYXJkL0dldFBhcmFtZXRlcjoBKhJxCg1HZXRQYXJhbWV0ZXJzEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GiIucnBjLmFwaS5DYXJkR2V0UGFyYW1ldGVyc1Jlc3BvbnNlIiTC8xgCGAGC0+STAhgiEy9DYXJkL0dldFBhcmFtZXRlcnM6ASoSZAoHTGV2ZWxVcBIbLnJwYy5hcGkuQ2FyZExldmVsVXBSZXF1ZXN0GhwucnBjLmFwaS5DYXJkTGV2ZWxVcFJlc3BvbnNlIh7C8xgCGAGC0+STAhIiDS9DYXJkL0xldmVsVXA6ASoShAEKD0xldmVsTGltaXRCcmVhaxIjLnJwYy5hcGkuQ2FyZExldmVsTGltaXRCcmVha1JlcXVlc3QaJC5ycGMuYXBpLkNhcmRMZXZlbExpbWl0QnJlYWtSZXNwb25zZSImwvMYAhgBgtPkkwIaIhUvQ2FyZC9MZXZlbExpbWl0QnJlYWs6ASoSiAEKEFVwZ3JhZGVQb3RlbnRpYWwSJC5ycGMuYXBpLkNhcmRVcGdyYWRlUG90ZW50aWFsUmVxdWVzdBolLnJwYy5hcGkuQ2FyZFVwZ3JhZGVQb3RlbnRpYWxSZXNwb25zZSInwvMYAhgBgtPkkwIbIhYvQ2FyZC9VcGdyYWRlUG90ZW50aWFsOgEqEpQBChNVcGdyYWRlUG90ZW50aWFsQWxsEicucnBjLmFwaS5DYXJkVXBncmFkZVBvdGVudGlhbEFsbFJlcXVlc3QaKC5ycGMuYXBpLkNhcmRVcGdyYWRlUG90ZW50aWFsQWxsUmVzcG9uc2UiKsLzGAIYAYLT5JMCHiIZL0NhcmQvVXBncmFkZVBvdGVudGlhbEFsbDoBKkJOWjJnaXRodWIuY29tL3F1YS12aXNpb24vdmlzaW9uLXNlcnZlci9wa2cvcGIvcnBjL2FwaaoCF1Zpc2lvbi5Db21tb24uUHJvdG8uQXBpYgZwcm90bzM", [file_buf_validate_validate, file_entity_master_options_master, file_google_api_annotations, file_google_protobuf_empty, file_options_check_option, file_rpc_api_common_response_gen]);
 
 /**
  * @generated from message rpc.api.CardGetParameterRequest
@@ -252,6 +252,45 @@ export const CardUpgradePotentialRequestSchema: GenMessage<CardUpgradePotentialR
   messageDesc(file_rpc_api_card_gen, 5);
 
 /**
+ * @generated from message rpc.api.CardUpgradePotentialAllRequest
+ */
+export type CardUpgradePotentialAllRequest = Message<"rpc.api.CardUpgradePotentialAllRequest"> & {
+  /**
+   * @generated from field: repeated rpc.api.CardUpgradePotentialAllRequest.CardPotentialUpgrade potential_upgrades = 1;
+   */
+  potentialUpgrades: CardUpgradePotentialAllRequest_CardPotentialUpgrade[];
+};
+
+/**
+ * Describes the message rpc.api.CardUpgradePotentialAllRequest.
+ * Use `create(CardUpgradePotentialAllRequestSchema)` to create a new message.
+ */
+export const CardUpgradePotentialAllRequestSchema: GenMessage<CardUpgradePotentialAllRequest> = /*@__PURE__*/
+  messageDesc(file_rpc_api_card_gen, 6);
+
+/**
+ * @generated from message rpc.api.CardUpgradePotentialAllRequest.CardPotentialUpgrade
+ */
+export type CardUpgradePotentialAllRequest_CardPotentialUpgrade = Message<"rpc.api.CardUpgradePotentialAllRequest.CardPotentialUpgrade"> & {
+  /**
+   * @generated from field: string card_id = 1;
+   */
+  cardId: string;
+
+  /**
+   * @generated from field: int32 after_potential_upgrade_count = 2;
+   */
+  afterPotentialUpgradeCount: number;
+};
+
+/**
+ * Describes the message rpc.api.CardUpgradePotentialAllRequest.CardPotentialUpgrade.
+ * Use `create(CardUpgradePotentialAllRequest_CardPotentialUpgradeSchema)` to create a new message.
+ */
+export const CardUpgradePotentialAllRequest_CardPotentialUpgradeSchema: GenMessage<CardUpgradePotentialAllRequest_CardPotentialUpgrade> = /*@__PURE__*/
+  messageDesc(file_rpc_api_card_gen, 6, 0);
+
+/**
  * @generated from message rpc.api.CardLevelUpResponse
  */
 export type CardLevelUpResponse = Message<"rpc.api.CardLevelUpResponse"> & {
@@ -266,7 +305,7 @@ export type CardLevelUpResponse = Message<"rpc.api.CardLevelUpResponse"> & {
  * Use `create(CardLevelUpResponseSchema)` to create a new message.
  */
 export const CardLevelUpResponseSchema: GenMessage<CardLevelUpResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_card_gen, 6);
+  messageDesc(file_rpc_api_card_gen, 7);
 
 /**
  * @generated from message rpc.api.CardLevelLimitBreakResponse
@@ -283,7 +322,7 @@ export type CardLevelLimitBreakResponse = Message<"rpc.api.CardLevelLimitBreakRe
  * Use `create(CardLevelLimitBreakResponseSchema)` to create a new message.
  */
 export const CardLevelLimitBreakResponseSchema: GenMessage<CardLevelLimitBreakResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_card_gen, 7);
+  messageDesc(file_rpc_api_card_gen, 8);
 
 /**
  * @generated from message rpc.api.CardUpgradePotentialResponse
@@ -300,7 +339,24 @@ export type CardUpgradePotentialResponse = Message<"rpc.api.CardUpgradePotential
  * Use `create(CardUpgradePotentialResponseSchema)` to create a new message.
  */
 export const CardUpgradePotentialResponseSchema: GenMessage<CardUpgradePotentialResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_card_gen, 8);
+  messageDesc(file_rpc_api_card_gen, 9);
+
+/**
+ * @generated from message rpc.api.CardUpgradePotentialAllResponse
+ */
+export type CardUpgradePotentialAllResponse = Message<"rpc.api.CardUpgradePotentialAllResponse"> & {
+  /**
+   * @generated from field: rpc.api.common.Response common_response = 9999;
+   */
+  commonResponse?: Response | undefined;
+};
+
+/**
+ * Describes the message rpc.api.CardUpgradePotentialAllResponse.
+ * Use `create(CardUpgradePotentialAllResponseSchema)` to create a new message.
+ */
+export const CardUpgradePotentialAllResponseSchema: GenMessage<CardUpgradePotentialAllResponse> = /*@__PURE__*/
+  messageDesc(file_rpc_api_card_gen, 10);
 
 /**
  * @generated from service rpc.api.Card
@@ -345,6 +401,14 @@ export const Card: GenService<{
     methodKind: "unary";
     input: typeof CardUpgradePotentialRequestSchema;
     output: typeof CardUpgradePotentialResponseSchema;
+  },
+  /**
+   * @generated from rpc rpc.api.Card.UpgradePotentialAll
+   */
+  upgradePotentialAll: {
+    methodKind: "unary";
+    input: typeof CardUpgradePotentialAllRequestSchema;
+    output: typeof CardUpgradePotentialAllResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_rpc_api_card_gen, 0);

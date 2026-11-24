@@ -9,6 +9,10 @@ import type { EmblemPosition } from "../../common/emblem_position.gen_pb.js";
 import { file_common_emblem_position_gen } from "../../common/emblem_position.gen_pb.js";
 import type { ComplainCategoryType } from "../../enums/complain_category_type.gen_pb.js";
 import { file_enums_complain_category_type_gen } from "../../enums/complain_category_type.gen_pb.js";
+import type { ProfilePublishContentType } from "../../enums/profile_publish_content_type.gen_pb.js";
+import { file_enums_profile_publish_content_type_gen } from "../../enums/profile_publish_content_type.gen_pb.js";
+import type { ProfilePublishScopeType } from "../../enums/profile_publish_scope_type.gen_pb.js";
+import { file_enums_profile_publish_scope_type_gen } from "../../enums/profile_publish_scope_type.gen_pb.js";
 import type { ProfilePublishType } from "../../enums/profile_publish_type.gen_pb.js";
 import { file_enums_profile_publish_type_gen } from "../../enums/profile_publish_type.gen_pb.js";
 import { file_google_api_annotations } from "../../google/api/annotations_pb.js";
@@ -28,7 +32,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file rpc/api/profile.gen.proto.
  */
 export const file_rpc_api_profile_gen: GenFile = /*@__PURE__*/
-  fileDesc("ChlycGMvYXBpL3Byb2ZpbGUuZ2VuLnByb3RvEgdycGMuYXBpIi4KFVByb2ZpbGVTZXROYW1lUmVxdWVzdBIVCgRuYW1lGAEgASgJQge6SARyAiABIjQKGFByb2ZpbGVTZXRNZXNzYWdlUmVxdWVzdBIYCgdtZXNzYWdlGAEgASgJQge6SARyAiABIi8KGFByb2ZpbGVTZXRGYW5NYXJrUmVxdWVzdBITCgtmYW5fbWFya19pZBgBIAEoCSJ9CiJQcm9maWxlU3dpdGNoUHVibGlzaFNldHRpbmdSZXF1ZXN0EkMKFHByb2ZpbGVfcHVibGlzaF90eXBlGAEgASgOMhkuZW51bXMuUHJvZmlsZVB1Ymxpc2hUeXBlQgq6SAeCAQQQASAAEhIKCmlzX3B1Ymxpc2gYAiABKAgiVQoXUHJvZmlsZVNldEVtYmxlbVJlcXVlc3QSOgoQZW1ibGVtX3Bvc2l0aW9ucxgBIAMoCzIWLmNvbW1vbi5FbWJsZW1Qb3NpdGlvbkIIukgFkgECEAUiRQoiUHJvZmlsZUdldFVzZXJQcm9maWxlRGV0YWlsUmVxdWVzdBIfCg5wdWJsaWNfdXNlcl9pZBgBIAEoCUIHukgEcgIgASKiAQojUHJvZmlsZUdldFVzZXJQcm9maWxlRGV0YWlsUmVzcG9uc2USRwoYdXNlcl9wcm9maWxlX2RldGFpbF9pbmZvGAEgASgLMiUucnBjLmFwaS5jb21tb24uVXNlclByb2ZpbGVEZXRhaWxJbmZvEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSI6ChdQcm9maWxlQmxvY2tVc2VyUmVxdWVzdBIfCg5wdWJsaWNfdXNlcl9pZBgBIAEoCUIHukgEcgIgASI8ChlQcm9maWxlVW5ibG9ja1VzZXJSZXF1ZXN0Eh8KDnB1YmxpY191c2VyX2lkGAEgASgJQge6SARyAiABIocBCh5Qcm9maWxlTGlzdEJsb2NrZWRVc2VyUmVzcG9uc2USMQoKdXNlcl9pbmZvcxgBIAMoCzIdLnJwYy5hcGkuY29tbW9uLkJhc2ljVXNlckluZm8SMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlIp8BChpQcm9maWxlQ29tcGxhaW5Vc2VyUmVxdWVzdBIfCg5wdWJsaWNfdXNlcl9pZBgBIAEoCUIHukgEcgIgARJGCg5jYXRlZ29yeV90eXBlcxgCIAMoDjIbLmVudW1zLkNvbXBsYWluQ2F0ZWdvcnlUeXBlQhG6SA6SAQsYASIHggEEEAEgABIYCgdtZXNzYWdlGAMgASgJQge6SARyAiABIo4BCiBQcm9maWxlTGlzdEN1c3RvbVBhbGV0dGVSZXNwb25zZRI2Cg9jdXN0b21fcGFsZXR0ZXMYASADKAsyHS5ycGMuYXBpLmNvbW1vbi5DdXN0b21QYWxldHRlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSJHCixQcm9maWxlR2V0Q3VzdG9tUGFsZXR0ZUltYWdlVXBsb2FkVXJsUmVxdWVzdBIXCgZudW1iZXIYASABKAVCB7pIBBoCKAAivwEKLVByb2ZpbGVHZXRDdXN0b21QYWxldHRlSW1hZ2VVcGxvYWRVcmxSZXNwb25zZRIaCgx1cGxvYWRfdG9rZW4YASABKAlCBJC4GAESPgoQc3RvcmFnZV91cmxfaW5mbxgCIAEoCzIeLnJwYy5hcGkuY29tbW9uLlN0b3JhZ2VVcmxJbmZvQgSQuBgBEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSKFAgofUHJvZmlsZUVkaXRDdXN0b21QYWxldHRlUmVxdWVzdBIhCgx1cGxvYWRfdG9rZW4YASABKAlCC7pIBHICIAGQuBgBEhcKBm51bWJlchgCIAEoBUIHukgEGgIoABItCiVjdXN0b21fcGFsZXR0ZV9wcmVzZXRfbGF5b3V0X2dyb3VwX2lkGAMgASgJEjsKCmJhY2tncm91bmQYBCABKAsyJy5ycGMuYXBpLmNvbW1vbi5DdXN0b21QYWxldHRlQmFja2dyb3VuZBI6CgVwYXJ0cxgFIAMoCzIhLnJwYy5hcGkuY29tbW9uLkN1c3RvbVBhbGV0dGVQYXJ0Qgi6SAWSAQIQZCJmCiBQcm9maWxlRWRpdEN1c3RvbVBhbGV0dGVSZXNwb25zZRIOCgZudW1iZXIYASABKAUSMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlIjkKHlByb2ZpbGVTZXRDdXN0b21QYWxldHRlUmVxdWVzdBIXCgZudW1iZXIYASABKAVCB7pIBBoCKAEiPAohUHJvZmlsZURlbGV0ZUN1c3RvbVBhbGV0dGVSZXF1ZXN0EhcKBm51bWJlchgBIAEoBUIHukgEGgIoASJMChZQcm9maWxlU2V0TmFtZVJlc3BvbnNlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSJPChlQcm9maWxlU2V0TWVzc2FnZVJlc3BvbnNlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSJPChlQcm9maWxlU2V0RmFuTWFya1Jlc3BvbnNlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSJZCiNQcm9maWxlU3dpdGNoUHVibGlzaFNldHRpbmdSZXNwb25zZRIyCg9jb21tb25fcmVzcG9uc2UYj04gASgLMhgucnBjLmFwaS5jb21tb24uUmVzcG9uc2UiTgoYUHJvZmlsZVNldEVtYmxlbVJlc3BvbnNlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSJOChhQcm9maWxlQmxvY2tVc2VyUmVzcG9uc2USMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlIlAKGlByb2ZpbGVVbmJsb2NrVXNlclJlc3BvbnNlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSJRChtQcm9maWxlQ29tcGxhaW5Vc2VyUmVzcG9uc2USMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlIlUKH1Byb2ZpbGVTZXRDdXN0b21QYWxldHRlUmVzcG9uc2USMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlIlgKIlByb2ZpbGVEZWxldGVDdXN0b21QYWxldHRlUmVzcG9uc2USMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlIlwKJlByb2ZpbGVTZXREZWZhdWx0Q3VzdG9tUGFsZXR0ZVJlc3BvbnNlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZTKREgoHUHJvZmlsZRJ1CgdTZXROYW1lEh4ucnBjLmFwaS5Qcm9maWxlU2V0TmFtZVJlcXVlc3QaHy5ycGMuYXBpLlByb2ZpbGVTZXROYW1lUmVzcG9uc2UiKcLzGAIYAcrzGAQKAvEPgtPkkwIVIhAvUHJvZmlsZS9TZXROYW1lOgEqEoEBCgpTZXRNZXNzYWdlEiEucnBjLmFwaS5Qcm9maWxlU2V0TWVzc2FnZVJlcXVlc3QaIi5ycGMuYXBpLlByb2ZpbGVTZXRNZXNzYWdlUmVzcG9uc2UiLMLzGAIYAcrzGAQKAvEPgtPkkwIYIhMvUHJvZmlsZS9TZXRNZXNzYWdlOgEqEnkKClNldEZhbk1hcmsSIS5ycGMuYXBpLlByb2ZpbGVTZXRGYW5NYXJrUmVxdWVzdBoiLnJwYy5hcGkuUHJvZmlsZVNldEZhbk1hcmtSZXNwb25zZSIkwvMYAhgBgtPkkwIYIhMvUHJvZmlsZS9TZXRGYW5NYXJrOgEqEqEBChRTd2l0Y2hQdWJsaXNoU2V0dGluZxIrLnJwYy5hcGkuUHJvZmlsZVN3aXRjaFB1Ymxpc2hTZXR0aW5nUmVxdWVzdBosLnJwYy5hcGkuUHJvZmlsZVN3aXRjaFB1Ymxpc2hTZXR0aW5nUmVzcG9uc2UiLsLzGAIYAYLT5JMCIiIdL1Byb2ZpbGUvU3dpdGNoUHVibGlzaFNldHRpbmc6ASoSdQoJU2V0RW1ibGVtEiAucnBjLmFwaS5Qcm9maWxlU2V0RW1ibGVtUmVxdWVzdBohLnJwYy5hcGkuUHJvZmlsZVNldEVtYmxlbVJlc3BvbnNlIiPC8xgCGAGC0+STAhciEi9Qcm9maWxlL1NldEVtYmxlbToBKhKrAQoUR2V0VXNlclByb2ZpbGVEZXRhaWwSKy5ycGMuYXBpLlByb2ZpbGVHZXRVc2VyUHJvZmlsZURldGFpbFJlcXVlc3QaLC5ycGMuYXBpLlByb2ZpbGVHZXRVc2VyUHJvZmlsZURldGFpbFJlc3BvbnNlIjjC8xgEEAEYAcrzGAQKAuAPgtPkkwIiIh0vUHJvZmlsZS9HZXRVc2VyUHJvZmlsZURldGFpbDoBKhJ/CglCbG9ja1VzZXISIC5ycGMuYXBpLlByb2ZpbGVCbG9ja1VzZXJSZXF1ZXN0GiEucnBjLmFwaS5Qcm9maWxlQmxvY2tVc2VyUmVzcG9uc2UiLcLzGAQQARgByvMYBAoC4g+C0+STAhciEi9Qcm9maWxlL0Jsb2NrVXNlcjoBKhJ/CgtVbmJsb2NrVXNlchIiLnJwYy5hcGkuUHJvZmlsZVVuYmxvY2tVc2VyUmVxdWVzdBojLnJwYy5hcGkuUHJvZmlsZVVuYmxvY2tVc2VyUmVzcG9uc2UiJ8LzGAQQARgBgtPkkwIZIhQvUHJvZmlsZS9VbmJsb2NrVXNlcjoBKhJ9Cg9MaXN0QmxvY2tlZFVzZXISFi5nb29nbGUucHJvdG9idWYuRW1wdHkaJy5ycGMuYXBpLlByb2ZpbGVMaXN0QmxvY2tlZFVzZXJSZXNwb25zZSIpwvMYAhgBgtPkkwIdIhgvUHJvZmlsZS9MaXN0QmxvY2tlZFVzZXI6ASoSiwEKDENvbXBsYWluVXNlchIjLnJwYy5hcGkuUHJvZmlsZUNvbXBsYWluVXNlclJlcXVlc3QaJC5ycGMuYXBpLlByb2ZpbGVDb21wbGFpblVzZXJSZXNwb25zZSIwwvMYBBABGAHK8xgECgLlD4LT5JMCGiIVL1Byb2ZpbGUvQ29tcGxhaW5Vc2VyOgEqEoMBChFMaXN0Q3VzdG9tUGFsZXR0ZRIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRopLnJwYy5hcGkuUHJvZmlsZUxpc3RDdXN0b21QYWxldHRlUmVzcG9uc2UiK8LzGAIYAYLT5JMCHyIaL1Byb2ZpbGUvTGlzdEN1c3RvbVBhbGV0dGU6ASoSywEKHkdldEN1c3RvbVBhbGV0dGVJbWFnZVVwbG9hZFVybBI1LnJwYy5hcGkuUHJvZmlsZUdldEN1c3RvbVBhbGV0dGVJbWFnZVVwbG9hZFVybFJlcXVlc3QaNi5ycGMuYXBpLlByb2ZpbGVHZXRDdXN0b21QYWxldHRlSW1hZ2VVcGxvYWRVcmxSZXNwb25zZSI6wvMYBBABGAGC0+STAiwiJy9Qcm9maWxlL0dldEN1c3RvbVBhbGV0dGVJbWFnZVVwbG9hZFVybDoBKhKXAQoRRWRpdEN1c3RvbVBhbGV0dGUSKC5ycGMuYXBpLlByb2ZpbGVFZGl0Q3VzdG9tUGFsZXR0ZVJlcXVlc3QaKS5ycGMuYXBpLlByb2ZpbGVFZGl0Q3VzdG9tUGFsZXR0ZVJlc3BvbnNlIi3C8xgEEAEYAYLT5JMCHyIaL1Byb2ZpbGUvRWRpdEN1c3RvbVBhbGV0dGU6ASoSkQEKEFNldEN1c3RvbVBhbGV0dGUSJy5ycGMuYXBpLlByb2ZpbGVTZXRDdXN0b21QYWxldHRlUmVxdWVzdBooLnJwYy5hcGkuUHJvZmlsZVNldEN1c3RvbVBhbGV0dGVSZXNwb25zZSIqwvMYAhgBgtPkkwIeIhkvUHJvZmlsZS9TZXRDdXN0b21QYWxldHRlOgEqEp0BChNEZWxldGVDdXN0b21QYWxldHRlEioucnBjLmFwaS5Qcm9maWxlRGVsZXRlQ3VzdG9tUGFsZXR0ZVJlcXVlc3QaKy5ycGMuYXBpLlByb2ZpbGVEZWxldGVDdXN0b21QYWxldHRlUmVzcG9uc2UiLcLzGAIYAYLT5JMCISIcL1Byb2ZpbGUvRGVsZXRlQ3VzdG9tUGFsZXR0ZToBKhKVAQoXU2V0RGVmYXVsdEN1c3RvbVBhbGV0dGUSFi5nb29nbGUucHJvdG9idWYuRW1wdHkaLy5ycGMuYXBpLlByb2ZpbGVTZXREZWZhdWx0Q3VzdG9tUGFsZXR0ZVJlc3BvbnNlIjHC8xgCGAGC0+STAiUiIC9Qcm9maWxlL1NldERlZmF1bHRDdXN0b21QYWxldHRlOgEqQk5aMmdpdGh1Yi5jb20vcXVhLXZpc2lvbi92aXNpb24tc2VydmVyL3BrZy9wYi9ycGMvYXBpqgIXVmlzaW9uLkNvbW1vbi5Qcm90by5BcGliBnByb3RvMw", [file_buf_validate_validate, file_common_emblem_position_gen, file_enums_complain_category_type_gen, file_enums_profile_publish_type_gen, file_google_api_annotations, file_google_protobuf_empty, file_options_check_option, file_options_zap, file_rpc_api_common_profile_gen, file_rpc_api_common_response_gen, file_rpc_api_common_storage_url_gen]);
+  fileDesc("ChlycGMvYXBpL3Byb2ZpbGUuZ2VuLnByb3RvEgdycGMuYXBpIi4KFVByb2ZpbGVTZXROYW1lUmVxdWVzdBIVCgRuYW1lGAEgASgJQge6SARyAiABIjQKGFByb2ZpbGVTZXRNZXNzYWdlUmVxdWVzdBIYCgdtZXNzYWdlGAEgASgJQge6SARyAiABIi8KGFByb2ZpbGVTZXRGYW5NYXJrUmVxdWVzdBITCgtmYW5fbWFya19pZBgBIAEoCSJ9CiJQcm9maWxlU3dpdGNoUHVibGlzaFNldHRpbmdSZXF1ZXN0EkMKFHByb2ZpbGVfcHVibGlzaF90eXBlGAEgASgOMhkuZW51bXMuUHJvZmlsZVB1Ymxpc2hUeXBlQgq6SAeCAQQQASAAEhIKCmlzX3B1Ymxpc2gYAiABKAgixwIKIFByb2ZpbGVTd2l0Y2hQdWJsaXNoU2NvcGVSZXF1ZXN0EmcKFnB1Ymxpc2hfc2NvcGVfc2V0dGluZ3MYASADKAsyPS5ycGMuYXBpLlByb2ZpbGVTd2l0Y2hQdWJsaXNoU2NvcGVSZXF1ZXN0LlB1Ymxpc2hTY29wZVNldHRpbmdCCLpIBZIBAggBGrkBChNQdWJsaXNoU2NvcGVTZXR0aW5nElIKHHByb2ZpbGVfcHVibGlzaF9jb250ZW50X3R5cGUYASABKA4yIC5lbnVtcy5Qcm9maWxlUHVibGlzaENvbnRlbnRUeXBlQgq6SAeCAQQQASAAEk4KGnByb2ZpbGVfcHVibGlzaF9zY29wZV90eXBlGAIgASgOMh4uZW51bXMuUHJvZmlsZVB1Ymxpc2hTY29wZVR5cGVCCrpIB4IBBBABIAAiVQoXUHJvZmlsZVNldEVtYmxlbVJlcXVlc3QSOgoQZW1ibGVtX3Bvc2l0aW9ucxgBIAMoCzIWLmNvbW1vbi5FbWJsZW1Qb3NpdGlvbkIIukgFkgECEAUiRQoiUHJvZmlsZUdldFVzZXJQcm9maWxlRGV0YWlsUmVxdWVzdBIfCg5wdWJsaWNfdXNlcl9pZBgBIAEoCUIHukgEcgIgASKiAQojUHJvZmlsZUdldFVzZXJQcm9maWxlRGV0YWlsUmVzcG9uc2USRwoYdXNlcl9wcm9maWxlX2RldGFpbF9pbmZvGAEgASgLMiUucnBjLmFwaS5jb21tb24uVXNlclByb2ZpbGVEZXRhaWxJbmZvEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSI6ChdQcm9maWxlQmxvY2tVc2VyUmVxdWVzdBIfCg5wdWJsaWNfdXNlcl9pZBgBIAEoCUIHukgEcgIgASI8ChlQcm9maWxlVW5ibG9ja1VzZXJSZXF1ZXN0Eh8KDnB1YmxpY191c2VyX2lkGAEgASgJQge6SARyAiABIocBCh5Qcm9maWxlTGlzdEJsb2NrZWRVc2VyUmVzcG9uc2USMQoKdXNlcl9pbmZvcxgBIAMoCzIdLnJwYy5hcGkuY29tbW9uLkJhc2ljVXNlckluZm8SMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlIp8BChpQcm9maWxlQ29tcGxhaW5Vc2VyUmVxdWVzdBIfCg5wdWJsaWNfdXNlcl9pZBgBIAEoCUIHukgEcgIgARJGCg5jYXRlZ29yeV90eXBlcxgCIAMoDjIbLmVudW1zLkNvbXBsYWluQ2F0ZWdvcnlUeXBlQhG6SA6SAQsYASIHggEEEAEgABIYCgdtZXNzYWdlGAMgASgJQge6SARyAiABIo4BCiBQcm9maWxlTGlzdEN1c3RvbVBhbGV0dGVSZXNwb25zZRI2Cg9jdXN0b21fcGFsZXR0ZXMYASADKAsyHS5ycGMuYXBpLmNvbW1vbi5DdXN0b21QYWxldHRlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSJHCixQcm9maWxlR2V0Q3VzdG9tUGFsZXR0ZUltYWdlVXBsb2FkVXJsUmVxdWVzdBIXCgZudW1iZXIYASABKAVCB7pIBBoCKAAivwEKLVByb2ZpbGVHZXRDdXN0b21QYWxldHRlSW1hZ2VVcGxvYWRVcmxSZXNwb25zZRIaCgx1cGxvYWRfdG9rZW4YASABKAlCBJC4GAESPgoQc3RvcmFnZV91cmxfaW5mbxgCIAEoCzIeLnJwYy5hcGkuY29tbW9uLlN0b3JhZ2VVcmxJbmZvQgSQuBgBEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSKFAgofUHJvZmlsZUVkaXRDdXN0b21QYWxldHRlUmVxdWVzdBIhCgx1cGxvYWRfdG9rZW4YASABKAlCC7pIBHICIAGQuBgBEhcKBm51bWJlchgCIAEoBUIHukgEGgIoABItCiVjdXN0b21fcGFsZXR0ZV9wcmVzZXRfbGF5b3V0X2dyb3VwX2lkGAMgASgJEjsKCmJhY2tncm91bmQYBCABKAsyJy5ycGMuYXBpLmNvbW1vbi5DdXN0b21QYWxldHRlQmFja2dyb3VuZBI6CgVwYXJ0cxgFIAMoCzIhLnJwYy5hcGkuY29tbW9uLkN1c3RvbVBhbGV0dGVQYXJ0Qgi6SAWSAQIQZCJmCiBQcm9maWxlRWRpdEN1c3RvbVBhbGV0dGVSZXNwb25zZRIOCgZudW1iZXIYASABKAUSMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlIjkKHlByb2ZpbGVTZXRDdXN0b21QYWxldHRlUmVxdWVzdBIXCgZudW1iZXIYASABKAVCB7pIBBoCKAEiPAohUHJvZmlsZURlbGV0ZUN1c3RvbVBhbGV0dGVSZXF1ZXN0EhcKBm51bWJlchgBIAEoBUIHukgEGgIoASJMChZQcm9maWxlU2V0TmFtZVJlc3BvbnNlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSJPChlQcm9maWxlU2V0TWVzc2FnZVJlc3BvbnNlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSJPChlQcm9maWxlU2V0RmFuTWFya1Jlc3BvbnNlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSJZCiNQcm9maWxlU3dpdGNoUHVibGlzaFNldHRpbmdSZXNwb25zZRIyCg9jb21tb25fcmVzcG9uc2UYj04gASgLMhgucnBjLmFwaS5jb21tb24uUmVzcG9uc2UiVwohUHJvZmlsZVN3aXRjaFB1Ymxpc2hTY29wZVJlc3BvbnNlEjIKD2NvbW1vbl9yZXNwb25zZRiPTiABKAsyGC5ycGMuYXBpLmNvbW1vbi5SZXNwb25zZSJOChhQcm9maWxlU2V0RW1ibGVtUmVzcG9uc2USMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlIk4KGFByb2ZpbGVCbG9ja1VzZXJSZXNwb25zZRIyCg9jb21tb25fcmVzcG9uc2UYj04gASgLMhgucnBjLmFwaS5jb21tb24uUmVzcG9uc2UiUAoaUHJvZmlsZVVuYmxvY2tVc2VyUmVzcG9uc2USMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlIlEKG1Byb2ZpbGVDb21wbGFpblVzZXJSZXNwb25zZRIyCg9jb21tb25fcmVzcG9uc2UYj04gASgLMhgucnBjLmFwaS5jb21tb24uUmVzcG9uc2UiVQofUHJvZmlsZVNldEN1c3RvbVBhbGV0dGVSZXNwb25zZRIyCg9jb21tb25fcmVzcG9uc2UYj04gASgLMhgucnBjLmFwaS5jb21tb24uUmVzcG9uc2UiWAoiUHJvZmlsZURlbGV0ZUN1c3RvbVBhbGV0dGVSZXNwb25zZRIyCg9jb21tb25fcmVzcG9uc2UYj04gASgLMhgucnBjLmFwaS5jb21tb24uUmVzcG9uc2UiXAomUHJvZmlsZVNldERlZmF1bHRDdXN0b21QYWxldHRlUmVzcG9uc2USMgoPY29tbW9uX3Jlc3BvbnNlGI9OIAEoCzIYLnJwYy5hcGkuY29tbW9uLlJlc3BvbnNlMq0TCgdQcm9maWxlEnUKB1NldE5hbWUSHi5ycGMuYXBpLlByb2ZpbGVTZXROYW1lUmVxdWVzdBofLnJwYy5hcGkuUHJvZmlsZVNldE5hbWVSZXNwb25zZSIpwvMYAhgByvMYBAoC8Q+C0+STAhUiEC9Qcm9maWxlL1NldE5hbWU6ASoSgQEKClNldE1lc3NhZ2USIS5ycGMuYXBpLlByb2ZpbGVTZXRNZXNzYWdlUmVxdWVzdBoiLnJwYy5hcGkuUHJvZmlsZVNldE1lc3NhZ2VSZXNwb25zZSIswvMYAhgByvMYBAoC8Q+C0+STAhgiEy9Qcm9maWxlL1NldE1lc3NhZ2U6ASoSeQoKU2V0RmFuTWFyaxIhLnJwYy5hcGkuUHJvZmlsZVNldEZhbk1hcmtSZXF1ZXN0GiIucnBjLmFwaS5Qcm9maWxlU2V0RmFuTWFya1Jlc3BvbnNlIiTC8xgCGAGC0+STAhgiEy9Qcm9maWxlL1NldEZhbk1hcms6ASoSoQEKFFN3aXRjaFB1Ymxpc2hTZXR0aW5nEisucnBjLmFwaS5Qcm9maWxlU3dpdGNoUHVibGlzaFNldHRpbmdSZXF1ZXN0GiwucnBjLmFwaS5Qcm9maWxlU3dpdGNoUHVibGlzaFNldHRpbmdSZXNwb25zZSIuwvMYAhgBgtPkkwIiIh0vUHJvZmlsZS9Td2l0Y2hQdWJsaXNoU2V0dGluZzoBKhKZAQoSU3dpdGNoUHVibGlzaFNjb3BlEikucnBjLmFwaS5Qcm9maWxlU3dpdGNoUHVibGlzaFNjb3BlUmVxdWVzdBoqLnJwYy5hcGkuUHJvZmlsZVN3aXRjaFB1Ymxpc2hTY29wZVJlc3BvbnNlIizC8xgCGAGC0+STAiAiGy9Qcm9maWxlL1N3aXRjaFB1Ymxpc2hTY29wZToBKhJ1CglTZXRFbWJsZW0SIC5ycGMuYXBpLlByb2ZpbGVTZXRFbWJsZW1SZXF1ZXN0GiEucnBjLmFwaS5Qcm9maWxlU2V0RW1ibGVtUmVzcG9uc2UiI8LzGAIYAYLT5JMCFyISL1Byb2ZpbGUvU2V0RW1ibGVtOgEqEqsBChRHZXRVc2VyUHJvZmlsZURldGFpbBIrLnJwYy5hcGkuUHJvZmlsZUdldFVzZXJQcm9maWxlRGV0YWlsUmVxdWVzdBosLnJwYy5hcGkuUHJvZmlsZUdldFVzZXJQcm9maWxlRGV0YWlsUmVzcG9uc2UiOMLzGAQQARgByvMYBAoC4A+C0+STAiIiHS9Qcm9maWxlL0dldFVzZXJQcm9maWxlRGV0YWlsOgEqEn8KCUJsb2NrVXNlchIgLnJwYy5hcGkuUHJvZmlsZUJsb2NrVXNlclJlcXVlc3QaIS5ycGMuYXBpLlByb2ZpbGVCbG9ja1VzZXJSZXNwb25zZSItwvMYBBABGAHK8xgECgLiD4LT5JMCFyISL1Byb2ZpbGUvQmxvY2tVc2VyOgEqEn8KC1VuYmxvY2tVc2VyEiIucnBjLmFwaS5Qcm9maWxlVW5ibG9ja1VzZXJSZXF1ZXN0GiMucnBjLmFwaS5Qcm9maWxlVW5ibG9ja1VzZXJSZXNwb25zZSInwvMYBBABGAGC0+STAhkiFC9Qcm9maWxlL1VuYmxvY2tVc2VyOgEqEn0KD0xpc3RCbG9ja2VkVXNlchIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRonLnJwYy5hcGkuUHJvZmlsZUxpc3RCbG9ja2VkVXNlclJlc3BvbnNlIinC8xgCGAGC0+STAh0iGC9Qcm9maWxlL0xpc3RCbG9ja2VkVXNlcjoBKhKLAQoMQ29tcGxhaW5Vc2VyEiMucnBjLmFwaS5Qcm9maWxlQ29tcGxhaW5Vc2VyUmVxdWVzdBokLnJwYy5hcGkuUHJvZmlsZUNvbXBsYWluVXNlclJlc3BvbnNlIjDC8xgEEAEYAcrzGAQKAuUPgtPkkwIaIhUvUHJvZmlsZS9Db21wbGFpblVzZXI6ASoSgwEKEUxpc3RDdXN0b21QYWxldHRlEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GikucnBjLmFwaS5Qcm9maWxlTGlzdEN1c3RvbVBhbGV0dGVSZXNwb25zZSIrwvMYAhgBgtPkkwIfIhovUHJvZmlsZS9MaXN0Q3VzdG9tUGFsZXR0ZToBKhLLAQoeR2V0Q3VzdG9tUGFsZXR0ZUltYWdlVXBsb2FkVXJsEjUucnBjLmFwaS5Qcm9maWxlR2V0Q3VzdG9tUGFsZXR0ZUltYWdlVXBsb2FkVXJsUmVxdWVzdBo2LnJwYy5hcGkuUHJvZmlsZUdldEN1c3RvbVBhbGV0dGVJbWFnZVVwbG9hZFVybFJlc3BvbnNlIjrC8xgEEAEYAYLT5JMCLCInL1Byb2ZpbGUvR2V0Q3VzdG9tUGFsZXR0ZUltYWdlVXBsb2FkVXJsOgEqEpcBChFFZGl0Q3VzdG9tUGFsZXR0ZRIoLnJwYy5hcGkuUHJvZmlsZUVkaXRDdXN0b21QYWxldHRlUmVxdWVzdBopLnJwYy5hcGkuUHJvZmlsZUVkaXRDdXN0b21QYWxldHRlUmVzcG9uc2UiLcLzGAQQARgBgtPkkwIfIhovUHJvZmlsZS9FZGl0Q3VzdG9tUGFsZXR0ZToBKhKRAQoQU2V0Q3VzdG9tUGFsZXR0ZRInLnJwYy5hcGkuUHJvZmlsZVNldEN1c3RvbVBhbGV0dGVSZXF1ZXN0GigucnBjLmFwaS5Qcm9maWxlU2V0Q3VzdG9tUGFsZXR0ZVJlc3BvbnNlIirC8xgCGAGC0+STAh4iGS9Qcm9maWxlL1NldEN1c3RvbVBhbGV0dGU6ASoSnQEKE0RlbGV0ZUN1c3RvbVBhbGV0dGUSKi5ycGMuYXBpLlByb2ZpbGVEZWxldGVDdXN0b21QYWxldHRlUmVxdWVzdBorLnJwYy5hcGkuUHJvZmlsZURlbGV0ZUN1c3RvbVBhbGV0dGVSZXNwb25zZSItwvMYAhgBgtPkkwIhIhwvUHJvZmlsZS9EZWxldGVDdXN0b21QYWxldHRlOgEqEpUBChdTZXREZWZhdWx0Q3VzdG9tUGFsZXR0ZRIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRovLnJwYy5hcGkuUHJvZmlsZVNldERlZmF1bHRDdXN0b21QYWxldHRlUmVzcG9uc2UiMcLzGAIYAYLT5JMCJSIgL1Byb2ZpbGUvU2V0RGVmYXVsdEN1c3RvbVBhbGV0dGU6ASpCTloyZ2l0aHViLmNvbS9xdWEtdmlzaW9uL3Zpc2lvbi1zZXJ2ZXIvcGtnL3BiL3JwYy9hcGmqAhdWaXNpb24uQ29tbW9uLlByb3RvLkFwaWIGcHJvdG8z", [file_buf_validate_validate, file_common_emblem_position_gen, file_enums_complain_category_type_gen, file_enums_profile_publish_content_type_gen, file_enums_profile_publish_scope_type_gen, file_enums_profile_publish_type_gen, file_google_api_annotations, file_google_protobuf_empty, file_options_check_option, file_options_zap, file_rpc_api_common_profile_gen, file_rpc_api_common_response_gen, file_rpc_api_common_storage_url_gen]);
 
 /**
  * @generated from message rpc.api.ProfileSetNameRequest
@@ -104,6 +108,45 @@ export const ProfileSwitchPublishSettingRequestSchema: GenMessage<ProfileSwitchP
   messageDesc(file_rpc_api_profile_gen, 3);
 
 /**
+ * @generated from message rpc.api.ProfileSwitchPublishScopeRequest
+ */
+export type ProfileSwitchPublishScopeRequest = Message<"rpc.api.ProfileSwitchPublishScopeRequest"> & {
+  /**
+   * @generated from field: repeated rpc.api.ProfileSwitchPublishScopeRequest.PublishScopeSetting publish_scope_settings = 1;
+   */
+  publishScopeSettings: ProfileSwitchPublishScopeRequest_PublishScopeSetting[];
+};
+
+/**
+ * Describes the message rpc.api.ProfileSwitchPublishScopeRequest.
+ * Use `create(ProfileSwitchPublishScopeRequestSchema)` to create a new message.
+ */
+export const ProfileSwitchPublishScopeRequestSchema: GenMessage<ProfileSwitchPublishScopeRequest> = /*@__PURE__*/
+  messageDesc(file_rpc_api_profile_gen, 4);
+
+/**
+ * @generated from message rpc.api.ProfileSwitchPublishScopeRequest.PublishScopeSetting
+ */
+export type ProfileSwitchPublishScopeRequest_PublishScopeSetting = Message<"rpc.api.ProfileSwitchPublishScopeRequest.PublishScopeSetting"> & {
+  /**
+   * @generated from field: enums.ProfilePublishContentType profile_publish_content_type = 1;
+   */
+  profilePublishContentType: ProfilePublishContentType;
+
+  /**
+   * @generated from field: enums.ProfilePublishScopeType profile_publish_scope_type = 2;
+   */
+  profilePublishScopeType: ProfilePublishScopeType;
+};
+
+/**
+ * Describes the message rpc.api.ProfileSwitchPublishScopeRequest.PublishScopeSetting.
+ * Use `create(ProfileSwitchPublishScopeRequest_PublishScopeSettingSchema)` to create a new message.
+ */
+export const ProfileSwitchPublishScopeRequest_PublishScopeSettingSchema: GenMessage<ProfileSwitchPublishScopeRequest_PublishScopeSetting> = /*@__PURE__*/
+  messageDesc(file_rpc_api_profile_gen, 4, 0);
+
+/**
  * @generated from message rpc.api.ProfileSetEmblemRequest
  */
 export type ProfileSetEmblemRequest = Message<"rpc.api.ProfileSetEmblemRequest"> & {
@@ -118,7 +161,7 @@ export type ProfileSetEmblemRequest = Message<"rpc.api.ProfileSetEmblemRequest">
  * Use `create(ProfileSetEmblemRequestSchema)` to create a new message.
  */
 export const ProfileSetEmblemRequestSchema: GenMessage<ProfileSetEmblemRequest> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 4);
+  messageDesc(file_rpc_api_profile_gen, 5);
 
 /**
  * @generated from message rpc.api.ProfileGetUserProfileDetailRequest
@@ -135,7 +178,7 @@ export type ProfileGetUserProfileDetailRequest = Message<"rpc.api.ProfileGetUser
  * Use `create(ProfileGetUserProfileDetailRequestSchema)` to create a new message.
  */
 export const ProfileGetUserProfileDetailRequestSchema: GenMessage<ProfileGetUserProfileDetailRequest> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 5);
+  messageDesc(file_rpc_api_profile_gen, 6);
 
 /**
  * @generated from message rpc.api.ProfileGetUserProfileDetailResponse
@@ -157,7 +200,7 @@ export type ProfileGetUserProfileDetailResponse = Message<"rpc.api.ProfileGetUse
  * Use `create(ProfileGetUserProfileDetailResponseSchema)` to create a new message.
  */
 export const ProfileGetUserProfileDetailResponseSchema: GenMessage<ProfileGetUserProfileDetailResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 6);
+  messageDesc(file_rpc_api_profile_gen, 7);
 
 /**
  * @generated from message rpc.api.ProfileBlockUserRequest
@@ -174,7 +217,7 @@ export type ProfileBlockUserRequest = Message<"rpc.api.ProfileBlockUserRequest">
  * Use `create(ProfileBlockUserRequestSchema)` to create a new message.
  */
 export const ProfileBlockUserRequestSchema: GenMessage<ProfileBlockUserRequest> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 7);
+  messageDesc(file_rpc_api_profile_gen, 8);
 
 /**
  * @generated from message rpc.api.ProfileUnblockUserRequest
@@ -191,7 +234,7 @@ export type ProfileUnblockUserRequest = Message<"rpc.api.ProfileUnblockUserReque
  * Use `create(ProfileUnblockUserRequestSchema)` to create a new message.
  */
 export const ProfileUnblockUserRequestSchema: GenMessage<ProfileUnblockUserRequest> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 8);
+  messageDesc(file_rpc_api_profile_gen, 9);
 
 /**
  * @generated from message rpc.api.ProfileListBlockedUserResponse
@@ -213,7 +256,7 @@ export type ProfileListBlockedUserResponse = Message<"rpc.api.ProfileListBlocked
  * Use `create(ProfileListBlockedUserResponseSchema)` to create a new message.
  */
 export const ProfileListBlockedUserResponseSchema: GenMessage<ProfileListBlockedUserResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 9);
+  messageDesc(file_rpc_api_profile_gen, 10);
 
 /**
  * @generated from message rpc.api.ProfileComplainUserRequest
@@ -240,7 +283,7 @@ export type ProfileComplainUserRequest = Message<"rpc.api.ProfileComplainUserReq
  * Use `create(ProfileComplainUserRequestSchema)` to create a new message.
  */
 export const ProfileComplainUserRequestSchema: GenMessage<ProfileComplainUserRequest> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 10);
+  messageDesc(file_rpc_api_profile_gen, 11);
 
 /**
  * @generated from message rpc.api.ProfileListCustomPaletteResponse
@@ -262,7 +305,7 @@ export type ProfileListCustomPaletteResponse = Message<"rpc.api.ProfileListCusto
  * Use `create(ProfileListCustomPaletteResponseSchema)` to create a new message.
  */
 export const ProfileListCustomPaletteResponseSchema: GenMessage<ProfileListCustomPaletteResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 11);
+  messageDesc(file_rpc_api_profile_gen, 12);
 
 /**
  * @generated from message rpc.api.ProfileGetCustomPaletteImageUploadUrlRequest
@@ -279,7 +322,7 @@ export type ProfileGetCustomPaletteImageUploadUrlRequest = Message<"rpc.api.Prof
  * Use `create(ProfileGetCustomPaletteImageUploadUrlRequestSchema)` to create a new message.
  */
 export const ProfileGetCustomPaletteImageUploadUrlRequestSchema: GenMessage<ProfileGetCustomPaletteImageUploadUrlRequest> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 12);
+  messageDesc(file_rpc_api_profile_gen, 13);
 
 /**
  * @generated from message rpc.api.ProfileGetCustomPaletteImageUploadUrlResponse
@@ -306,7 +349,7 @@ export type ProfileGetCustomPaletteImageUploadUrlResponse = Message<"rpc.api.Pro
  * Use `create(ProfileGetCustomPaletteImageUploadUrlResponseSchema)` to create a new message.
  */
 export const ProfileGetCustomPaletteImageUploadUrlResponseSchema: GenMessage<ProfileGetCustomPaletteImageUploadUrlResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 13);
+  messageDesc(file_rpc_api_profile_gen, 14);
 
 /**
  * @generated from message rpc.api.ProfileEditCustomPaletteRequest
@@ -343,7 +386,7 @@ export type ProfileEditCustomPaletteRequest = Message<"rpc.api.ProfileEditCustom
  * Use `create(ProfileEditCustomPaletteRequestSchema)` to create a new message.
  */
 export const ProfileEditCustomPaletteRequestSchema: GenMessage<ProfileEditCustomPaletteRequest> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 14);
+  messageDesc(file_rpc_api_profile_gen, 15);
 
 /**
  * @generated from message rpc.api.ProfileEditCustomPaletteResponse
@@ -365,7 +408,7 @@ export type ProfileEditCustomPaletteResponse = Message<"rpc.api.ProfileEditCusto
  * Use `create(ProfileEditCustomPaletteResponseSchema)` to create a new message.
  */
 export const ProfileEditCustomPaletteResponseSchema: GenMessage<ProfileEditCustomPaletteResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 15);
+  messageDesc(file_rpc_api_profile_gen, 16);
 
 /**
  * @generated from message rpc.api.ProfileSetCustomPaletteRequest
@@ -382,7 +425,7 @@ export type ProfileSetCustomPaletteRequest = Message<"rpc.api.ProfileSetCustomPa
  * Use `create(ProfileSetCustomPaletteRequestSchema)` to create a new message.
  */
 export const ProfileSetCustomPaletteRequestSchema: GenMessage<ProfileSetCustomPaletteRequest> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 16);
+  messageDesc(file_rpc_api_profile_gen, 17);
 
 /**
  * @generated from message rpc.api.ProfileDeleteCustomPaletteRequest
@@ -399,7 +442,7 @@ export type ProfileDeleteCustomPaletteRequest = Message<"rpc.api.ProfileDeleteCu
  * Use `create(ProfileDeleteCustomPaletteRequestSchema)` to create a new message.
  */
 export const ProfileDeleteCustomPaletteRequestSchema: GenMessage<ProfileDeleteCustomPaletteRequest> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 17);
+  messageDesc(file_rpc_api_profile_gen, 18);
 
 /**
  * @generated from message rpc.api.ProfileSetNameResponse
@@ -416,7 +459,7 @@ export type ProfileSetNameResponse = Message<"rpc.api.ProfileSetNameResponse"> &
  * Use `create(ProfileSetNameResponseSchema)` to create a new message.
  */
 export const ProfileSetNameResponseSchema: GenMessage<ProfileSetNameResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 18);
+  messageDesc(file_rpc_api_profile_gen, 19);
 
 /**
  * @generated from message rpc.api.ProfileSetMessageResponse
@@ -433,7 +476,7 @@ export type ProfileSetMessageResponse = Message<"rpc.api.ProfileSetMessageRespon
  * Use `create(ProfileSetMessageResponseSchema)` to create a new message.
  */
 export const ProfileSetMessageResponseSchema: GenMessage<ProfileSetMessageResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 19);
+  messageDesc(file_rpc_api_profile_gen, 20);
 
 /**
  * @generated from message rpc.api.ProfileSetFanMarkResponse
@@ -450,7 +493,7 @@ export type ProfileSetFanMarkResponse = Message<"rpc.api.ProfileSetFanMarkRespon
  * Use `create(ProfileSetFanMarkResponseSchema)` to create a new message.
  */
 export const ProfileSetFanMarkResponseSchema: GenMessage<ProfileSetFanMarkResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 20);
+  messageDesc(file_rpc_api_profile_gen, 21);
 
 /**
  * @generated from message rpc.api.ProfileSwitchPublishSettingResponse
@@ -467,7 +510,24 @@ export type ProfileSwitchPublishSettingResponse = Message<"rpc.api.ProfileSwitch
  * Use `create(ProfileSwitchPublishSettingResponseSchema)` to create a new message.
  */
 export const ProfileSwitchPublishSettingResponseSchema: GenMessage<ProfileSwitchPublishSettingResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 21);
+  messageDesc(file_rpc_api_profile_gen, 22);
+
+/**
+ * @generated from message rpc.api.ProfileSwitchPublishScopeResponse
+ */
+export type ProfileSwitchPublishScopeResponse = Message<"rpc.api.ProfileSwitchPublishScopeResponse"> & {
+  /**
+   * @generated from field: rpc.api.common.Response common_response = 9999;
+   */
+  commonResponse?: Response | undefined;
+};
+
+/**
+ * Describes the message rpc.api.ProfileSwitchPublishScopeResponse.
+ * Use `create(ProfileSwitchPublishScopeResponseSchema)` to create a new message.
+ */
+export const ProfileSwitchPublishScopeResponseSchema: GenMessage<ProfileSwitchPublishScopeResponse> = /*@__PURE__*/
+  messageDesc(file_rpc_api_profile_gen, 23);
 
 /**
  * @generated from message rpc.api.ProfileSetEmblemResponse
@@ -484,7 +544,7 @@ export type ProfileSetEmblemResponse = Message<"rpc.api.ProfileSetEmblemResponse
  * Use `create(ProfileSetEmblemResponseSchema)` to create a new message.
  */
 export const ProfileSetEmblemResponseSchema: GenMessage<ProfileSetEmblemResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 22);
+  messageDesc(file_rpc_api_profile_gen, 24);
 
 /**
  * @generated from message rpc.api.ProfileBlockUserResponse
@@ -501,7 +561,7 @@ export type ProfileBlockUserResponse = Message<"rpc.api.ProfileBlockUserResponse
  * Use `create(ProfileBlockUserResponseSchema)` to create a new message.
  */
 export const ProfileBlockUserResponseSchema: GenMessage<ProfileBlockUserResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 23);
+  messageDesc(file_rpc_api_profile_gen, 25);
 
 /**
  * @generated from message rpc.api.ProfileUnblockUserResponse
@@ -518,7 +578,7 @@ export type ProfileUnblockUserResponse = Message<"rpc.api.ProfileUnblockUserResp
  * Use `create(ProfileUnblockUserResponseSchema)` to create a new message.
  */
 export const ProfileUnblockUserResponseSchema: GenMessage<ProfileUnblockUserResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 24);
+  messageDesc(file_rpc_api_profile_gen, 26);
 
 /**
  * @generated from message rpc.api.ProfileComplainUserResponse
@@ -535,7 +595,7 @@ export type ProfileComplainUserResponse = Message<"rpc.api.ProfileComplainUserRe
  * Use `create(ProfileComplainUserResponseSchema)` to create a new message.
  */
 export const ProfileComplainUserResponseSchema: GenMessage<ProfileComplainUserResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 25);
+  messageDesc(file_rpc_api_profile_gen, 27);
 
 /**
  * @generated from message rpc.api.ProfileSetCustomPaletteResponse
@@ -552,7 +612,7 @@ export type ProfileSetCustomPaletteResponse = Message<"rpc.api.ProfileSetCustomP
  * Use `create(ProfileSetCustomPaletteResponseSchema)` to create a new message.
  */
 export const ProfileSetCustomPaletteResponseSchema: GenMessage<ProfileSetCustomPaletteResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 26);
+  messageDesc(file_rpc_api_profile_gen, 28);
 
 /**
  * @generated from message rpc.api.ProfileDeleteCustomPaletteResponse
@@ -569,7 +629,7 @@ export type ProfileDeleteCustomPaletteResponse = Message<"rpc.api.ProfileDeleteC
  * Use `create(ProfileDeleteCustomPaletteResponseSchema)` to create a new message.
  */
 export const ProfileDeleteCustomPaletteResponseSchema: GenMessage<ProfileDeleteCustomPaletteResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 27);
+  messageDesc(file_rpc_api_profile_gen, 29);
 
 /**
  * @generated from message rpc.api.ProfileSetDefaultCustomPaletteResponse
@@ -586,7 +646,7 @@ export type ProfileSetDefaultCustomPaletteResponse = Message<"rpc.api.ProfileSet
  * Use `create(ProfileSetDefaultCustomPaletteResponseSchema)` to create a new message.
  */
 export const ProfileSetDefaultCustomPaletteResponseSchema: GenMessage<ProfileSetDefaultCustomPaletteResponse> = /*@__PURE__*/
-  messageDesc(file_rpc_api_profile_gen, 28);
+  messageDesc(file_rpc_api_profile_gen, 30);
 
 /**
  * @generated from service rpc.api.Profile
@@ -623,6 +683,14 @@ export const Profile: GenService<{
     methodKind: "unary";
     input: typeof ProfileSwitchPublishSettingRequestSchema;
     output: typeof ProfileSwitchPublishSettingResponseSchema;
+  },
+  /**
+   * @generated from rpc rpc.api.Profile.SwitchPublishScope
+   */
+  switchPublishScope: {
+    methodKind: "unary";
+    input: typeof ProfileSwitchPublishScopeRequestSchema;
+    output: typeof ProfileSwitchPublishScopeResponseSchema;
   },
   /**
    * @generated from rpc rpc.api.Profile.SetEmblem
